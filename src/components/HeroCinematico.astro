@@ -15,7 +15,6 @@
  * Alternativa com a foto real da fábrica: HeroCamadas.astro.
  */
 import { getImage } from 'astro:assets';
-import Icon from './Icon.astro';
 import poster from '../assets/hero/poster.jpg';
 import primeiro from '../assets/hero/primeiro-quadro.jpg';
 import { indicadores } from '../data/conteudo';
@@ -130,10 +129,6 @@ const caixas = [
         <span class="line" style="--line-i:2"><span class="g">E valorizam marcas.</span></span>
       </h1>
       <p class="lead hc-lead" data-auto-fade style="--delay:380ms">Da força da nossa indústria nasce a proteção de cada produto.</p>
-      <div class="hc-actions" data-auto-fade style="--delay:480ms">
-        <a href="/orcamento/" class="btn" data-cta-primary>Solicitar orçamento <Icon name="arrow" class="arrow" /></a>
-        <a href="#solucoes" class="btn btn-ghost">Conhecer soluções</a>
-      </div>
     </div>
   </div>
 </section>
@@ -192,9 +187,6 @@ const caixas = [
   }
   .hc-title .g { color: var(--color-green-700); }
   .hc-lead { margin-top: 0.75rem; font-size: clamp(1.0625rem, 1.25vw, 1.25rem); max-width: 34ch; color: var(--color-ink); font-weight: 500; }
-  .hc-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.1rem; }
-  .hc-actions .btn-ghost { --btn-bg: rgb(241 236 225 / 0.94); }
-  .hc-actions .btn-ghost:hover { --btn-bg: var(--color-ink); }
 
   /* ---------- Carimbos ---------- */
   .labels { list-style: none; margin: 0; padding: 0; }
