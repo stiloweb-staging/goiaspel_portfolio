@@ -1,0 +1,100 @@
+---
+/**
+ * "Chapas" de papelão com os indicadores. Inspirado na p. 6 da apresentação:
+ * cada número vive numa placa com canto chanfrado e borda de miolo ondulado.
+ * Somente indicadores validados recebem contagem animada (data-count).
+ */
+import { indicadores } from '../data/conteudo';
+import { yearsSinceFounding } from '../data/site';
+import Pending from './Pending.astro';
+
+const fmt = new Intl.NumberFormat('pt-BR');
+const anos = yearsSinceFounding();
+---
+<div class="plates" data-reveal-group>
+  <div class="plate plate-year flute-edge chamfer-tr" data-reveal>
+    <p class="p-label">Desde</p>
+    <p class="num p-num">1992</p>
+    <p class="p-text">{anos} anos de mercado, a partir da fundação em maio de 1992.</p>
+  </div>
+  {indicadores.map((ind) => (
+    <div class:list={['plate', 'flute-edge', 'chamfer-tr', `plate-${ind.id}`]} data-reveal>
+      <p class="num p-num">
+        <span data-count={ind.status === 'validado' ? ind.valor : undefined}>{ind.formato === 'milhar' ? fmt.format(ind.valor) : ind.valor}</span>
+        {ind.sufixo && <span class="p-suf">{ind.sufixo}</span>}
+      </p>
+      <p class="p-label">{ind.rotulo}</p>
+      {ind.detalhe && <p class="p-text">{ind.detalhe}</p>}
+      {ind.status === 'pendente' && <p class="p-pend"><Pending title={`${ind.fonte}. ${ind.nota ?? ''}`} /></p>}
+    </div>
+  ))}
+</div>
+
+<style>
+  /* Chapas "em pé" (releitura da p. 6): cor da paleta + fibra real do papel + miolo real na borda.
+     A sombra fica no contêiner (drop-shadow respeita o chanfro recortado de cada chapa). */
+  .plates {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: 1fr;
+    filter: drop-shadow(0 22px 22px rgb(0 0 0 / 0.28)) drop-shadow(0 3px 4px rgb(0 0 0 / 0.18));
+  }
+  @media (min-width: 36rem) { .plates { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 64rem) {
+    .plates { grid-template-columns: repeat(12, 1fr); grid-auto-rows: minmax(13rem, auto); }
+    .plate-year { grid-column: 1 / 5; grid-row: 1 / 3; }
+    .plate-caixas { grid-column: 5 / 13; grid-row: 1; }
+    .plate-area { grid-column: 5 / 9; grid-row: 2; }
+    .plate-toneladas { grid-column: 9 / 13; grid-row: 2; }
+  }
+  .plate {
+    --chamfer: 34px;
+    --plate-bg: var(--gp-fibra);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    padding: 1.75rem 2.4rem 1.75rem 1.9rem;
+    min-height: 11rem;
+    background: var(--pat-fibra) 0 0 / 327px auto, var(--plate-bg);
+    background-blend-mode: soft-light;
+    color: var(--gp-terra);
+    /* espessura e volume: luz no topo, leve sombra na base */
+    box-shadow: inset 3px 0 0 rgb(255 255 255 / 0.18), inset 0 -18px 28px -18px rgb(0 0 0 / 0.28);
+  }
+  .plate::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgb(255 255 255 / 0.22), transparent 38%);
+    pointer-events: none;
+  }
+  /* borda: miolo ondulado real (PDF p. 6), ladrilhado no período exato da onda */
+  .plate.flute-edge::after {
+    width: 6px;
+    background: linear-gradient(90deg, rgb(0 0 0 / 0.22), rgb(255 255 255 / 0.12) 40%, rgb(0 0 0 / 0.12));
+    opacity: 1;
+  }
+  .plate-year { --plate-bg: var(--gp-papel); background-image: var(--tex-fibra); }
+  .plate-caixas { --plate-bg: var(--gp-verde); color: var(--gp-branco); }
+  .plate-toneladas { --plate-bg: var(--gp-teal); color: var(--gp-branco); }
+  .p-num {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    font-size: clamp(2.8rem, 4.2vw, 4.1rem);
+  }
+  .plate-year .p-num, .plate-caixas .p-num { font-size: clamp(4rem, 7vw, 7.25rem); }
+  .p-suf { font-size: 0.42em; letter-spacing: 0; }
+  .p-label {
+    font-variation-settings: "wdth" 75;
+    font-weight: 750;
+    font-size: 1.125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .plate-year .p-label:first-child { order: -1; margin-bottom: auto; }
+  .p-text { font-size: 0.9375rem; opacity: 0.85; max-width: 34ch; }
+  .p-pend { order: -1; margin-bottom: auto; padding-bottom: 0.75rem; }
+</style>

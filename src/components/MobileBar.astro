@@ -1,0 +1,53 @@
+---
+// Barra de ação para celular (zona do polegar). Aparece depois que o usuário passa do topo.
+import Icon from './Icon.astro';
+import { whatsappLink } from '../data/site';
+---
+<div class="mobile-bar" data-mobile-bar>
+  <a href={whatsappLink('Olá! Vim pelo site e gostaria de falar sobre embalagens.')} class="mb-wa" target="_blank" rel="noopener">
+    <Icon name="whatsapp" class="i" /> WhatsApp
+  </a>
+  <a href="/orcamento/" class="mb-cta">Solicitar orçamento <Icon name="arrow" class="i" /></a>
+</div>
+
+<style>
+  .mobile-bar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: 1fr 1.6fr;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--color-blue-950);
+    transform: translateY(110%);
+    transition: transform var(--dur-2) var(--ease-out-quart);
+  }
+  .mobile-bar.is-visible { transform: none; }
+  .mobile-bar a {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    min-height: 3.5rem;
+    font-weight: 650;
+    text-decoration: none;
+    color: var(--color-white);
+  }
+  .mb-cta { background: var(--color-green-700); }
+  .i { width: 1.2rem; height: 1.2rem; }
+  @media (min-width: 40rem) { .mobile-bar { display: none; } }
+  @media print { .mobile-bar { display: none; } }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('[data-mobile-bar]');
+  if (bar) {
+    let ticking = false;
+    const update = () => {
+      // some no rodapé para não cobrir os contatos
+      const nearEnd = innerHeight + scrollY > document.body.scrollHeight - 480;
+      bar.classList.toggle('is-visible', scrollY > innerHeight * 0.6 && !nearEnd);
+      ticking = false;
+    };
+    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    update();
+  }
+</script>

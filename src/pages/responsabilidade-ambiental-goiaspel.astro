@@ -1,0 +1,110 @@
+---
+import CutLine from '../components/CutLine.astro';
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+import Pending from '../components/Pending.astro';
+import { praticasAmbientais } from '../data/conteudo';
+import solar from '../assets/fotos/fabrica-aerea.jpg';
+import floresta from '../assets/eucaflora/foto_04.png';
+
+const icon = { energia: 'sun', agua: 'water', aparas: 'recycle' } as const;
+const detalhe: Record<string, string> = {
+  energia: 'Os painéis fotovoltaicos cobrem parte da cobertura do parque fabril. A geração própria reduz a energia comprada da rede, com manutenção mínima e sem emissões na operação do sistema.',
+  agua: 'A água proveniente das máquinas passa por sistema de tratamento de efluentes instalado na própria fábrica, permitindo sua reutilização no processo.',
+  aparas: 'As aparas são resíduos de corte da produção das caixas. Elas são reaproveitadas no processo ou vendidas a indústrias fabricantes de papel e papelão, que as transformam em nova matéria-prima.',
+};
+---
+<Base
+  title="Responsabilidade ambiental"
+  description="Energia solar, tratamento e reúso de água e reaproveitamento de aparas de papelão na fábrica da Goiaspel em Goiânia."
+>
+  <PageHero
+    crumb="Responsabilidade ambiental"
+    eyebrow="Responsabilidade ambiental"
+    title="Compromisso que protege o hoje e constrói o amanhã"
+    accent="constrói o amanhã"
+    lead="Energia solar na cobertura, água tratada e reutilizada, aparas que voltam para a cadeia do papel. Práticas diárias da operação."
+    image={solar}
+    alt="Painéis solares instalados na cobertura da fábrica da Goiaspel."
+    imagePos="50% 75%"
+  />
+
+  <section class="section" aria-labelledby="t-praticas">
+    <div class="container-x">
+      <SectionHead id="t-praticas" num="01" eyebrow="Nossas práticas" title="Práticas em ação" accent="em ação" />
+      <div class="praticas">
+        {praticasAmbientais.map((p, i) => (
+          <article class="pratica" aria-labelledby={`t-${p.id}`} data-reveal>
+            <div class="pr-head">
+              <span class="num pr-n">0{i + 1}</span>
+              <Icon name={icon[p.id as keyof typeof icon]} class="pr-i" />
+            </div>
+            <div>
+              <h3 id={`t-${p.id}`} class="pr-t">{p.titulo}</h3>
+              <p class="pr-lead">{p.texto}</p>
+              <p class="pr-det">{detalhe[p.id]}</p>
+              {p.status === 'pendente' && <p class="pr-pend"><Pending title={p.fonte} label="Detalhamento a validar" /></p>}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section clareza tone-green" aria-labelledby="t-clareza">
+    <div class="container-x cl-grid">
+      <div>
+        <SectionHead id="t-clareza" num="02" eyebrow="Transparência" title="Sem exageros" accent="exageros" align="start" size="md" />
+      </div>
+      <div class="prose-g" data-reveal>
+        <p>O papelão ondulado é um material reciclável, e o reaproveitamento das aparas é parte da nossa operação. <strong>Isso não significa que toda embalagem produzida seja reciclada</strong>: o destino final depende do descarte feito por quem a utiliza.</p>
+        <p>Também não publicamos percentuais de economia de energia ou de água sem medição auditável. Quando esses dados forem consolidados, serão apresentados aqui com período e método.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section grupo" aria-labelledby="t-grupo">
+    <div class="container-x gr-grid">
+      <figure class="gr-photo cut cut-tl" data-reveal="mask">
+        <Picture src={floresta} formats={['avif', 'webp']} widths={[206]} sizes="(min-width: 64rem) 40vw, 92vw" alt="Plantação de eucaliptos do grupo Goiaspel." loading="lazy" />
+        <CutLine shape="tl" />
+      </figure>
+      <div>
+        <SectionHead id="t-grupo" num="03" eyebrow="Grupo Goiaspel" title="Reflorestamento de eucalipto" accent="eucalipto" align="start" size="md" />
+        <p class="prose-g gr-text" data-reveal>
+          O grupo mantém uma fazenda de eucaliptos que abastece a Eucaflora, outra empresa do grupo. A floresta foi plantada sem desmatamento e conserva parte da reserva de cerrado nativo.
+        </p>
+        <p class="gr-pend"><Pending title="Conteúdo do site atual (/responsabilidade-ambiental). Confirmar se permanece vigente e se deve constar no novo site." label="Confirmar vigência" /></p>
+      </div>
+    </div>
+  </section>
+
+  <ContinueExplorando grupo={0} />
+  <CtaFinal />
+</Base>
+
+<style>
+  .wide { margin: 0; }
+  .wide :global(img) { width: 100%; height: clamp(16rem, 42vw, 36rem); object-fit: cover; }
+  .praticas { display: grid; margin-top: clamp(3rem, 6vw, 4.5rem); border-top: 2px solid var(--color-ink); }
+  .pratica { display: grid; gap: 1.25rem; padding-block: 2.5rem; border-bottom: 1px solid var(--color-line); }
+  @media (min-width: 64rem) { .pratica { grid-template-columns: 16rem 1fr; gap: 4rem; } }
+  .pr-head { display: flex; align-items: center; gap: 1.25rem; }
+  .pr-n { font-size: 3.5rem; color: var(--color-kraft-deep); }
+  .pr-i { width: 2.75rem; height: 2.75rem; color: var(--color-green-700); }
+  .pr-t { font-variation-settings: "wdth" 72; font-weight: 800; font-size: clamp(1.75rem, 3vw, 2.5rem); text-transform: uppercase; color: var(--color-blue-700); }
+  .pr-lead { margin-top: 0.75rem; font-size: 1.1875rem; color: var(--color-ink); max-width: 52ch; }
+  .pr-det { margin-top: 0.75rem; color: var(--color-ink-2); max-width: 64ch; }
+  .pr-pend { margin-top: 1rem; }
+  .cl-grid, .gr-grid { display: grid; gap: 2.5rem; }
+  @media (min-width: 64rem) { .cl-grid { grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: end; } .gr-grid { grid-template-columns: 1fr 1.1fr; gap: 5rem; align-items: center; } }
+  .gr-photo { --chamfer: 36px; margin: 0; }
+  .gr-photo :global(img) { width: 100%; height: auto; aspect-ratio: 1.2; object-fit: cover; object-position: 50% 30%; }
+  .gr-text { margin-top: 1.5rem; }
+  .gr-pend { margin-top: 1rem; }
+</style>

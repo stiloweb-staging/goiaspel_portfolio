@@ -1,0 +1,87 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Processo from '../components/Processo.astro';
+import CutLine from '../components/CutLine.astro';
+import Icon from '../components/Icon.astro';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import poli from '../assets/fotos/poli-composicao.jpg';
+import flexo from '../assets/fotos/flexo-composicao.jpg';
+import { R } from '../data/rotas';
+
+// Conteúdo do site original (/criacao-de-layout-e-amostras-de-produtos/), ampliado com o processo.
+const entregas = [
+  { t: 'Arte e layout', p: 'Adaptação da marca e das informações do produto às faces da caixa e ao processo de impressão escolhido.' },
+  { t: 'Faca e estrutura', p: 'Definição de formato, corte, vinco, tipo de onda e papel conforme peso, empilhamento e transporte.' },
+  { t: 'Amostra física', p: 'Protótipo para análise e aprovação antes da produção — sem surpresas depois do pedido.' },
+];
+---
+<Base
+  title="Criação de layout e amostras"
+  description="Setor de layout da Goiaspel: desenvolvimento de arte, estrutura e amostras de embalagens de papelão para aprovação do cliente antes da produção."
+>
+  <PageHero
+    crumb="Criação de layout e amostras"
+    parent={{ label: 'Produtos', href: R.produtos }}
+    eyebrow="Desenvolvimento"
+    title="Aprove antes de produzir"
+    accent="antes de produzir"
+    lead="Uma equipe exclusiva desenvolve artes, layouts e amostras que se transformam no produto final, seguindo um procedimento rigoroso para evitar falhas depois da produção."
+    image={poli}
+    alt="Caixas de papelão impressas em policromia, resultado de layouts desenvolvidos pela Goiaspel."
+  />
+
+  <section class="section" aria-labelledby="t-entregas">
+    <div class="container-x">
+      <SectionHead id="t-entregas" num="01" eyebrow="O que o setor de layout entrega" title="Da ideia à amostra" accent="à amostra" />
+      <ol class="ent" data-reveal-group>
+        {entregas.map((e, i) => (
+          <li data-reveal><span class="num e-n">0{i + 1}</span><h3>{e.t}</h3><p>{e.p}</p></li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section tone-blue" aria-labelledby="t-proc">
+    <div class="container-x">
+      <SectionHead id="t-proc" num="02" eyebrow="Processo" title="Como um projeto anda" accent="anda" lead="O layout é uma área complementar do desenvolvimento: entra depois do entendimento técnico e antes da produção." />
+      <div class="proc"><Processo /></div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="t-arte">
+    <div class="container-x ar-grid">
+      <figure class="ar-photo cut cut-tl" data-reveal="mask">
+        <Picture src={flexo} formats={['avif', 'webp']} widths={[560, 900, 1300]} sizes="(min-width: 64rem) 45vw, 92vw" alt="Caixas em flexografia com marcas de clientes, desenvolvidas pelo setor de layout." loading="lazy" />
+        <CutLine shape="tl" />
+      </figure>
+      <div>
+        <SectionHead id="t-arte" num="03" eyebrow="Envie o que tiver" title="Partimos do que você tem" accent="você tem" align="start" size="md" />
+        <p class="prose-g ar-text" data-reveal>Arte final, logotipo ou apenas uma ideia: nossa equipe parte do que você tem e indica o processo de impressão mais adequado — flexografia em até 3 cores ou policromia.</p>
+        <a class="btn" href={`${R.orcamento}`}>Enviar meu projeto <Icon name="arrow" class="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <ContinueExplorando grupo={1} />
+  <CtaFinal />
+</Base>
+
+<style>
+  .ent { list-style: none; margin: clamp(3rem, 6vw, 4.5rem) 0 0; padding: 0; display: grid; gap: 0; }
+  @media (min-width: 48rem) { .ent { grid-template-columns: repeat(3, 1fr); } }
+  .ent li { display: grid; align-content: start; gap: 0.6rem; padding: 1.75rem 1.75rem 2rem 0; border-top: 2px solid var(--color-ink); }
+  @media (min-width: 48rem) { .ent li + li { padding-left: 1.75rem; border-left: 1px solid var(--color-line); } }
+  .e-n { font-size: 3.2rem; color: var(--color-kraft-deep); }
+  .ent h3 { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.6rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .ent p { color: var(--color-ink-2); }
+  .proc { margin-top: clamp(3rem, 6vw, 4.5rem); }
+  .ar-grid { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 64rem) { .ar-grid { grid-template-columns: 1fr 1fr; gap: 5rem; } }
+  .ar-photo { margin: 0; }
+  .ar-photo :global(img) { width: 100%; height: auto; aspect-ratio: 1.15; object-fit: cover; }
+  .ar-text { margin: 1.25rem 0 1.75rem; }
+</style>

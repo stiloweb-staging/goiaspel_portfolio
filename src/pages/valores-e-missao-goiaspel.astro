@@ -1,0 +1,97 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import CutLine from '../components/CutLine.astro';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import operador from '../assets/fotos/operador-maquina.jpg';
+import equipe from '../assets/fotos/equipe-atendimento.jpg';
+
+// Conteúdo integral do site original (/valores-e-missao-goiaspel/), com redação atualizada.
+const valores = [
+  { t: 'Transparência', p: 'Honestidade e sinceridade nas ações, para inspirar segurança e confiança na qualidade dos nossos produtos e serviços.' },
+  { t: 'Comprometimento', p: 'Compromisso com cada cliente, tendo como objetivo a sua total satisfação.' },
+  { t: 'Meio ambiente', p: 'Preservação e respeito ao meio ambiente em cada etapa da operação.' },
+  { t: 'Trabalho em equipe', p: 'Valorização do trabalho coletivo para alcançar resultados e manter um bom clima organizacional.' },
+];
+---
+<Base
+  title="Valores e missão"
+  description="Missão e valores da Goiaspel: transparência, comprometimento com o cliente, respeito ao meio ambiente e trabalho em equipe na fabricação de embalagens de papelão."
+>
+  <PageHero
+    crumb="Valores e missão"
+    eyebrow="Preceitos básicos"
+    title="O que orienta cada embalagem"
+    accent="cada embalagem"
+    lead="Quatro valores e uma missão clara sustentam a forma como a Goiaspel produz, atende e se relaciona há mais de três décadas."
+    image={equipe}
+    alt="Equipe comercial da Goiaspel conversando com uma cliente na recepção."
+  />
+
+  <section class="section missao tone-blue" aria-labelledby="t-missao">
+    <div class="container-x ms-grid">
+      <p class="eyebrow">Missão</p>
+      <blockquote class="ms-quote" data-reveal>
+        <p id="t-missao">Fabricar embalagens de papelão de qualidade, atendendo às necessidades dos clientes, garantindo lucratividade e desenvolvimento para a empresa com <em>responsabilidade ambiental</em> e buscando a satisfação de todos com quem se relaciona.</p>
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="t-valores">
+    <div class="container-x">
+      <SectionHead id="t-valores" num="01" eyebrow="Valores" title="Quatro compromissos" accent="compromissos" />
+      <ol class="vals" data-reveal-group>
+        {valores.map((v, i) => (
+          <li data-reveal>
+            <span class="num v-n" aria-hidden="true">0{i + 1}</span>
+            <h3 class="v-t">{v.t}</h3>
+            <p>{v.p}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section pratica tone-sage" aria-labelledby="t-pratica">
+    <div class="container-x pr-grid">
+      <figure class="pr-photo cut cut-tr" data-reveal="mask">
+        <Picture src={operador} formats={['avif', 'webp']} widths={[600, 1000, 1690]} sizes="(min-width: 64rem) 55vw, 92vw" alt="Colaborador da Goiaspel, de protetor auricular e camiseta da empresa, alimentando a máquina de produção com chapas de papelão." loading="lazy" />
+        <CutLine shape="tr" />
+      </figure>
+      <div>
+        <SectionHead id="t-pratica" num="02" eyebrow="Na prática" title="Valores que viram processo" accent="viram processo" align="start" size="md" />
+        <p class="prose-g pr-text" data-reveal>Transparência no orçamento, compromisso com o prazo, cuidado com o resíduo e uma equipe que trabalha junta do layout à expedição: é assim que os valores aparecem no dia a dia da fábrica.</p>
+      </div>
+    </div>
+  </section>
+
+  <ContinueExplorando grupo={0} />
+  <CtaFinal />
+</Base>
+
+<style>
+  .ms-grid { display: grid; gap: 1.5rem; }
+  .ms-quote { margin: 0; }
+  .ms-quote p {
+    font-variation-settings: "wdth" 80; font-weight: 600;
+    font-size: clamp(1.6rem, 3.2vw, 2.9rem); line-height: 1.16;
+    max-width: 30ch; text-wrap: balance;
+  }
+  .ms-quote em { font-style: normal; color: var(--gp-fibra); }
+  .vals { list-style: none; margin: clamp(3rem, 6vw, 4.5rem) 0 0; padding: 0; display: grid; gap: 0; }
+  @media (min-width: 48rem) { .vals { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 80rem) { .vals { grid-template-columns: repeat(4, 1fr); } }
+  .vals li { display: grid; align-content: start; gap: 0.6rem; padding: 1.75rem 1.75rem 2rem 0; border-top: 2px solid var(--color-ink); }
+  @media (min-width: 80rem) { .vals li + li { padding-left: 1.75rem; border-left: 1px solid var(--color-line); } }
+  .v-n { font-size: 3.4rem; color: var(--color-kraft-deep); }
+  .v-t { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.75rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .vals p { color: var(--color-ink-2); max-width: 34ch; }
+  .pr-grid { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 64rem) { .pr-grid { grid-template-columns: 1.2fr 1fr; gap: 4rem; } }
+  .pr-photo { margin: 0; }
+  .pr-photo :global(img) { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: 30% 50%; }
+  .pr-text { margin-top: 1.5rem; }
+</style>

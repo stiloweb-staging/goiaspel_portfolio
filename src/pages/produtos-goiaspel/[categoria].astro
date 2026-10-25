@@ -1,0 +1,170 @@
+---
+/**
+ * Páginas de categoria nos caminhos ORIGINAIS: /produtos-goiaspel/{caixa-em-flexografia,
+ * caixa-em-policromia, caixas-especiais, acessorios-de-papelao}/. No site antigo eram só galerias
+ * numeradas; aqui ganham explicação, aplicações, galeria com legendas e caminho para o orçamento.
+ */
+import type { ImageMetadata } from 'astro';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import Galeria from '../../components/Galeria.astro';
+import Icon from '../../components/Icon.astro';
+import CtaFinal from '../../components/CtaFinal.astro';
+import { galeria, type Categoria } from '../../data/galeria';
+import { R } from '../../data/rotas';
+import flexo from '../../assets/fotos/flexo-composicao.jpg';
+import poli from '../../assets/fotos/poli-composicao.jpg';
+import avant from '../../assets/fotos/poli-avant.jpg';
+import operadorCx from '../../assets/fotos/operador-caixas.jpg';
+
+interface Dados {
+  slug: string; cat: Categoria; nome: string; eyebrow: string; titulo: string; accent: string; lead: string;
+  imagem: ImageMetadata; alt: string; pos?: string;
+  pontos: { t: string; p: string }[]; aplicacoes: string[]; orcar: string;
+}
+const categorias: Dados[] = [
+  {
+    slug: 'caixa-em-flexografia', cat: 'flexografia', nome: 'Caixa em flexografia', eyebrow: 'Impressão direta no papelão',
+    titulo: 'Flexografia em até 3 cores', accent: 'até 3 cores',
+    lead: 'A impressão é feita diretamente sobre o papelão ondulado, com clichê e tintas à base d’água. É a escolha para volume, padronização e identificação clara da sua marca.',
+    imagem: flexo, alt: 'Caixas impressas em flexografia: Star Pel, Zupp Amaciante, coletor de perfurocortantes e Frigorífico Goiás.',
+    pontos: [
+      { t: 'Clichê e tinta à base d’água', p: 'Processo limpo e eficiente, com cores sólidas e boa leitura de marca, códigos e avisos de manuseio.' },
+      { t: 'Até 3 cores', p: 'O limite técnico do processo. Nossa equipe de arte ajuda a adaptar o layout para tirar o melhor resultado.' },
+      { t: 'Escala e repetibilidade', p: 'Ideal para pedidos recorrentes e grandes tiragens, com padrão constante entre lotes.' },
+    ],
+    aplicacoes: ['Caixas de transporte e expedição', 'Alimentos, carnes e hortifrúti', 'Saneantes e produtos de limpeza', 'Bandejas e expositores de uma ou duas cores'],
+    orcar: 'flexografia',
+  },
+  {
+    slug: 'caixa-em-policromia', cat: 'policromia', nome: 'Caixa em policromia', eyebrow: 'Reprodução fotográfica',
+    titulo: 'Policromia que vende no ponto de venda', accent: 'no ponto de venda',
+    lead: 'Impressão em cartão acoplado ao papelão ondulado, com reprodução de fotos, degradês e muitas cores. A embalagem passa a comunicar e a valorizar o produto.',
+    imagem: poli, alt: 'Caixas em policromia para Europa Pães, Mundial Panificadora, Bosch Service e Imperial Tintas.',
+    pontos: [
+      { t: 'Imagem com qualidade gráfica', p: 'Fotos, ilustrações e detalhes finos que a impressão direta não alcança.' },
+      { t: 'Resistência do ondulado', p: 'O acabamento gráfico vem acoplado à estrutura de papelão, que continua protegendo o produto.' },
+      { t: 'Formatos de apresentação', p: 'Caixas com alça, janela, expositores e embalagens promocionais.' },
+    ],
+    aplicacoes: ['Panificação e confeitaria', 'Bebidas', 'Autopeças e serviços', 'Tintas e construção', 'Pizzarias e delivery'],
+    orcar: 'policromia',
+  },
+  {
+    slug: 'caixas-especiais', cat: 'especiais', nome: 'Caixas especiais', eyebrow: 'Formatos sob medida',
+    titulo: 'Quando o padrão não serve', accent: 'não serve',
+    lead: 'Corte e vinco, alças, janelas, expositores e caixas para datas comemorativas e kits — desenvolvidas a partir do produto e de como ele será apresentado.',
+    imagem: avant, alt: 'Expositor hexagonal de papelão impresso para lâmpadas Avant.',
+    pontos: [
+      { t: 'Corte e vinco', p: 'Formatos fora do retangular, encaixes e travas sem cola.' },
+      { t: 'Datas e campanhas', p: 'Caixas de Natal, Boas Festas e kits promocionais.' },
+      { t: 'Exposição', p: 'Expositores de balcão e de chão que levam a marca ao ponto de venda.' },
+    ],
+    aplicacoes: ['Kits e cestas comemorativas', 'Expositores de balcão', 'Caixas com janela', 'Embalagens de presente'],
+    orcar: 'especial',
+  },
+  {
+    slug: 'acessorios-de-papelao', cat: 'acessorios', nome: 'Acessórios de papelão', eyebrow: 'Proteção interna',
+    titulo: 'O que vai dentro da caixa também conta', accent: 'também conta',
+    lead: 'Divisórias, chapas, calços e cantoneiras que organizam, protegem e estabilizam o produto durante o transporte e a armazenagem.',
+    imagem: operadorCx, alt: 'Colaborador da Goiaspel segurando caixas e acessórios de papelão na expedição.', pos: '70% 50%',
+    pontos: [
+      { t: 'Divisórias colmeia', p: 'Separam garrafas, frascos e itens frágeis, evitando atrito e quebra.' },
+      { t: 'Chapas e calços', p: 'Reforçam o empilhamento e preenchem espaços vazios.' },
+      { t: 'Cantoneiras', p: 'Protegem arestas e quinas de produtos e paletes.' },
+    ],
+    aplicacoes: ['Bebidas e vidros', 'Cosméticos e farmacêuticos', 'Eletroeletrônicos', 'Paletização'],
+    orcar: 'acessorios',
+  },
+];
+
+export function getStaticPaths() {
+  return ['caixa-em-flexografia', 'caixa-em-policromia', 'caixas-especiais', 'acessorios-de-papelao'].map((categoria) => ({ params: { categoria } }));
+}
+const { categoria } = Astro.params;
+const d = categorias.find((c) => c.slug === categoria)!;
+const total = galeria.filter((g) => g.cat === d.cat).length;
+const outras = categorias.filter((c) => c.slug !== d.slug);
+const schema = [{ '@context': 'https://schema.org', '@type': 'Product', name: d.nome, description: d.lead, brand: { '@type': 'Brand', name: 'Goiaspel' }, category: 'Embalagens de papelão ondulado' }];
+---
+<Base title={d.nome} description={d.lead} schema={schema}>
+  <PageHero
+    crumb={d.nome}
+    parent={{ label: 'Produtos', href: R.produtos }}
+    eyebrow={d.eyebrow}
+    title={d.titulo}
+    accent={d.accent}
+    lead={d.lead}
+    image={d.imagem}
+    alt={d.alt}
+    imagePos={d.pos}
+  >
+    <div class="ph-actions">
+      <a class="btn" href={`${R.orcamento}?tipo=${d.orcar}`}>Orçar {d.nome.toLowerCase()} <Icon name="arrow" class="arrow" /></a>
+      <a class="btn btn-ghost" href="#portfolio">Ver {total} modelos</a>
+    </div>
+  </PageHero>
+
+  <section class="section" aria-labelledby="t-pontos">
+    <div class="container-x pt-grid">
+      <SectionHead id="t-pontos" num="01" eyebrow="Como funciona" title="Por que escolher" accent="escolher" align="start" size="md" />
+      <div>
+        <ol class="pontos" data-reveal-group>
+          {d.pontos.map((p, i) => (
+            <li data-reveal><span class="num p-n">0{i + 1}</span><div><h3>{p.t}</h3><p>{p.p}</p></div></li>
+          ))}
+        </ol>
+        <div class="apl" data-reveal>
+          <h3 class="apl-t">Aplicações</h3>
+          <ul>{d.aplicacoes.map((a) => <li>{a}</li>)}</ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="portfolio" class="section tone-sage" aria-labelledby="t-port">
+    <div class="container-x">
+      <SectionHead id="t-port" num="02" eyebrow="Portfólio" title={`${total} modelos produzidos`} accent="produzidos" lead="Clique para ampliar. Cada projeto é desenvolvido sob medida para o produto do cliente." />
+      <div class="port"><Galeria only={d.cat} /></div>
+    </div>
+  </section>
+
+  <nav class="section outras" aria-labelledby="t-outras">
+    <div class="container-x">
+      <h2 id="t-outras" class="display display-sm o-t">Outras linhas</h2>
+      <ul class="o-list">
+        {outras.map((o) => (
+          <li><a href={`/produtos-goiaspel/${o.slug}/`}><span class="o-name">{o.nome}</span><span class="o-ey">{o.eyebrow}</span><Icon name="arrow" class="o-i" /></a></li>
+        ))}
+        <li><a href={R.layout}><span class="o-name">Criação de layout e amostras</span><span class="o-ey">Arte e amostra antes da produção</span><Icon name="arrow" class="o-i" /></a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <CtaFinal />
+</Base>
+
+<style>
+  .ph-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.75rem; }
+  .pt-grid { display: grid; gap: 2.5rem; }
+  @media (min-width: 64rem) { .pt-grid { grid-template-columns: 0.9fr 1.3fr; gap: 5rem; } }
+  .pontos { list-style: none; margin: 0; padding: 0; }
+  .pontos li { display: grid; grid-template-columns: 3.5rem 1fr; gap: 1rem; padding: 1.4rem 0; border-top: 1px solid var(--color-line); }
+  .p-n { font-size: 2.4rem; color: var(--color-kraft-deep); }
+  .pontos h3 { font-weight: 750; font-size: 1.2rem; color: var(--color-ink); }
+  .pontos p { margin-top: 0.25rem; color: var(--color-ink-2); }
+  .apl { margin-top: 2rem; padding: 1.5rem 1.75rem; background: var(--gp-branco); border-left: 3px solid var(--gp-verde); }
+  .apl-t { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-ink-2); }
+  .apl ul { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; margin: 0.9rem 0 0; padding: 0; }
+  .apl li { padding: 0.4rem 0.8rem; font-size: 0.9375rem; font-weight: 600; border: 1px solid var(--color-line); background: var(--gp-papel); }
+  .port { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+  .o-t { color: var(--color-blue-700); }
+  .o-list { list-style: none; margin: 1.75rem 0 0; padding: 0; display: grid; border-top: 2px solid var(--color-ink); }
+  @media (min-width: 48rem) { .o-list { grid-template-columns: repeat(2, 1fr); column-gap: 2rem; } }
+  .o-list a { position: relative; display: grid; gap: 0.15rem; padding: 1.25rem 2.5rem 1.25rem 0; border-bottom: 1px solid var(--color-line); color: var(--color-ink); text-decoration: none; }
+  .o-name { font-variation-settings: "wdth" 75; font-weight: 800; font-size: 1.3rem; text-transform: uppercase; color: var(--color-blue-700); transition: color var(--dur-1); }
+  .o-ey { font-size: 0.9375rem; color: var(--color-ink-2); }
+  .o-list a:hover .o-name { color: var(--gp-verde); }
+  .o-list :global(.o-i) { position: absolute; right: 0.25rem; top: 50%; width: 1.25rem; height: 1.25rem; translate: 0 -50%; color: var(--gp-verde); transition: transform var(--dur-2) var(--ease-out-quart); }
+  .o-list a:hover :global(.o-i) { transform: translateX(4px); }
+</style>

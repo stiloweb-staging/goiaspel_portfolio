@@ -1,0 +1,138 @@
+---
+import CutLine from '../components/CutLine.astro';
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import FluteLine from '../components/FluteLine.astro';
+import VideoFacade from '../components/VideoFacade.astro';
+import Clientes from '../components/Clientes.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import Icon from '../components/Icon.astro';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+import { historia } from '../data/conteudo';
+import { yearsSinceFounding } from '../data/site';
+
+import equipe from '../assets/fotos/equipe-atendimento.jpg';
+import fabrica from '../assets/fotos/fabrica-aerea.jpg';
+import operadora from '../assets/fotos/operadora-expedicao.jpg';
+import capaInst from '../assets/outros/capa_video_institucional.jpg';
+
+---
+<Base
+  title="Quem somos — fundação e crescimento"
+  description="Fundada em maio de 1992 em Goiânia, a Goiaspel foi a indústria pioneira em embalagens de papelão na região. Da primeira máquina ao parque fabril próprio de 11.000 m²."
+>
+  <PageHero
+    crumb="Quem somos"
+    eyebrow="Fundação e crescimento"
+    title="Pioneira desde 1992"
+    accent="desde 1992"
+    lead={`Há ${yearsSinceFounding()} anos a Goiaspel desenvolve e produz embalagens de papelão ondulado em flexografia e policromia, para pequenas e grandes empresas. Entender o desafio de cada cliente é o ponto de partida.`}
+    image={equipe}
+    alt="Duas pessoas conversando na recepção da Goiaspel, com o logotipo da empresa ao fundo."
+  />
+
+  <section class="section" aria-labelledby="t-historia">
+    <div class="container-x">
+      <SectionHead
+        id="t-historia"
+        num="01"
+        eyebrow="Trajetória"
+        title="Uma história de expansão"
+        accent="expansão"
+        lead="Pioneira na fabricação de embalagens de papelão em sua região, a Goiaspel nasceu para atender uma demanda crescente que ainda não tinha fornecedor local."
+      />
+      <ol class="timeline" data-reveal-group>
+        {historia.map((h) => (
+          <li data-reveal>
+            <span class="num tl-year">{h.ano}</span>
+            <p>{h.texto}</p>
+          </li>
+        ))}
+      </ol>
+      <FluteLine class="tl-flute" tone="green" />
+    </div>
+  </section>
+
+  <section class="section duo tone-sage" aria-label="A fábrica">
+    <div class="container-x duo-grid">
+      <figure class="duo-a cut cut-bl" data-reveal="mask">
+        <Picture src={fabrica} formats={['avif', 'webp']} widths={[480, 900, 1300]} sizes="(min-width: 64rem) 55vw, 92vw" alt="Vista aérea da sede da Goiaspel com a cidade de Goiânia ao fundo." loading="lazy" />
+        <CutLine shape="bl" />
+      </figure>
+      <div class="duo-text" data-reveal>
+        <p class="eyebrow">2015</p>
+        <p class="duo-quote">O parque fabril próprio de 11.000 m² consolidou a Goiaspel como referência em embalagens de papelão no Centro-Oeste.</p>
+        <p class="duo-cite">Resultado de investimento constante em pessoas, infraestrutura e tecnologia.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="grupo" class="section grupo" aria-labelledby="t-grupo">
+    <div class="container-x">
+      <div class="grupo-box">
+        <h2 id="t-grupo" class="g-t">Empresas do grupo</h2>
+        <p>A <strong>Eucaflora</strong>, empresa do grupo Goiaspel, é uma das maiores do Centro-Oeste na comercialização de eucalipto tratado: plantio, tratamento, reflorestamento e venda de madeira.</p>
+        <a class="link-arrow" href="/eucaflora-uma-empresa-do-grupo-goiaspel/">Conheça a Eucaflora <Icon name="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section video-inst" aria-labelledby="t-vi">
+    <div class="container-x vi-grid">
+      <div>
+        <SectionHead id="t-vi" num="03" eyebrow="Vídeo institucional" title="Conheça melhor a Goiaspel" accent="a Goiaspel" align="start" size="md" />
+        <p class="prose-g vi-text" data-reveal>Um passeio pelo parque fabril, pelas pessoas e pelos processos que transformam papelão ondulado em embalagens sob medida.</p>
+        <a class="link-arrow" href="/videos-da-goiaspel/">Todos os vídeos <Icon name="arrow" /></a>
+      </div>
+      <div data-reveal><VideoFacade id="vJMXnChkjrk" title="Goiaspel Embalagens — Institucional 2022" poster={capaInst} /></div>
+    </div>
+  </section>
+
+  <Clientes />
+  <ContinueExplorando grupo={0} />
+  <CtaFinal image={operadora} alt="Colaboradora da Goiaspel apoiada sobre chapas de caixas prontas para expedição." />
+</Base>
+
+<style>
+  .timeline { list-style: none; margin: clamp(3rem, 6vw, 4.5rem) 0 0; padding: 0; display: grid; gap: 0; }
+  @media (min-width: 64rem) { .timeline { grid-template-columns: repeat(5, 1fr); } }
+  .timeline li { padding: 1.5rem 1.5rem 1.5rem 0; border-top: 2px solid var(--color-ink); }
+  @media (min-width: 64rem) { .timeline li { border-top: 0; border-left: 1px solid var(--color-line); padding: 0 1.5rem 0 1.5rem; } .timeline li:first-child { border-left: 0; padding-left: 0; } }
+  .tl-year { display: block; font-size: clamp(3rem, 5vw, 4.25rem); color: var(--color-blue-700); margin-bottom: 0.75rem; }
+  .timeline li:last-child .tl-year { color: var(--color-green-700); }
+  .timeline p { color: var(--color-ink-2); }
+  .tl-flute { display: block; height: 26px; margin-top: 3rem; }
+
+  .duo-grid { display: grid; gap: 3rem; }
+  @media (min-width: 64rem) { .duo-grid { grid-template-columns: 1.3fr 1fr; gap: 5rem; align-items: center; } }
+  .duo-a { --chamfer: 48px; margin: 0; }
+  .duo-a :global(img) { width: 100%; height: auto; aspect-ratio: 1.3; object-fit: cover; }
+  .duo-quote { margin-top: 1.25rem; font-variation-settings: "wdth" 80; font-weight: 600; font-size: clamp(1.6rem, 3vw, 2.4rem); line-height: 1.15; color: var(--color-blue-900); }
+  .duo-cite { margin-top: 1rem; color: var(--color-ink-2); }
+
+  .missao { margin-top: 3rem; padding: 2rem; background: var(--color-blue-700); color: var(--color-white); clip-path: polygon(0 0, calc(100% - 32px) 0, 100% 32px, 100% 100%, 0 100%); }
+  .missao p { max-width: 70ch; font-size: 1.125rem; margin-top: 0.5rem; }
+  .m-t { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; }
+  .val-grid { list-style: none; margin: 0.75rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+  @media (min-width: 48rem) { .val-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 80rem) { .val-grid { grid-template-columns: repeat(4, 1fr); } }
+  .val-grid li { padding: 1.75rem; background: var(--color-paper-2); }
+  .val-grid h3 { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.375rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .val-grid p { margin-top: 0.5rem; color: var(--color-ink-2); font-size: 0.975rem; }
+
+  .rel-grid { display: grid; gap: 2rem; }
+  @media (min-width: 64rem) { .rel-grid { grid-template-columns: 1fr 1fr; gap: 5rem; align-items: end; } }
+
+  .vid-grid { display: grid; gap: 1rem; margin-top: 3rem; }
+  @media (min-width: 48rem) { .vid-grid { grid-template-columns: 1fr 1fr; } }
+  .vid-note { margin-top: 1rem; font-size: 0.875rem; color: var(--color-ink-3); }
+
+  .grupo-box { display: grid; gap: 0.75rem; justify-items: start; padding: 2rem; border: 1.5px solid var(--color-line); }
+  .g-t { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .grupo-box p { color: var(--color-ink-2); max-width: 70ch; }
+  .vi-grid { display: grid; gap: 2.5rem; align-items: center; }
+  @media (min-width: 64rem) { .vi-grid { grid-template-columns: 1fr 1.25fr; gap: 4rem; } }
+  .vi-text { margin: 1.25rem 0; }
+</style>

@@ -1,0 +1,74 @@
+---
+/**
+ * Mascote Goiaspel no hero (poses geradas no FLORA a partir do guia de estilo 2027).
+ * Estado padrão: "apresentando" — a palma aponta para o título/CTA (desktop) ou para a fábrica (celular).
+ * Interação: com hover/foco no CTA principal (ou no próprio mascote) ele troca para "joinha + piscada".
+ * Decorativo (aria-hidden): não carrega informação que não esteja no texto.
+ * Movimento: entrada + 2 ciclos de flutuação (< 5 s, WCAG 2.2.2); nada anima com prefers-reduced-motion.
+ */
+import { Image } from 'astro:assets';
+import apresentando from '../assets/mascote/apresentando.png';
+import joinha from '../assets/mascote/joinha.png';
+---
+<div class="mascote" aria-hidden="true">
+  <div class="m-body">
+    <Image src={apresentando} alt="" widths={[200, 320, 480]} sizes="(min-width: 64rem) 19rem, 11rem" class="m-pose m-default" loading="lazy" fetchpriority="low" decoding="async" />
+    <Image src={joinha} alt="" widths={[160, 260, 380]} sizes="(min-width: 64rem) 15rem, 9rem" class="m-pose m-joinha" loading="lazy" decoding="async" />
+  </div>
+</div>
+
+<style>
+  .mascote {
+    position: absolute;
+    z-index: 3;
+    right: -1%;
+    bottom: -9%;
+    height: clamp(9.5rem, 34vw, 13rem);
+    aspect-ratio: 848 / 922;
+  }
+  @media (min-width: 64rem) {
+    .mascote { right: auto; left: -14%; bottom: -8%; height: clamp(15rem, 23vw, 21rem); }
+  }
+  @media (min-width: 80rem) {
+    .mascote { left: -21%; }
+  }
+  .m-body {
+    display: grid;
+    height: 100%;
+    align-items: end;
+    justify-items: center;
+    filter: drop-shadow(0 14px 14px rgb(28 26 23 / 0.2));
+  }
+  .m-pose {
+    grid-area: 1 / 1;
+    height: 100%;
+    width: auto;
+    max-width: none;
+    transform-origin: 50% 100%;
+    transition: opacity 220ms ease, transform 420ms var(--ease-out-quart);
+  }
+  .m-joinha { height: 101%; opacity: 0; transform: translateY(6px) scale(0.94); }
+
+  /* Interação: reage ao CTA principal e ao próprio mascote */
+  :global(.hero:has([data-cta-primary]:is(:hover, :focus-visible))) .m-default,
+  .mascote:hover .m-default { opacity: 0; transform: scale(0.96); }
+  :global(.hero:has([data-cta-primary]:is(:hover, :focus-visible))) .m-joinha,
+  .mascote:hover .m-joinha { opacity: 1; transform: translateY(-6px) rotate(-2deg); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js-motion) .mascote { animation: m-enter 900ms var(--ease-out-quart) 950ms both; }
+    :global(.js-motion) .m-body { animation: m-bob 2.4s ease-in-out 1.9s 2; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .m-pose { transition: none; }
+  }
+  @keyframes m-enter {
+    from { opacity: 0; transform: translateY(30%) rotate(-5deg); }
+    60% { opacity: 1; transform: translateY(-4%) rotate(1.5deg); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes m-bob {
+    0%, 100% { transform: none; }
+    50% { transform: translateY(-7px); }
+  }
+</style>

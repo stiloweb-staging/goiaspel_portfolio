@@ -1,0 +1,18 @@
+# Caminhos idênticos aos do site original. Apenas o prefixo /site/ (do <base href> antigo) vira 301.
+# Aplicar SOMENTE na publicação autorizada — ver 10_PENDENCIAS_PARA_PUBLICACAO.md.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule ^site/servicos\.php$ /know-how-e-infraestrutura-goiaspel/#logistica [R=301,L,NE]
+RewriteRule ^site/clientes\.php$ /#clientes [R=301,L,NE]
+RewriteRule ^site/formulario_ligamos_voce\.php$ /canais-de-contato-com-a-goiaspel/#nos-ligamos [R=301,L,NE]
+RewriteRule ^site/?$ / [R=301,L]
+RewriteRule ^site/(.+)$ /$1 [R=301,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+<FilesMatch "\.(avif|webp|jpg|png|svg|woff2|css|js|mp4|webm)$">
+Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+</IfModule>
+
+ErrorDocument 404 /404.html

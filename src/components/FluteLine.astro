@@ -1,0 +1,55 @@
+---
+/**
+ * Corte transversal de papelão ondulado: capa — miolo ondulado — capa.
+ * Elemento-assinatura da identidade. O miolo "se desenha" quando entra na tela.
+ * variant="double" = parede dupla (dois miolos), como na NBR 5985 citada no site.
+ */
+interface Props {
+  variant?: 'single' | 'double';
+  tone?: 'kraft' | 'blue' | 'green' | 'light';
+  class?: string;
+  animate?: boolean;
+}
+const { variant = 'single', tone = 'kraft', class: cls = '', animate = true } = Astro.props;
+const W = 1200;
+const period = 24;
+const amp = variant === 'double' ? 7 : 9;
+function wave(y0: number) {
+  let d = `M0 ${y0}`;
+  for (let x = 0; x < W; x += period) {
+    d += ` Q${x + period / 4} ${y0 - amp} ${x + period / 2} ${y0} T${x + period} ${y0}`;
+  }
+  return d;
+}
+const h = variant === 'double' ? 44 : 26;
+const liners = variant === 'double' ? [2, 22, 42] : [2, 24];
+const waves = variant === 'double' ? [12, 32] : [13];
+---
+<svg
+  class:list={['flute-line', `tone-${tone}`, cls]}
+  viewBox={`0 0 ${W} ${h}`}
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  focusable="false"
+  data-flute={animate ? '' : undefined}
+>
+  {liners.map((y) => <line x1="0" x2={W} y1={y} y2={y} class="liner" />)}
+  {waves.map((y) => <path d={wave(y)} class="fluting" pathLength="1" />)}
+</svg>
+
+<style>
+  .flute-line { width: 100%; height: auto; overflow: visible; }
+  .liner { stroke: var(--fl, var(--color-kraft-deep)); stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+  .fluting { fill: none; stroke: var(--fl, var(--color-kraft-deep)); stroke-width: 1.75; vector-effect: non-scaling-stroke; }
+  .tone-blue { --fl: var(--color-blue-700); }
+  .tone-green { --fl: var(--color-green-600); }
+  .tone-light { --fl: rgb(255 255 255 / 0.55); }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js-motion) [data-flute] .fluting {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      transition: stroke-dashoffset var(--dur-4) var(--ease-in-out-cut);
+    }
+    :global(.js-motion) [data-flute].is-in .fluting { stroke-dashoffset: 0; }
+  }
+</style>

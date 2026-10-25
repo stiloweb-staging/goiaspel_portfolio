@@ -1,0 +1,220 @@
+---
+import CutLine from '../components/CutLine.astro';
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+import Pending from '../components/Pending.astro';
+import Galeria from '../components/Galeria.astro';
+import { galeria } from '../data/galeria';
+import { solucoes, outrasSolucoes } from '../data/conteudo';
+import poliComposicao from '../assets/fotos/poli-composicao.jpg';
+
+const ondas = [
+  { tipo: 'A', esp: '4,5 a 5,0 mm', n: '11 a 13' },
+  { tipo: 'C', esp: '3,5 a 4,0 mm', n: '13 a 15' },
+  { tipo: 'B', esp: '2,5 a 3,0 mm', n: '16 a 18' },
+  { tipo: 'E', esp: '1,2 a 1,5 mm', n: '31 a 38' },
+];
+const schema = solucoes.map((s) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: s.nome,
+  description: s.resumo,
+  provider: { '@id': 'https://www.goiaspel.com.br/#organizacao' },
+  areaServed: 'BR',
+}));
+---
+<Base
+  title="Produtos — embalagens de papelão sob medida"
+  description="Caixas de papelão em flexografia (até 3 cores) e policromia, caixas especiais, expositores e acessórios. Desenvolvimento de layout e amostras pela Goiaspel."
+  schema={schema}
+>
+  <PageHero
+    crumb="Produtos"
+    eyebrow="Linha de produtos Goiaspel"
+    title="Cada produto pede uma embalagem"
+    accent="uma embalagem"
+    lead="Flexografia para escala e padronização. Policromia para presença de marca. Formatos especiais para o que não cabe no padrão."
+    image={poliComposicao}
+    alt="Caixas de papelão impressas em policromia para marcas de panificação, tintas e serviços automotivos."
+  >
+    <nav class="jump" aria-label="Linhas de produto">
+      <a href="/produtos-goiaspel/caixa-em-flexografia/">Caixa em flexografia</a>
+      <a href="/produtos-goiaspel/caixa-em-policromia/">Caixa em policromia</a>
+      <a href="/produtos-goiaspel/caixas-especiais/">Caixas especiais</a>
+      <a href="/produtos-goiaspel/acessorios-de-papelao/">Acessórios</a>
+      <a href="/criacao-de-layout-e-amostras-de-produtos/">Layout e amostras</a>
+    </nav>
+  </PageHero>
+
+  {solucoes.map((s, i) => (
+    <section id={s.id} class:list={['section', 'sol', i % 2 === 1 && 'sol-alt']} aria-labelledby={`t-${s.id}`}>
+      <div class="container-x">
+        <div class="sol-top">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-num">0{i + 1}</span>Tecnologia de impressão</p>
+            <h2 id={`t-${s.id}`} class="display display-lg sol-title" data-reveal>{s.nome}</h2>
+            <span class:list={['tag', s.tagCor === 'green' && 'tag-green']}>{s.tag}</span>
+            {s.pendencia && <Pending title={s.pendencia} label="Especificação a validar" />}
+          </div>
+          <div class="sol-copy" data-reveal>
+            <p class="lead">{s.resumo}</p>
+            <ul class="sol-ben">
+              {s.beneficios.map((b) => <li><Icon name="check" class="i" />{b}</li>)}
+            </ul>
+            <p class="sol-app"><strong>Aplicações típicas:</strong> {s.aplicacao}</p>
+            <div class="sol-acts"><a class="btn sol-btn" href={`/produtos-goiaspel/caixa-em-${s.id}/`}>Ver {s.nome.toLowerCase()} <Icon name="arrow" class="arrow" /></a><a class="link-arrow" href={`/orcamento/?tipo=${s.id}`}>Solicitar orçamento <Icon name="arrow" /></a></div>
+          </div>
+        </div>
+        <div class="gallery" data-reveal-group>
+          <figure class="g-main cut cut-tr" data-reveal="mask">
+            <Picture src={s.imagem} formats={['avif', 'webp']} widths={[560, 900, 1300]} sizes="(min-width: 64rem) 58vw, 92vw" alt={s.alt} loading="lazy" />
+            <CutLine shape="tr" />
+          </figure>
+          {s.galeria.map((g) => (
+            <figure class="g-item" data-reveal>
+              <Picture src={g.src} formats={['avif', 'webp']} widths={[320, 560]} sizes="(min-width: 64rem) 20vw, 45vw" alt={g.alt} loading="lazy" />
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="section outras" aria-label="Outras soluções">
+    <div class="container-x outras-grid">
+      {outrasSolucoes.map((o, i) => (
+        <article id={o.id} class="outra" aria-labelledby={`t-${o.id}`} data-reveal>
+          <p class="eyebrow"><span class="eyebrow-num">0{i + 3}</span>Formatos</p>
+          <h2 id={`t-${o.id}`} class="display display-md outra-t">{o.nome}</h2>
+          <p class="outra-p">{o.texto}</p>
+          <a class="link-arrow" href={o.id === 'especiais' ? '/produtos-goiaspel/caixas-especiais/' : '/produtos-goiaspel/acessorios-de-papelao/'}>Ver modelos <Icon name="arrow" /></a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section id="portfolio" class="section portfolio tone-sage" aria-labelledby="t-portfolio">
+    <div class="container-x">
+      <SectionHead
+        id="t-portfolio"
+        num="05"
+        eyebrow="Portfólio"
+        title="Embalagens que já produzimos"
+        accent="já produzimos"
+        lead={`${galeria.length} embalagens reais, de caixas de transporte a expositores e caixas de pizza. Filtre por tipo e clique para ampliar.`}
+      />
+      <div class="port-body"><Galeria /></div>
+      <p class="port-note"><Pending label="Nova sessão de fotos recomendada" title="Fotos migradas do site atual, com cerca de 375 px. Recomenda-se refotografar em alta resolução." /></p>
+    </div>
+  </section>
+
+  <section id="desenvolvimento" class="section dev tone-blue" aria-labelledby="t-dev">
+    <div class="container-x dv-grid">
+      <h2 id="t-dev" class="display display-md dv-t" data-reveal>Arte, faca e amostra antes de produzir</h2>
+      <div data-reveal>
+        <p class="dv-p">Um setor dedicado desenvolve o layout e a amostra física para a sua aprovação. Assim o pedido entra em produção sem surpresas.</p>
+        <a class="btn" href="/criacao-de-layout-e-amostras-de-produtos/">Como funciona <Icon name="arrow" class="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="guia" class="section guia" aria-labelledby="t-guia">
+    <div class="container-x guia-grid">
+      <div>
+        <SectionHead
+          id="t-guia"
+          num="08"
+          eyebrow="Guia técnico"
+          title="Tipos de onda"
+          accent="onda"
+          align="start"
+          size="md"
+          lead="A espessura do papelão depende da onda escolhida. Os valores variam conforme o fabricante e o desgaste do rolo ondulador."
+        />
+        <p class="guia-src">Referência: NBR 5985.</p>
+        <a class="link-arrow" href="/tire-suas-duvidas-sobre-nossos-produtos-goiaspel/">Mais dúvidas técnicas <Icon name="arrow" /></a>
+      </div>
+      <div class="table-wrap" role="region" aria-labelledby="cap-ondas" tabindex="0">
+        <table class="ondas">
+          <caption id="cap-ondas">Espessura do papelão ondulado por tipo de onda</caption>
+          <thead><tr><th scope="col">Onda</th><th scope="col">Espessura</th><th scope="col">Ondas em 10 cm</th></tr></thead>
+          <tbody>
+            {ondas.map((o) => <tr><th scope="row">{o.tipo}</th><td>{o.esp}</td><td>{o.n}</td></tr>)}
+          </tbody>
+        </table>
+        <p class="ondas-note">Ondas B e C são usuais em parede simples; a combinação BC, em parede dupla. Na caixa, as ondulações devem ficar na vertical — funcionam como pilares no empilhamento.</p>
+      </div>
+    </div>
+  </section>
+
+  <ContinueExplorando grupo={1} />
+  <CtaFinal />
+</Base>
+
+<style>
+  .jump { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
+  .jump a {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.875rem; font-weight: 600;
+    text-decoration: none; color: var(--color-ink);
+    border: 1.5px solid var(--color-line);
+    transition: border-color var(--dur-1), background-color var(--dur-1);
+  }
+  .jump a:hover { border-color: var(--color-ink); background: var(--color-white); }
+
+  .sol-top { display: grid; gap: 2rem; }
+  @media (min-width: 64rem) { .sol-top { grid-template-columns: 1fr 1fr; gap: 5rem; align-items: end; } }
+  .sol-title { margin: 1.25rem 0 1rem; color: var(--color-blue-700); }
+  .sol-top :global(.pending) { margin-left: 0.5rem; }
+  .sol-ben { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; gap: 0.5rem; }
+  .sol-ben li { display: flex; gap: 0.6rem; align-items: center; font-weight: 600; }
+  .sol-ben .i { width: 1.15rem; height: 1.15rem; color: var(--color-green-700); }
+  .sol-app { margin-top: 1.25rem; color: var(--color-ink-2); }
+  .sol-app strong { color: var(--color-ink); }
+  .sol-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.75rem; margin-top: 1.75rem; }
+
+  .gallery { display: grid; gap: 0.75rem; margin-top: clamp(2.5rem, 5vw, 4rem); grid-template-columns: repeat(3, 1fr); }
+  .g-main { grid-column: 1 / -1; margin: 0; --chamfer: 48px; }
+  .g-main :global(img) { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+  .g-item { margin: 0; background: var(--color-white); overflow: hidden; }
+  .g-item :global(img) { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; transition: transform 900ms var(--ease-out-quart); }
+  .g-item:hover :global(img) { transform: scale(1.04); }
+  @media (min-width: 64rem) {
+    .gallery { grid-template-columns: 2fr 1fr; grid-template-rows: repeat(3, auto); }
+    .g-main { grid-column: 1; grid-row: 1 / span 3; }
+    .g-main { aspect-ratio: 1 / 1; align-self: start; }
+    .g-main, .g-main :global(picture) { height: 100%; }
+    .g-main :global(img) { height: 100%; aspect-ratio: auto; object-position: 50% 50%; }
+  }
+
+  .outras-grid { display: grid; gap: 3rem; }
+  @media (min-width: 48rem) { .outras-grid { grid-template-columns: 1fr 1fr; gap: 4rem; } }
+  .outra { padding-top: 1rem; }
+  .outra-t { margin-top: 1rem; color: var(--color-blue-700); }
+  .outra-p { margin: 1rem 0 1.25rem; color: var(--color-ink-2); max-width: 44ch; font-size: 1.0625rem; }
+  .port-body { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+  .port-note { margin-top: 1.5rem; }
+
+  .dev-steps { margin-top: clamp(3rem, 6vw, 5rem); }
+  .set-body { margin-top: clamp(3rem, 6vw, 4.5rem); }
+
+  .guia-grid { display: grid; gap: 3rem; }
+  @media (min-width: 64rem) { .guia-grid { grid-template-columns: 1fr 1.1fr; gap: 5rem; align-items: start; } }
+  .guia-src { margin: 1.5rem 0 1rem; font-size: 0.875rem; color: var(--color-ink-3); }
+  .table-wrap { overflow-x: auto; }
+  .ondas { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .ondas caption { text-align: left; font-weight: 650; padding-bottom: 0.75rem; color: var(--color-ink-2); font-size: 0.9375rem; }
+  .ondas th, .ondas td { padding: 1rem 0.75rem; text-align: left; border-bottom: 1px solid var(--color-line); }
+  .ondas thead th { font-size: 0.8125rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-ink-2); border-bottom: 2px solid var(--color-ink); }
+  .ondas tbody th { font-variation-settings: "wdth" 70; font-weight: 800; font-size: 1.75rem; color: var(--color-blue-700); width: 5rem; }
+  .ondas-note { margin-top: 1.25rem; color: var(--color-ink-2); font-size: 0.9375rem; }
+  .dv-grid { display: grid; gap: 2rem; align-items: end; }
+  @media (min-width: 64rem) { .dv-grid { grid-template-columns: 1.2fr 1fr; gap: 5rem; } }
+  .dv-t { max-width: 18ch; }
+  .dv-p { margin-bottom: 1.5rem; color: var(--color-ink-2); font-size: 1.125rem; }
+</style>

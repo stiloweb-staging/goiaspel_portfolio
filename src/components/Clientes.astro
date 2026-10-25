@@ -1,0 +1,118 @@
+---
+/**
+ * Marcas clientes (PDF p. 8 + site atual). Só renderiza fora de homologação se CLIENTES_AUTORIZADOS = true.
+ * variant="marquee": faixa contínua em duas linhas (padrão "Logo Marquee" acessível, ref. 21st.dev):
+ * pausa no hover/foco, botão de pausa (WCAG 2.2.2) e grade estática com movimento reduzido.
+ * variant="grid": grade editorial.
+ */
+import { Image } from 'astro:assets';
+import { clientes, CLIENTES_AUTORIZADOS } from '../data/conteudo';
+import { STAGING } from '../data/site';
+import SectionHead from './SectionHead.astro';
+import Pending from './Pending.astro';
+
+interface Props { variant?: 'marquee' | 'grid'; num?: string }
+const { variant = 'grid', num = '07' } = Astro.props;
+const show = CLIENTES_AUTORIZADOS || STAGING;
+const half = Math.ceil(clientes.length / 2);
+const rows = [clientes.slice(0, half), clientes.slice(half)];
+---
+{show && (
+  <section id="clientes" class="section clientes" aria-labelledby="t-clientes">
+    <div class="container-x">
+      <SectionHead
+        id="t-clientes"
+        num={num}
+        eyebrow={num === '' ? undefined : 'Clientes'}
+        title="Confiança construída na prática"
+        accent="na prática"
+        lead="Empresas de alimentos, cosméticos, farmacêutico, utilidades, construção e varejo fazem parte da trajetória da Goiaspel."
+      />
+      {!CLIENTES_AUTORIZADOS && <p class="pend"><Pending label="Uso das marcas pendente de autorização" title="Logotipos extraídos da apresentação (p. 8) e do site atual. Confirmar autorização de cada cliente e obter arquivos vetoriais." /></p>}
+    </div>
+
+    {variant === 'marquee' ? (
+      <div class="mq" data-marquee>
+        <ul class="sr-only">{clientes.map((c) => <li>{c.nome}</li>)}</ul>
+        {rows.map((row, r) => (
+          <div class:list={['mq-row', r === 1 && 'mq-rev']} aria-hidden="true">
+            <div class="mq-track">
+              {[...row, ...row].map((c) => (
+                <div class="mq-item"><Image src={c.logo} alt="" height={56} class="logo" loading="lazy" /></div>
+              ))}
+            </div>
+          </div>
+        ))}
+        <div class="container-x mq-ctrl">
+          <button type="button" class="mq-toggle" data-marquee-toggle aria-pressed="false">Pausar animação</button>
+        </div>
+      </div>
+    ) : (
+      <div class="container-x">
+        <ul class="logos" data-reveal-group>
+          {clientes.map((c) => (
+            <li data-reveal="fade"><Image src={c.logo} alt={c.nome} height={64} class="logo" loading="lazy" /></li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </section>
+)}
+
+<style>
+  .pend { margin-top: 1.5rem; }
+  .logo {
+    width: auto; height: auto; max-width: 78%; max-height: 3.5rem; object-fit: contain;
+    filter: grayscale(1) contrast(1.1); opacity: 0.75;
+    transition: filter var(--dur-2), opacity var(--dur-2);
+  }
+
+  .logos {
+    list-style: none; margin: 3rem 0 0; padding: 0;
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--color-line); border-left: 1px solid var(--color-line);
+  }
+  @media (min-width: 40rem) { .logos { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 64rem) { .logos { grid-template-columns: repeat(6, 1fr); } }
+  .logos li { display: grid; place-items: center; aspect-ratio: 3 / 2; padding: 1.25rem; border-right: 1px solid var(--color-line); border-bottom: 1px solid var(--color-line); }
+  .logos li:hover .logo { filter: none; opacity: 1; }
+
+  .mq { margin-top: 3rem; display: grid; gap: 0.75rem; }
+  .mq-row {
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .mq-track { display: flex; width: max-content; gap: 0.75rem; }
+  .mq-item { display: grid; place-items: center; width: clamp(9rem, 16vw, 13rem); aspect-ratio: 2 / 1; background: var(--color-white); }
+  .mq-item:hover .logo { filter: none; opacity: 1; }
+  .mq-ctrl { display: flex; justify-content: flex-end; }
+  .mq-toggle {
+    min-height: 2.75rem; padding: 0.4rem 0.9rem;
+    font: inherit; font-size: 0.875rem; font-weight: 600;
+    color: var(--color-ink-2); background: transparent; border: 1.5px solid var(--color-line); cursor: pointer;
+  }
+  .mq-toggle:hover { border-color: var(--color-ink); color: var(--color-ink); }
+  @media (prefers-reduced-motion: no-preference) {
+    .mq-track { animation: mq 48s linear infinite; }
+    .mq-rev .mq-track { animation-direction: reverse; animation-duration: 56s; }
+    .mq:hover .mq-track, .mq:focus-within .mq-track, .mq.is-paused .mq-track { animation-play-state: paused; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mq-row { mask-image: none; }
+    .mq-track { width: auto; flex-wrap: wrap; justify-content: center; padding-inline: var(--gutter); }
+    .mq-track > :nth-child(n + 10) { display: none; }
+    .mq-ctrl { display: none; }
+  }
+  @keyframes mq { to { transform: translateX(calc(-50% - 0.375rem)); } }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((mq) => {
+    const btn = mq.querySelector<HTMLButtonElement>('[data-marquee-toggle]');
+    btn?.addEventListener('click', () => {
+      const paused = mq.classList.toggle('is-paused');
+      btn.setAttribute('aria-pressed', String(paused));
+      btn.textContent = paused ? 'Retomar animação' : 'Pausar animação';
+    });
+  });
+</script>

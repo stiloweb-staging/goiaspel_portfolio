@@ -1,0 +1,119 @@
+---
+import { Image } from 'astro:assets';
+import logoBranco from '../assets/marca/logo-branco.png';
+import Icon from './Icon.astro';
+import FluteLine from './FluteLine.astro';
+import { site, whatsappLink } from '../data/site';
+import { menu, R } from '../data/rotas';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer on-dark">
+  <FluteLine tone="light" class="flute" animate={false} />
+  <div class="container-x grid-f">
+    <div class="col-brand">
+      <Image src={logoBranco} alt="Goiaspel Embalagens de Papelão" width={160} height={82} loading="lazy" class="logo" />
+      <p class="claim">Embalagens de papelão ondulado sob medida. Indústria em Goiânia desde 1992.</p>
+      <ul class="social" aria-label="Redes sociais">
+        <li><a href={site.instagram} target="_blank" rel="noopener" aria-label="Instagram (abre em nova aba)"><Icon name="instagram" /></a></li>
+        <li><a href={site.facebook} target="_blank" rel="noopener" aria-label="Facebook (abre em nova aba)"><Icon name="facebook" /></a></li>
+        <li><a href={site.youtube} target="_blank" rel="noopener" aria-label="YouTube (abre em nova aba)"><Icon name="youtube" /></a></li>
+      </ul>
+    </div>
+
+    <nav aria-label="Rodapé" class="col-nav">
+      {menu.map((g) => (
+        <div class="f-group">
+          <h2 class="f-title">{g.label}</h2>
+          <ul>{g.itens.map((i) => <li><a href={i.href}>{i.label}</a></li>)}</ul>
+        </div>
+      ))}
+      <div class="f-group">
+        <h2 class="f-title">Atendimento</h2>
+        <ul>
+          <li><a href={R.orcamento}>Solicitar orçamento</a></li>
+          <li><a href={R.contato}>Fale conosco</a></li>
+          <li><a href={R.eucaflora}>Eucaflora (empresa do grupo)</a></li>
+          <li><a href={R.privacidade}>Política de privacidade</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="col-contact">
+      <h2 class="f-title">Contato</h2>
+      <ul class="contact">
+        <li><a href={`tel:${site.phoneE164}`}><Icon name="phone" class="i" />{site.phoneDisplay}</a></li>
+        <li><a href={whatsappLink()} target="_blank" rel="noopener"><Icon name="whatsapp" class="i" />WhatsApp comercial</a></li>
+        <li><a href={`mailto:${site.email}`}><Icon name="mail" class="i" />{site.email}</a></li>
+        <li><a href={`${R.contato}#nos-ligamos`}><Icon name="phone" class="i" />Nós ligamos para você</a></li>
+      </ul>
+      <address>
+        <a href={site.maps} target="_blank" rel="noopener" class="addr">
+          <Icon name="pin" class="i" />
+          <span>
+            {site.address.street}<br />
+            {site.address.district}<br />
+            CEP {site.address.postalCodeDisplay} · {site.address.city}-{site.address.state}
+          </span>
+        </a>
+      </address>
+    </div>
+  </div>
+  <div class="container-x legal">
+    <p>© {year} {site.legalName}. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--gp-terra);
+    color: rgb(255 255 255 / 0.82);
+    padding-bottom: 2rem;
+  }
+  .flute { display: block; height: 26px; }
+  .grid-f {
+    display: grid;
+    gap: 3rem;
+    padding-block: 4rem 3rem;
+  }
+  @media (min-width: 48rem) { .grid-f { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 72rem) { .grid-f { grid-template-columns: 1fr 2.6fr 1.1fr; } }
+  .col-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1.5rem; }
+  @media (min-width: 72rem) { .col-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .col-nav li a { font-size: 0.9375rem; }
+  .logo { width: 150px; height: auto; }
+  .claim { margin-top: 1.25rem; max-width: 30ch; }
+  .social { display: flex; gap: 0.5rem; list-style: none; padding: 0; margin: 1.5rem 0 0; }
+  .social a {
+    display: grid; place-items: center;
+    width: 2.75rem; height: 2.75rem;
+    border: 1px solid rgb(255 255 255 / 0.3);
+    color: var(--color-white);
+    transition: background-color var(--dur-1), border-color var(--dur-1);
+  }
+  .social a:hover { background: var(--color-green-700); border-color: var(--color-green-700); }
+  .social svg { width: 1.25rem; height: 1.25rem; }
+  .f-title {
+    font-size: 0.8125rem;
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-white);
+    margin-bottom: 1rem;
+  }
+  ul { list-style: none; margin: 0; padding: 0; }
+  .col-nav a, .contact a, .addr { color: rgb(255 255 255 / 0.82); text-decoration: none; }
+  .col-nav li a { display: inline-block; padding-block: 0.35rem; }
+  .col-nav a:hover, .contact a:hover, .addr:hover { color: var(--color-white); text-decoration: underline; text-underline-offset: 4px; }
+  .sec { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgb(255 255 255 / 0.15); font-size: 0.9375rem; }
+  .contact a, .addr { display: flex; gap: 0.75rem; align-items: flex-start; padding-block: 0.4rem; }
+  .i { width: 1.2rem; height: 1.2rem; flex: none; margin-top: 0.15rem; color: var(--gp-fibra); }
+  address { font-style: normal; margin-top: 0.5rem; }
+  .legal {
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgb(255 255 255 / 0.15);
+    font-size: 0.875rem;
+    color: rgb(255 255 255 / 0.65);
+  }
+  .pending-inline { border-bottom: 1px dashed currentColor; }
+</style>

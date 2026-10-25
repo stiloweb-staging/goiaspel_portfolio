@@ -1,0 +1,90 @@
+---
+import CtaFinal from '../components/CtaFinal.astro';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import ResultPanel from '../components/ResultPanel.astro';
+import esteira from '../assets/fotos/fabrica-aerea.jpg';
+
+const campos = [
+  { id: 'f-empresa', name: 'empresa', label: 'Nome da empresa', auto: 'organization', req: true, col: 'f-col-3' },
+  { id: 'f-razao', name: 'razao_social', label: 'Razão social', auto: 'off', req: true, col: 'f-col-3' },
+  { id: 'f-cnpj', name: 'cnpj', label: 'CNPJ', auto: 'off', req: false, col: 'f-col-2', mask: 'cnpj', pattern: '\\d{2}\\.\\d{3}\\.\\d{3}/\\d{4}-\\d{2}', patternMsg: 'Use o formato 00.000.000/0000-00.' },
+  { id: 'f-segmento', name: 'segmento', label: 'Segmento', auto: 'off', req: true, col: 'f-col-2' },
+  { id: 'f-produto', name: 'tipo_produto', label: 'Produto ou serviço oferecido', auto: 'off', req: true, col: 'f-col-2' },
+  { id: 'f-contato', name: 'contato', label: 'Nome do contato', auto: 'name', req: true, col: 'f-col-2' },
+  { id: 'f-email', name: 'email', label: 'E-mail', auto: 'email', req: true, col: 'f-col-2', type: 'email' },
+  { id: 'f-tel', name: 'telefone', label: 'Telefone ou celular', auto: 'tel-national', req: true, col: 'f-col-2', type: 'tel', mask: 'phone', pattern: '\\(\\d{2}\\) \\d{4,5}-\\d{4}', patternMsg: 'Informe DDD e número.' },
+];
+---
+<Base
+  title="Seja um fornecedor da Goiaspel"
+  description="Cadastre sua empresa como fornecedora da Goiaspel. Os dados são encaminhados ao setor de compras."
+>
+  <PageHero
+    crumb="Fornecedores"
+    eyebrow="Fornecedores"
+    title="Vamos crescer juntos"
+    accent="juntos"
+    lead="Buscamos parceiros comprometidos com qualidade, prazo e com o que foi negociado. Cadastre sua empresa: os dados vão direto para o setor de compras."
+    image={esteira}
+    alt="Sede da Goiaspel em Goiânia vista do alto."
+    imagePos="50% 60%"
+  />
+
+  <section class="section" aria-label="Cadastro de fornecedor">
+    <div class="container-x forn">
+      <noscript><p>Este formulário precisa de JavaScript. Envie sua apresentação para o e-mail de atendimento indicado no rodapé.</p></noscript>
+      <form data-lead-form="fornecedor" method="post">
+        <div class="f-summary" data-error-summary hidden tabindex="-1" role="alert">
+          <h2>Revise os campos abaixo:</h2>
+          <ul></ul>
+        </div>
+        <fieldset class="f-set">
+          <legend class="f-legend"><span class="num">01</span>Dados da empresa</legend>
+          <div class="f-grid">
+            {campos.map((c) => (
+              <div class:list={['f-field', c.col]} data-field>
+                <label class="f-label" for={c.id} data-label>{c.label}{c.req ? <span class="f-req" aria-hidden="true">*</span> : <span class="f-opt"> (opcional)</span>}</label>
+                <input class="f-input" id={c.id} name={c.name} type={(c.type ?? 'text') as 'text' | 'email' | 'tel'} autocomplete={c.auto} required={c.req}
+                  pattern={c.pattern} data-pattern-msg={c.patternMsg} data-mask={c.mask} aria-describedby={`${c.id}-err`} data-summary={c.label} />
+                <p class="f-error" id={`${c.id}-err`} data-error></p>
+              </div>
+            ))}
+            <div class="f-field f-col-6" data-field>
+              <label class="f-label" for="f-coment" data-label>Comentários <span class="f-opt">(opcional)</span></label>
+              <textarea class="f-input" id="f-coment" name="comentarios" rows="4" maxlength="2000" data-summary="Comentários"></textarea>
+            </div>
+            <div class="f-field f-col-6" data-field>
+              <label class="f-check">
+                <input type="checkbox" id="f-lgpd" name="consentimento" value="sim" required aria-describedby="f-lgpd-err" />
+                <span data-label>Autorizo o uso destes dados pelo setor de compras da Goiaspel, conforme a <a href="/privacidade/">política de privacidade</a>.<span class="f-req" aria-hidden="true">*</span></span>
+              </label>
+              <p class="f-error" id="f-lgpd-err" data-error></p>
+            </div>
+          </div>
+        </fieldset>
+        <div class="hp-field" aria-hidden="true">
+          <label for="f-site">Não preencha este campo</label>
+          <input type="text" id="f-site" name="site_empresa" tabindex="-1" autocomplete="off" />
+        </div>
+        <div class="f-submit">
+          <button type="submit" class="btn">Enviar cadastro <Icon name="arrow" class="arrow" /></button>
+        </div>
+      </form>
+      <ResultPanel />
+    </div>
+  </section>
+  <ContinueExplorando grupo={0} />
+  <CtaFinal />
+</Base>
+
+<script>
+  import { initForm } from '../scripts/form';
+  document.querySelectorAll<HTMLFormElement>('[data-lead-form="fornecedor"]').forEach((f) => initForm(f, 'fornecedor'));
+</script>
+
+<style>
+  .forn { max-width: 60rem; }
+</style>

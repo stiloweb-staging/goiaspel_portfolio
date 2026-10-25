@@ -1,0 +1,256 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import ResultPanel from '../components/ResultPanel.astro';
+import { site, whatsappLink, STAGING } from '../data/site';
+
+const tipos = [
+  { v: 'transporte', t: 'Caixa de transporte', d: 'Expedição e armazenagem, sem ou com impressão simples' },
+  { v: 'flexografia', t: 'Caixa em flexografia', d: 'Impressão direta em até 3 cores' },
+  { v: 'policromia', t: 'Caixa em policromia', d: 'Reprodução fotográfica, múltiplas cores' },
+  { v: 'especial', t: 'Caixa especial ou expositor', d: 'Alças, janelas, corte e vinco, kits' },
+  { v: 'acessorios', t: 'Acessórios', d: 'Divisórias, calços e componentes internos' },
+  { v: 'nao-sei', t: 'Ainda não sei', d: 'Quero ajuda para definir a melhor solução' },
+];
+const ufs = 'AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(' ');
+const endpointConfigured = Boolean(import.meta.env.PUBLIC_LEAD_ENDPOINT);
+---
+<Base
+  title="Solicitar orçamento de embalagens de papelão"
+  description="Peça um orçamento de caixas de papelão ondulado sob medida: flexografia, policromia, caixas especiais e acessórios. Atendimento comercial da Goiaspel em Goiânia-GO."
+  hideMobileBar
+>
+  <PageHero
+    crumb="Solicitar orçamento"
+    eyebrow="Orçamento"
+    title="Conte o que você precisa embalar"
+    accent="embalar"
+    lead="Quanto mais detalhes, mais precisa a proposta. Se não tiver todas as informações, envie o que tiver — nossa equipe completa com você."
+  />
+
+  <section class="section q" aria-label="Formulário de orçamento">
+    <div class="container-x q-grid">
+      <div class="q-form-col">
+        {import.meta.env.PUBLIC_SHOW_PENDING === 'true' && !endpointConfigured && (
+          <p class="q-notice" role="note">
+            <Icon name="alert" class="i" />
+            <span><strong>Homologação — integração de envio pendente.</strong> Ao enviar, o formulário valida os dados e oferece o envio do resumo por WhatsApp ou e-mail. Nenhum dado é transmitido a servidores.</span>
+          </p>
+        )}
+
+        <noscript><p class="q-notice">Este formulário precisa de JavaScript. Use os contatos diretos ao lado — WhatsApp, telefone ou e-mail.</p></noscript>
+        <form class="q-form" data-lead-form="orcamento" action={import.meta.env.PUBLIC_LEAD_ENDPOINT || undefined} method="post" enctype="multipart/form-data">
+          <div class="f-summary" data-error-summary hidden tabindex="-1" role="alert">
+            <h2>Revise os campos abaixo:</h2>
+            <ul></ul>
+          </div>
+
+          <p class="f-help q-req-note"><span class="f-req">*</span> campos obrigatórios</p>
+
+          <fieldset class="f-set">
+            <legend class="f-legend"><span class="num">01</span>Você e sua empresa</legend>
+            <div class="f-grid">
+              <div class="f-field f-col-3" data-field>
+                <label class="f-label" for="nome" data-label>Nome<span class="f-req" aria-hidden="true">*</span></label>
+                <input class="f-input" id="nome" name="nome" type="text" autocomplete="name" required minlength="2" aria-describedby="nome-err" data-summary="Nome" />
+                <p class="f-error" id="nome-err" data-error></p>
+              </div>
+              <div class="f-field f-col-3" data-field>
+                <label class="f-label" for="empresa" data-label>Empresa<span class="f-req" aria-hidden="true">*</span></label>
+                <input class="f-input" id="empresa" name="empresa" type="text" autocomplete="organization" required aria-describedby="empresa-err" data-summary="Empresa" />
+                <p class="f-error" id="empresa-err" data-error></p>
+              </div>
+              <div class="f-field f-col-3" data-field>
+                <label class="f-label" for="email" data-label>E-mail corporativo<span class="f-req" aria-hidden="true">*</span></label>
+                <input class="f-input" id="email" name="email" type="email" autocomplete="email" inputmode="email" required aria-describedby="email-err" data-summary="E-mail" />
+                <p class="f-error" id="email-err" data-error></p>
+              </div>
+              <div class="f-field f-col-3" data-field>
+                <label class="f-label" for="whatsapp" data-label>WhatsApp<span class="f-req" aria-hidden="true">*</span></label>
+                <input class="f-input" id="whatsapp" name="whatsapp" type="tel" autocomplete="tel-national" inputmode="tel" required
+                  pattern="\(\d{2}\) \d{4,5}-\d{4}" data-pattern-msg="Informe DDD e número, como (62) 99999-9999." data-mask="phone"
+                  placeholder="(62) 99999-9999" aria-describedby="whatsapp-err" data-summary="WhatsApp" />
+                <p class="f-error" id="whatsapp-err" data-error></p>
+              </div>
+              <div class="f-field f-col-4" data-field>
+                <label class="f-label" for="cidade" data-label>Cidade<span class="f-req" aria-hidden="true">*</span></label>
+                <input class="f-input" id="cidade" name="cidade" type="text" autocomplete="address-level2" required aria-describedby="cidade-err" data-summary="Cidade" />
+                <p class="f-error" id="cidade-err" data-error></p>
+              </div>
+              <div class="f-field f-col-2" data-field>
+                <label class="f-label" for="uf" data-label>Estado<span class="f-req" aria-hidden="true">*</span></label>
+                <select class="f-input" id="uf" name="uf" autocomplete="address-level1" required aria-describedby="uf-err" data-summary="UF">
+                  <option value="">Selecione</option>
+                  {ufs.map((u) => <option value={u}>{u}</option>)}
+                </select>
+                <p class="f-error" id="uf-err" data-error></p>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="f-set">
+            <legend class="f-legend"><span class="num">02</span>A embalagem</legend>
+            <div class="f-grid">
+              <div class="f-field f-col-6" data-field role="radiogroup" aria-labelledby="tipo-l" aria-describedby="tipo-err">
+                <p class="f-label" id="tipo-l" data-label>Tipo de embalagem<span class="f-req" aria-hidden="true">*</span></p>
+                <div class="f-options f-options-3">
+                  {tipos.map((t, i) => (
+                    <label class="f-option">
+                      <input type="radio" name="tipo" id={i === 0 ? 'tipo' : `tipo-${t.v}`} value={t.v} required data-summary="Tipo" data-value-label={t.t} />
+                      <span class="f-option-box"><span class="f-option-t">{t.t}</span><span class="f-option-d">{t.d}</span></span>
+                    </label>
+                  ))}
+                </div>
+                <p class="f-error" id="tipo-err" data-error></p>
+              </div>
+
+              <div class="f-field f-col-6" data-field role="radiogroup" aria-labelledby="medidas-l">
+                <p class="f-label" id="medidas-l" data-label>Você já tem as medidas internas?</p>
+                <div class="f-options">
+                  <label class="f-option"><input type="radio" name="tem_medidas" id="tem_medidas" value="sim" data-summary="Tem medidas" data-value-label="Sim" /><span class="f-option-box"><span class="f-option-t">Sim, tenho as medidas</span></span></label>
+                  <label class="f-option"><input type="radio" name="tem_medidas" id="tem_medidas-nao" value="nao" data-summary="Tem medidas" data-value-label="Não — prefere visita/apoio técnico" /><span class="f-option-box"><span class="f-option-t">Não, preciso de apoio</span><span class="f-option-d">Podemos agendar uma visita técnica</span></span></label>
+                </div>
+              </div>
+
+              <div class="f-field f-col-6" data-field data-show-when="tem_medidas=sim" hidden>
+                <p class="f-label" id="dim-l" data-label>Dimensões internas aproximadas <span class="f-opt">(comprimento × largura × altura)</span></p>
+                <div class="f-dims" role="group" aria-labelledby="dim-l">
+                  <div class="f-dim"><label class="sr-only" for="comp">Comprimento em milímetros</label><input class="f-input" id="comp" name="comprimento_mm" type="number" inputmode="numeric" min="10" max="3000" placeholder="C" data-summary="Comprimento (mm)" aria-describedby="dim-err" /><span class="f-dim-u" aria-hidden="true">mm</span></div>
+                  <div class="f-dim"><label class="sr-only" for="larg">Largura em milímetros</label><input class="f-input" id="larg" name="largura_mm" type="number" inputmode="numeric" min="10" max="3000" placeholder="L" data-summary="Largura (mm)" aria-describedby="dim-err" /><span class="f-dim-u" aria-hidden="true">mm</span></div>
+                  <div class="f-dim"><label class="sr-only" for="alt">Altura em milímetros</label><input class="f-input" id="alt" name="altura_mm" type="number" inputmode="numeric" min="10" max="3000" placeholder="A" data-summary="Altura (mm)" aria-describedby="dim-err" /><span class="f-dim-u" aria-hidden="true">mm</span></div>
+                </div>
+                <p class="f-help"><a href="/tire-suas-duvidas-sobre-nossos-produtos-goiaspel/#medir">Como medir sua caixa</a></p>
+                <p class="f-error" id="dim-err" data-error></p>
+              </div>
+
+              <div class="f-field f-col-3" data-field>
+                <label class="f-label" for="quantidade" data-label>Quantidade estimada por pedido<span class="f-req" aria-hidden="true">*</span></label>
+                <select class="f-input" id="quantidade" name="quantidade" required aria-describedby="quantidade-err" data-summary="Quantidade">
+                  <option value="">Selecione</option>
+                  <option>Até 1.000 unidades</option>
+                  <option>1.000 a 5.000 unidades</option>
+                  <option>5.000 a 20.000 unidades</option>
+                  <option>Acima de 20.000 unidades</option>
+                  <option>Ainda não sei</option>
+                </select>
+                <p class="f-error" id="quantidade-err" data-error></p>
+              </div>
+              <div class="f-field f-col-3" data-field>
+                <label class="f-label" for="impressao" data-label>Impressão</label>
+                <select class="f-input" id="impressao" name="impressao" data-summary="Impressão">
+                  <option value="">Selecione</option>
+                  <option value="sem">Sem impressão</option>
+                  <option value="flexo">Até 3 cores (flexografia)</option>
+                  <option value="poli">Múltiplas cores / fotográfica (policromia)</option>
+                  <option value="nao-sei">Ainda não sei</option>
+                </select>
+              </div>
+              <div class="f-field f-col-6" data-field data-show-when="impressao=flexo|poli" hidden>
+                <label class="f-label" for="arte" data-label>Arte da embalagem</label>
+                <select class="f-input" id="arte" name="arte" data-summary="Arte">
+                  <option value="">Selecione</option>
+                  <option>Já tenho a arte finalizada</option>
+                  <option>Tenho a marca, preciso de apoio no layout</option>
+                  <option>Preciso desenvolver do zero</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="f-set">
+            <legend class="f-legend"><span class="num">03</span>Detalhes</legend>
+            <div class="f-grid">
+              <div class="f-field f-col-6" data-field>
+                <label class="f-label" for="descricao" data-label>O que será embalado e como a embalagem é usada? <span class="f-opt">(opcional)</span></label>
+                <textarea class="f-input" id="descricao" name="descricao" rows="5" maxlength="2000" aria-describedby="descricao-help" data-summary="Aplicação"></textarea>
+                <p class="f-help" id="descricao-help">Ex.: peso do produto, empilhamento, transporte, armazenagem refrigerada ou úmida.</p>
+              </div>
+              <div class="f-field f-col-6" data-field>
+                <label class="f-label" for="anexo" data-label>Arquivo de referência <span class="f-opt">(opcional — PDF, JPG ou PNG, até 10 MB)</span></label>
+                <div class="f-file">
+                  <input id="anexo" name="anexo" type="file" accept=".pdf,.jpg,.jpeg,.png" data-max-mb="10" aria-describedby="anexo-err anexo-help" />
+                </div>
+                <p class="f-help" id="anexo-help">Desenho técnico, foto da embalagem atual ou arte.</p>
+                <p class="f-error" id="anexo-err" data-error></p>
+              </div>
+              <div class="f-field f-col-6" data-field>
+                <label class="f-check">
+                  <input type="checkbox" id="lgpd" name="consentimento" value="sim" required aria-describedby="lgpd-err" />
+                  <span data-label>Autorizo a Goiaspel a usar estes dados para responder à minha solicitação, conforme a <a href="/privacidade/">política de privacidade</a>.<span class="f-req" aria-hidden="true">*</span></span>
+                </label>
+                <p class="f-error" id="lgpd-err" data-error></p>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="hp-field" aria-hidden="true">
+            <label for="site_empresa">Não preencha este campo</label>
+            <input type="text" id="site_empresa" name="site_empresa" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="f-submit">
+            <button type="submit" class="btn btn-green">Enviar solicitação <Icon name="arrow" class="arrow" /></button>
+            <p class="f-help">Retorno da equipe comercial em horário comercial.</p>
+          </div>
+        </form>
+        <ResultPanel />
+      </div>
+
+      <aside class="q-aside" aria-labelledby="t-direto">
+        <div class="q-card">
+          <h2 id="t-direto" class="q-card-t">Prefere falar direto?</h2>
+          <ul class="q-contacts">
+            <li><a href={whatsappLink('Olá! Gostaria de solicitar um orçamento de embalagens.')} target="_blank" rel="noopener"><Icon name="whatsapp" class="i" /><span><strong>WhatsApp</strong>{site.phoneDisplay}</span></a></li>
+            <li><a href={`tel:${site.phoneE164}`}><Icon name="phone" class="i" /><span><strong>Telefone</strong>{site.phoneDisplay}</span></a></li>
+            <li><a href={`mailto:${site.email}`}><Icon name="mail" class="i" /><span><strong>E-mail</strong>{site.email}</span></a></li>
+            <li><a href={site.maps} target="_blank" rel="noopener"><Icon name="pin" class="i" /><span><strong>Fábrica</strong>{site.address.street} — {site.address.district}, {site.address.city}-{site.address.state}</span></a></li>
+          </ul>
+        </div>
+        <div class="q-note">
+          <h2 class="q-note-t">O que acontece depois</h2>
+          <ol>
+            <li>Analisamos as informações e, se preciso, pedimos detalhes ou agendamos uma visita.</li>
+            <li>Definimos estrutura, onda e impressão adequadas ao produto.</li>
+            <li>Enviamos a proposta e, quando aplicável, a amostra para aprovação.</li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { initForm } from '../scripts/form';
+  document.querySelectorAll<HTMLFormElement>('[data-lead-form="orcamento"]').forEach((f) => initForm(f, 'orcamento'));
+</script>
+
+<style>
+  .q { padding-top: clamp(2.5rem, 5vw, 4rem); }
+  .q-grid { display: grid; gap: 3rem; }
+  .q-grid > * { min-width: 0; }
+  @media (min-width: 64rem) { .q-grid { grid-template-columns: 1fr 22rem; gap: 4rem; align-items: start; } }
+  @media (min-width: 80rem) { .q-grid { grid-template-columns: 1fr 26rem; gap: 6rem; } }
+  .q-notice {
+    display: flex; gap: 0.75rem; align-items: flex-start;
+    padding: 1rem 1.25rem; margin-bottom: 2rem;
+    background: var(--color-warning-bg); color: #4d3500;
+    border: 1px dashed var(--color-warning);
+    font-size: 0.9375rem;
+  }
+  .q-notice .i { width: 1.25rem; height: 1.25rem; flex: none; margin-top: 0.1rem; }
+  .q-req-note { margin-bottom: 1.5rem; }
+  .q-aside { display: grid; gap: 1.5rem; }
+  @media (min-width: 64rem) { .q-aside { position: sticky; top: calc(var(--header-h) + 1.5rem); } }
+  .q-card { --chamfer: 28px; padding: 2rem; background: var(--color-blue-700); color: var(--color-white); clip-path: polygon(0 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer), 100% 100%, 0 100%); }
+  .q-card-t, .q-note-t { font-variation-settings: "wdth" 75; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; }
+  .q-contacts { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; }
+  .q-contacts li + li { border-top: 1px solid rgb(255 255 255 / 0.2); }
+  .q-contacts a { display: flex; gap: 0.9rem; padding-block: 0.9rem; color: var(--color-white); text-decoration: none; font-size: 0.9375rem; }
+  .q-contacts a:hover strong { text-decoration: underline; }
+  .q-contacts strong { display: block; font-weight: 700; font-size: 1rem; }
+  .q-contacts .i { width: 1.35rem; height: 1.35rem; color: var(--gp-fibra); flex: none; margin-top: 0.1rem; }
+  .q-note { padding: 1.75rem 2rem; background: var(--color-paper-2); }
+  .q-note-t { color: var(--color-blue-700); font-size: 1.25rem; }
+  .q-note ol { margin: 1rem 0 0; padding-left: 1.25rem; color: var(--color-ink-2); display: grid; gap: 0.5rem; font-size: 0.9375rem; }
+</style>

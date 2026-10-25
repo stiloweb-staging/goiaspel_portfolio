@@ -1,0 +1,126 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Icon from '../components/Icon.astro';
+import ResultPanel from '../components/ResultPanel.astro';
+import equipe from '../assets/fotos/equipe-atendimento.jpg';
+import { site, whatsappLink } from '../data/site';
+
+const canais = [
+  { icon: 'whatsapp', t: 'WhatsApp comercial', v: site.phoneDisplay, href: whatsappLink('Olá! Vim pelo site da Goiaspel.'), ext: true },
+  { icon: 'phone', t: 'Telefone', v: site.phoneDisplay, href: `tel:${site.phoneE164}` },
+  { icon: 'mail', t: 'E-mail', v: site.email, href: `mailto:${site.email}` },
+  { icon: 'instagram', t: 'Instagram', v: site.instagramHandle, href: site.instagram, ext: true },
+  { icon: 'facebook', t: 'Facebook', v: '/goiaspelembalagens', href: site.facebook, ext: true },
+  { icon: 'youtube', t: 'YouTube', v: 'Goiaspel Embalagens', href: site.youtube, ext: true },
+] as const;
+---
+<Base
+  title="Contato — canais de atendimento"
+  description="Fale com a Goiaspel: WhatsApp e telefone (62) 4008-8930, e-mail atendimento@goiaspel.com.br, endereço da fábrica em Goiânia-GO ou peça para ligarmos para você."
+>
+  <PageHero
+    crumb="Fale conosco"
+    eyebrow="Fale conosco"
+    title="Canais de atendimento"
+    accent="atendimento"
+    lead="Escolha o canal mais prático. Se preferir, deixe seu telefone que nós ligamos para você."
+    image={equipe}
+    alt="Equipe comercial da Goiaspel atendendo uma cliente na recepção."
+  />
+
+  <section class="section" aria-labelledby="t-canais">
+    <div class="container-x ct-grid">
+      <div>
+        <h2 id="t-canais" class="ct-h">Canais diretos</h2>
+        <ul class="canais">
+          {canais.map((c) => (
+            <li>
+              <a href={c.href} target={'ext' in c ? '_blank' : undefined} rel={'ext' in c ? 'noopener' : undefined}>
+                <Icon name={c.icon} class="i" />
+                <span><strong>{c.t}</strong>{c.v}</span>
+                <Icon name="arrow" class="go" />
+              </a>
+            </li>
+          ))}
+        </ul>
+        <address class="addr">
+          <h2 class="ct-h">Fábrica e escritório</h2>
+          <p>{site.address.street}<br />{site.address.district}<br />CEP {site.address.postalCodeDisplay} · {site.address.city}-{site.address.state}</p>
+          <a class="link-arrow" href={site.maps} target="_blank" rel="noopener">Abrir no Google Maps <Icon name="arrow" /></a>
+        </address>
+      </div>
+
+      <div class="ct-forms">
+        <div class="ct-card" id="nos-ligamos">
+          <h2 class="ct-h">Nós ligamos para você</h2>
+          <p class="ct-p">Informe nome e telefone. Retornamos em horário comercial.</p>
+          <form data-lead-form="contato" method="post">
+            <div class="f-summary" data-error-summary hidden tabindex="-1" role="alert"><h2>Revise os campos abaixo:</h2><ul></ul></div>
+            <div class="f-grid">
+              <div class="f-field f-col-3" data-field>
+                <label class="f-label" for="c-nome" data-label>Nome<span class="f-req" aria-hidden="true">*</span></label>
+                <input class="f-input" id="c-nome" name="nome" autocomplete="name" required minlength="2" aria-describedby="c-nome-err" data-summary="Nome" />
+                <p class="f-error" id="c-nome-err" data-error></p>
+              </div>
+              <div class="f-field f-col-3" data-field>
+                <label class="f-label" for="c-tel" data-label>Telefone<span class="f-req" aria-hidden="true">*</span></label>
+                <input class="f-input" id="c-tel" name="telefone" type="tel" inputmode="tel" autocomplete="tel-national" required data-mask="phone" pattern="\(\d{2}\) \d{4,5}-\d{4}" data-pattern-msg="Informe DDD e número, como (62) 99999-9999." placeholder="(62) 99999-9999" aria-describedby="c-tel-err" data-summary="Telefone" />
+                <p class="f-error" id="c-tel-err" data-error></p>
+              </div>
+              <div class="f-field f-col-3" data-field>
+                <label class="f-label" for="c-email" data-label>E-mail <span class="f-opt">(opcional)</span></label>
+                <input class="f-input" id="c-email" name="email" type="email" autocomplete="email" aria-describedby="c-email-err" data-summary="E-mail" />
+                <p class="f-error" id="c-email-err" data-error></p>
+              </div>
+              <div class="f-field f-col-3" data-field>
+                <label class="f-label" for="c-cidade" data-label>Cidade <span class="f-opt">(opcional)</span></label>
+                <input class="f-input" id="c-cidade" name="cidade" autocomplete="address-level2" data-summary="Cidade" />
+              </div>
+              <div class="f-field f-col-6" data-field>
+                <label class="f-label" for="c-msg" data-label>Mensagem, dúvida ou sugestão <span class="f-opt">(opcional)</span></label>
+                <textarea class="f-input" id="c-msg" name="mensagem" rows="4" maxlength="2000" data-summary="Mensagem"></textarea>
+              </div>
+              <div class="f-field f-col-6" data-field>
+                <label class="f-check">
+                  <input type="checkbox" id="c-lgpd" name="consentimento" value="sim" required aria-describedby="c-lgpd-err" />
+                  <span data-label>Autorizo o contato da Goiaspel com estes dados, conforme a <a href="/privacidade/">política de privacidade</a>.<span class="f-req" aria-hidden="true">*</span></span>
+                </label>
+                <p class="f-error" id="c-lgpd-err" data-error></p>
+              </div>
+            </div>
+            <div class="hp-field" aria-hidden="true"><label for="c-site">Não preencha este campo</label><input type="text" id="c-site" name="site_empresa" tabindex="-1" autocomplete="off" /></div>
+            <div class="f-submit"><button type="submit" class="btn btn-green">Quero que me liguem <Icon name="phone" /></button></div>
+          </form>
+          <ResultPanel />
+        </div>
+        <p class="ct-alt">Precisa de proposta? <a class="link-arrow" href="/orcamento/">Solicite um orçamento detalhado <Icon name="arrow" /></a></p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { initForm } from '../scripts/form';
+  document.querySelectorAll<HTMLFormElement>('[data-lead-form="contato"]').forEach((f) => initForm(f, 'contato'));
+</script>
+
+<style>
+  .ct-grid { display: grid; gap: 3.5rem; }
+  .ct-grid > * { min-width: 0; }
+  @media (min-width: 64rem) { .ct-grid { grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: start; } }
+  .ct-h { font-variation-settings: "wdth" 75; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .canais { list-style: none; margin: 1.25rem 0 0; padding: 0; border-top: 2px solid var(--color-ink); }
+  .canais li { border-bottom: 1px solid var(--color-line); }
+  .canais a { display: flex; align-items: center; gap: 1rem; padding: 1.1rem 0; text-decoration: none; color: var(--color-ink-2); }
+  .canais strong { display: block; color: var(--color-ink); font-weight: 700; }
+  .canais .i { width: 1.5rem; height: 1.5rem; color: var(--color-green-700); }
+  .canais .go { width: 1.1rem; height: 1.1rem; margin-left: auto; color: var(--color-blue-700); transition: transform var(--dur-2) var(--ease-out-quart); }
+  .canais a:hover .go { transform: translateX(4px); }
+  .canais a:hover strong { color: var(--color-blue-700); }
+  .addr { font-style: normal; margin-top: 3rem; }
+  .addr p { margin: 1rem 0; color: var(--color-ink-2); }
+  .ct-card { padding: clamp(1.5rem, 4vw, 2.5rem); background: var(--color-paper-2); }
+  .ct-p { margin-top: 0.5rem; color: var(--color-ink-2); }
+  .ct-alt { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 1.5rem; color: var(--color-ink-2); }
+</style>

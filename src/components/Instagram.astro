@@ -1,0 +1,85 @@
+---
+/**
+ * Faixa fina do Instagram: postagens em fila contínua, embaralhadas a cada visita, passando devagar
+ * (pausa no hover/foco). As imagens vêm de src/assets/instagram/ — sem arquivos, a faixa não aparece.
+ * Cada post leva ao perfil (não temos os links individuais nem integração com a API do Instagram).
+ */
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+const posts = Object.entries(import.meta.glob<{ default: ImageMetadata }>('../assets/instagram/*.{jpg,jpeg,png,webp}', { eager: true }))
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([, m]) => m.default);
+---
+{posts.length > 0 && (
+  <section class="ig" aria-labelledby="t-ig">
+    <div class="container-x ig-head">
+      <h2 id="t-ig" class="ig-t"><Icon name="instagram" class="ig-logo" /> Instagram</h2>
+      <a class="ig-follow" href={site.instagram} target="_blank" rel="noopener">
+        {site.instagramHandle} <span class="ig-cta">Seguir <Icon name="arrow" /></span><span class="sr-only"> (abre em nova aba)</span>
+      </a>
+    </div>
+    <div class="ig-rail" data-ig role="region" aria-label="Postagens recentes do Instagram da Goiaspel" tabindex="0">
+      <ul class="ig-track" data-ig-track>
+        {posts.map((p) => (
+          <li>
+            <a href={site.instagram} target="_blank" rel="noopener" tabindex="-1">
+              <Image src={p} alt="Postagem da Goiaspel no Instagram" width={300} widths={[220, 300, 440]} sizes="(min-width: 64rem) 260px, 180px" loading="lazy" />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
+
+<script>
+  // mesma lógica da fila de produtos: embaralha, duplica para o loop e ajusta a duração ao total
+  document.querySelectorAll<HTMLElement>('[data-ig]').forEach((box) => {
+    const track = box.querySelector<HTMLElement>('[data-ig-track]')!;
+    const items = [...track.children];
+    for (let i = items.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [items[i], items[j]] = [items[j], items[i]];
+    }
+    // poucos posts: repete até cobrir telas largas antes de duplicar
+    let base = items;
+    while (base.length < 10) base = [...base, ...items.map((li) => li.cloneNode(true) as Element)];
+    track.replaceChildren(...base);
+    base.forEach((li) => {
+      const c = li.cloneNode(true) as HTMLElement;
+      c.setAttribute('aria-hidden', 'true');
+      c.querySelector('img')?.setAttribute('alt', '');
+      track.append(c);
+    });
+    box.style.setProperty('--ig-dur', `${base.length * 5}s`);
+    box.classList.add('is-ready');
+  });
+</script>
+
+<style>
+  /* dobra fina: papel, filete kraft em cima, fila sangrando de ponta a ponta */
+  .ig { position: relative; padding-block: calc(var(--fold-h) + 1.25rem) 0; background: var(--gp-papel); }
+  .ig-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1.5rem; padding-bottom: 1.1rem; }
+  .ig-t { display: flex; align-items: center; gap: 0.6rem; margin: 0; font-variation-settings: "wdth" 75; font-weight: 800; font-size: clamp(1.5rem, 2.4vw, 2rem); text-transform: uppercase; letter-spacing: 0.02em; color: var(--color-blue-700); }
+  .ig-t :global(.ig-logo) { width: 1.6rem; height: 1.6rem; color: var(--gp-verde); }
+  .ig-follow { display: inline-flex; align-items: center; gap: 1rem; font-weight: 650; color: var(--color-ink-2); text-decoration: none; }
+  .ig-cta { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--gp-verde); font-weight: 750; }
+  .ig-cta :global(svg) { width: 1rem; height: 1rem; transition: transform var(--dur-2) var(--ease-out-quart); }
+  .ig-follow:hover .ig-cta :global(svg) { transform: translateX(4px); }
+
+  .ig-rail { overflow: hidden; border-top: 1px solid var(--color-line); }
+  .ig-track { list-style: none; margin: 0; padding: 0; display: flex; width: max-content; }
+  .ig-track li { flex: none; width: 180px; aspect-ratio: 1; overflow: hidden; }
+  @media (min-width: 64rem) { .ig-track li { width: 260px; } }
+  .ig-track a { display: block; height: 100%; }
+  .ig-track :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-out-quart), filter 0.4s; }
+  .ig-track a:hover :global(img) { transform: scale(1.05); }
+  @media (prefers-reduced-motion: no-preference) {
+    .ig-rail.is-ready .ig-track { animation: ig-scroll var(--ig-dur, 60s) linear infinite; }
+    .ig-rail:hover .ig-track, .ig-rail:focus-within .ig-track { animation-play-state: paused; }
+  }
+  @media (prefers-reduced-motion: reduce) { .ig-rail { overflow-x: auto; } }
+  @keyframes ig-scroll { to { transform: translateX(-50%); } }
+</style>

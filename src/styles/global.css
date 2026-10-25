@@ -1,0 +1,712 @@
+@import "tailwindcss";
+/* Archivo Variable (OFL) auto-hospedada. font-display: swap + preload no <head> + fallback com métricas ajustadas:
+   a fonte entra se chegar no início do carregamento; se não, a página não "pula" (CLS 0). */
+@font-face {
+  font-family: 'Archivo Fallback';
+  src: local('Arial Narrow'), local('Roboto Condensed'), local('Arial');
+  size-adjust: 96%;
+  ascent-override: 92%;
+  descent-override: 22%;
+}
+@font-face {
+  font-family: 'Archivo Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  src: url("@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Archivo Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  src: url("@fontsource-variable/archivo/files/archivo-latin-ext-wdth-normal.woff2") format("woff2-variations");
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+/* =========================================================================
+   GOIASPEL — DESIGN TOKENS
+   Paleta oficial 2027: "Azul sustenta. Verde renova. Papel acolhe. Terra ancora."
+   Ver 05_DESIGN_SYSTEM.md para regras de uso, contraste e o sistema de dobras.
+   ========================================================================= */
+@theme {
+  /* Azul Estrutura #14395A — autoridade: títulos, botão primário, seções de capacidade */
+  --color-blue-950: #0b2135;
+  --color-blue-900: #0f2c46;
+  --color-blue-700: #14395a;
+  --color-blue-100: #dde5ec;
+  /* Azul Inovação #246E74 — tecnologia, CTA final */
+  --color-teal: #246e74;
+  --color-teal-800: #1b5559;
+  /* Verde Circular #2A7654 — sustentabilidade, destaques, botão verde (AA sobre papel e branco) */
+  --color-green-800: #215e43;
+  --color-green-700: #2a7654;
+  --color-green-600: #2a7654;
+  --color-green-100: #e2ece4;
+  /* Verde Fibra #9BB89A — superfícies suaves, acentos sobre fundos escuros */
+  --color-sage: #9bb89a;
+  --color-sage-200: #cddccc;
+
+  /* Papel Natural #F1ECE1 — base; Branco Técnico #FFFFFF — seções e superfícies limpas */
+  --color-paper: #f1ece1;
+  --color-paper-2: #e8e1d3;
+  --color-paper-3: #dcd3c1;
+  --color-white: #ffffff;
+
+  /* Terra Profunda #3B302A — texto, rodapé, linhas de papelão */
+  --color-terra: #3b302a;
+  --color-kraft: #9bb89a;      /* superfície material (chapas) → Verde Fibra */
+  --color-kraft-deep: #6b5c50; /* números decorativos e miolo ondulado → Terra suavizada (AA texto grande) */
+  --color-kraft-dark: #3b302a;
+
+  /* Texto: Terra Profunda e derivados */
+  --color-ink: #3b302a;
+  --color-ink-2: #574b42;
+  --color-ink-3: #6b5f55;
+  --color-line: #d8cfbe;
+
+  /* Estados */
+  --color-danger: #b42318;
+  --color-warning: #8a5a00;
+  --color-warning-bg: #fff1c7;
+
+  /* Tipografia — Archivo variável (eixos wght 100–900, wdth 62–125) */
+  --font-sans: "Archivo Variable", "Archivo", "Archivo Fallback", ui-sans-serif, system-ui, sans-serif;
+
+  /* Raios: o papelão é cortado, não arredondado. Raios curtos; o "chanfro" é a forma-assinatura. */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+
+  /* Motion tokens */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-cut: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --breakpoint-xs: 26rem;
+}
+
+:root {
+  --gutter: clamp(1rem, 4vw, 3rem);
+  --container: 84rem;
+  --section-y: clamp(4.5rem, 10vw, 9rem);
+  --header-h: 4.5rem;
+  --chamfer: clamp(18px, 3vw, 40px);
+  --fold-h: clamp(22px, 4.2vw, 60px); /* altura única das dobras entre seções */
+
+  /* Paleta "pura": não é redefinida pelos tons de seção (chapas, ilustrações, marca) */
+  --gp-azul: #14395a;
+  --gp-verde: #2a7654;
+  --gp-teal: #246e74;
+  --gp-fibra: #9bb89a;
+  --gp-papel: #f1ece1;
+  --gp-terra: #3b302a;
+  --gp-branco: #ffffff;
+
+  --dur-1: 160ms; /* microinterações */
+  --dur-2: 320ms; /* estados, menus */
+  --dur-3: 700ms; /* revelações editoriais */
+  --dur-4: 1400ms; /* desenho de linhas, contagem */
+
+  color-scheme: light;
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+    background: var(--color-paper);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+  body {
+    font-family: var(--font-sans);
+    font-variation-settings: "wdth" 100;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--color-green-600); color: var(--color-white); }
+  img, svg, video { display: block; max-width: 100%; }
+  a { color: inherit; }
+  :focus-visible {
+    outline: 3px solid var(--color-blue-700);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
+  }
+  .on-dark :focus-visible { outline-color: var(--color-white); }
+  h1, h2, h3, h4 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+}
+
+/* Transições entre páginas nativas (cross-document). Sem JS; ignoradas onde não há suporte. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 260ms; }
+
+/* ---------- Tipografia editorial ---------- */
+@layer components {
+  .container-x {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  .section { padding-block: var(--section-y); }
+
+  .display {
+    font-variation-settings: "wdth" 70;
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+  }
+  .display-xl { font-size: clamp(2.6rem, 5.3vw, 4.85rem); }
+  .display-lg { font-size: clamp(2.4rem, 6.4vw, 5.5rem); }
+  .display-md { font-size: clamp(2rem, 4.4vw, 3.75rem); }
+  .display-sm { font-size: clamp(1.6rem, 2.8vw, 2.4rem); line-height: 0.98; }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-ink-2);
+  }
+  .eyebrow::before {
+    content: "";
+    width: 2.25rem;
+    height: 2px;
+    background: var(--color-green-600);
+  }
+  .eyebrow-num {
+    font-variant-numeric: tabular-nums;
+    color: var(--color-green-800);
+  }
+  .on-dark .eyebrow { color: rgb(255 255 255 / 0.85); }
+  .on-dark .lead { color: rgb(255 255 255 / 0.88); }
+  .on-dark .eyebrow-num { color: var(--color-white); }
+  .on-dark .eyebrow::before { background: var(--gp-fibra); }
+
+  .lead {
+    font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    line-height: 1.5;
+    color: var(--color-ink-2);
+    max-width: 38ch;
+  }
+  .prose-g { max-width: 64ch; color: var(--color-ink-2); }
+  .prose-g p + p { margin-top: 1em; }
+  .prose-g strong { color: var(--color-ink); font-weight: 650; }
+
+  .num {
+    font-variation-settings: "wdth" 62;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums lining-nums;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+  }
+
+  /* ---------- Botões ---------- */
+  .btn {
+    --btn-bg: var(--color-blue-700);
+    --btn-fg: var(--color-white);
+    --btn-bd: var(--btn-bg);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    min-height: 3.25rem;
+    padding: 0.875rem 1.5rem;
+    font-weight: 650;
+    font-size: 1rem;
+    line-height: 1.1;
+    text-decoration: none;
+    color: var(--btn-fg);
+    background: var(--btn-bg);
+    border: 2px solid var(--btn-bd);
+    /* canto chanfrado: assinatura do corte e vinco */
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: background-color var(--dur-1) ease, color var(--dur-1) ease, transform var(--dur-1) var(--ease-out-quart);
+    cursor: pointer;
+    user-select: none;
+  }
+  .btn svg { width: 1.125rem; height: 1.125rem; flex: none; transition: transform var(--dur-2) var(--ease-out-quart); }
+  .btn:hover { --btn-bg: var(--color-blue-900); }
+  .btn:hover svg.arrow { transform: translateX(4px); }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible { clip-path: none; }
+  .btn[disabled], .btn[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
+  .btn-green { --btn-bg: var(--color-green-700); }
+  .btn-green:hover { --btn-bg: var(--color-green-800); }
+  /* contornados: sem chanfro (o clip-path cortaria a borda no canto) */
+  .btn-ghost, .btn-ghost-light { clip-path: none; }
+  .btn-ghost { --btn-bg: transparent; --btn-fg: var(--color-ink); --btn-bd: var(--color-ink); }
+  .btn-ghost:hover { --btn-bg: var(--color-ink); --btn-fg: var(--color-paper); }
+  .btn-light { --btn-bg: var(--color-white); --btn-fg: var(--color-blue-900); }
+  .btn-light:hover { --btn-bg: var(--color-paper-2); }
+  .btn-ghost-light { --btn-bg: transparent; --btn-fg: var(--color-white); --btn-bd: rgb(255 255 255 / 0.6); }
+  .btn-ghost-light:hover { --btn-bg: var(--color-white); --btn-fg: var(--color-blue-900); }
+  .btn-sm { min-height: 2.75rem; padding: 0.6rem 1.1rem; font-size: 0.9375rem; }
+
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 650;
+    text-decoration: none;
+    color: var(--color-blue-700);
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0 2px no-repeat;
+    padding-block: 0.25rem;
+    transition: background-size var(--dur-2) var(--ease-out-quart);
+  }
+  .link-arrow:hover { background-size: 100% 2px; }
+  .link-arrow svg { width: 1rem; height: 1rem; transition: transform var(--dur-2) var(--ease-out-quart); }
+  .link-arrow:hover svg { transform: translateX(3px); }
+
+  /* ---------- Formas-assinatura ---------- */
+  /* Chanfro: cantos cortados como as chapas de papelão da apresentação */
+  .chamfer {
+    clip-path: polygon(var(--chamfer) 0, 100% 0, 100% calc(100% - var(--chamfer)), calc(100% - var(--chamfer)) 100%, 0 100%, 0 var(--chamfer));
+  }
+  .chamfer-tr {
+    clip-path: polygon(0 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer), 100% 100%, 0 100%);
+  }
+  /* Borda de miolo ondulado (vista lateral da chapa) */
+  .flute-edge {
+    position: relative;
+  }
+  .flute-edge::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 0;
+    width: 10px;
+    background:
+      radial-gradient(circle at 0 50%, transparent 3px, var(--color-kraft-deep) 3.5px, var(--color-kraft-deep) 4.5px, transparent 5px) 0 0 / 10px 10px,
+      linear-gradient(90deg, var(--color-kraft-deep) 1.5px, transparent 1.5px, transparent 8.5px, var(--color-kraft-deep) 8.5px);
+    opacity: 0.9;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-white);
+    background: var(--color-blue-700);
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
+  }
+  .tag-green { background: var(--color-green-700); }
+
+  .rule { height: 1px; background: var(--color-line); border: 0; }
+  .kinetic .line { display: block; }
+
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -4rem;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    background: var(--color-ink);
+    color: var(--color-white);
+    font-weight: 650;
+    text-decoration: none;
+    transition: top var(--dur-1);
+  }
+  .skip-link:focus { top: 1rem; }
+
+  /* Selo de pendência — visível somente em homologação */
+  .pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--color-warning);
+    background: var(--color-warning-bg);
+    border: 1px dashed currentColor;
+    font-variation-settings: "wdth" 100;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+}
+
+/* ---------- Motion: revelação progressiva ---------- */
+/* O conteúdo é visível por padrão; só fica oculto se o JS confirmar suporte (html.js-motion). */
+@media (prefers-reduced-motion: no-preference) {
+  .js-motion [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+    transition: opacity var(--dur-3) var(--ease-out-quart), transform var(--dur-3) var(--ease-out-quart);
+    transition-delay: calc(var(--reveal-i, 0) * 90ms);
+  }
+  .js-motion [data-reveal="fade"] { transform: none; }
+  /* "mask" e "layer": o elemento fica sempre pintado (o IntersectionObserver precisa de área visível);
+     uma camada de papel por cima se recolhe, como uma chapa que se afasta. */
+  .js-motion [data-reveal="mask"],
+  .js-motion [data-reveal="layer"] { opacity: 1; transform: none; position: relative; }
+  .js-motion [data-reveal="mask"]::after,
+  .js-motion [data-reveal="layer"]::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 2;
+    background: var(--wipe-bg, var(--color-paper-3));
+    transform-origin: 50% 0;
+    transition: transform 1100ms var(--ease-in-out-cut);
+    transition-delay: calc(var(--reveal-i, 0) * 120ms);
+    pointer-events: none;
+  }
+  .js-motion [data-reveal="layer"]::after { transform-origin: 100% 50%; }
+  .js-motion [data-reveal="mask"].is-in::after { transform: scaleY(0); }
+  .js-motion [data-reveal="layer"].is-in::after { transform: scaleX(0); }
+  .js-motion [data-reveal].is-in { opacity: 1; transform: none; }
+
+  /* Tipografia cinética: linhas sobem de dentro de uma máscara */
+  .js-motion .kinetic .line { display: block; overflow: hidden; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+  .js-motion .kinetic .line > span {
+    display: block;
+    transform: translate3d(0, 105%, 0);
+    transition: transform 900ms var(--ease-out-quart);
+    transition-delay: calc(var(--line-i, 0) * 110ms + 120ms);
+  }
+  .js-motion .kinetic.is-in .line > span { transform: none; }
+
+  /* Acima da dobra: anima no carregamento (keyframes), sem esperar o observer.
+     O conteúdo já está pintado — apenas deslocado/coberto — para não atrasar o LCP. */
+  .js-motion .kinetic[data-auto] .line > span {
+    transition: none;
+    animation: line-up 820ms var(--ease-out-quart) both;
+    animation-delay: calc(var(--line-i, 0) * 90ms + 60ms);
+  }
+  .js-motion [data-auto-fade] {
+    animation: auto-fade 700ms var(--ease-out-quart) both;
+    animation-delay: var(--delay, 300ms);
+  }
+  /* Camada de papel que se retira e revela a imagem (transição "chapa sobre chapa") */
+  .js-motion [data-wipe] { position: relative; }
+  .js-motion [data-wipe]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--wipe-bg, var(--color-paper-3));
+    transform-origin: 100% 50%;
+    animation: wipe 1000ms var(--ease-in-out-cut) both;
+    animation-delay: var(--delay, 150ms);
+    pointer-events: none;
+  }
+}
+@keyframes line-up { from { transform: translate3d(0, 105%, 0); } to { transform: none; } }
+@keyframes auto-fade { from { opacity: 0; transform: translate3d(0, 16px, 0); } to { opacity: 1; transform: none; } }
+@keyframes wipe { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+/* ---------- Formulários ---------- */
+@layer components {
+  .f-set { border: 0; padding: 0; margin: 0; min-width: 0; }
+  .f-set + .f-set { margin-top: 3rem; padding-top: 2.5rem; border-top: 1px solid var(--color-line); }
+  .f-legend {
+    display: flex; align-items: baseline; gap: 0.75rem;
+    padding: 0;
+    font-variation-settings: "wdth" 75;
+    font-weight: 800;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    color: var(--color-blue-700);
+  }
+  .f-legend .num { font-size: 1rem; color: var(--color-green-700); font-variation-settings: "wdth" 100; }
+  .f-hint-set { margin-top: 0.4rem; color: var(--color-ink-2); font-size: 0.9375rem; }
+  .f-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem 1.5rem; margin-top: 1.5rem; }
+  @media (min-width: 40rem) {
+    .f-grid { grid-template-columns: repeat(6, 1fr); }
+    .f-col-2 { grid-column: span 2; } .f-col-3 { grid-column: span 3; } .f-col-4 { grid-column: span 4; } .f-col-6 { grid-column: 1 / -1; }
+  }
+  .f-col-6 { grid-column: 1 / -1; }
+  .f-field { display: grid; gap: 0.4rem; align-content: start; }
+  .f-label { font-weight: 620; font-size: 0.9375rem; color: var(--color-ink); }
+  .f-req { color: var(--color-danger); margin-left: 0.15rem; }
+  .f-opt { font-weight: 400; color: var(--color-ink-3); font-size: 0.875rem; }
+  .f-help { font-size: 0.875rem; color: var(--color-ink-3); }
+  .f-input {
+    width: 100%;
+    min-height: 3.25rem;
+    padding: 0.75rem 0.9rem;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--color-ink);
+    background: var(--color-white);
+    border: 1.5px solid var(--color-ink-3);
+    border-radius: var(--radius-xs);
+    transition: border-color var(--dur-1), box-shadow var(--dur-1);
+    appearance: none;
+  }
+  textarea.f-input { min-height: 8rem; resize: vertical; }
+  select.f-input {
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231c1a17' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.1rem;
+  }
+  .f-input:hover { border-color: var(--color-ink); }
+  .f-input:focus { outline: none; border-color: var(--color-blue-700); box-shadow: 0 0 0 3px rgb(20 57 90 / 0.25); }
+  .f-input:disabled { background: var(--color-paper-2); cursor: not-allowed; }
+  .f-input[aria-invalid="true"] { border-color: var(--color-danger); }
+  .f-input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgb(180 35 24 / 0.2); }
+  .f-error { min-height: 0; font-size: 0.875rem; font-weight: 600; color: var(--color-danger); }
+  .f-error:empty { display: none; }
+
+  /* Opções em cartão (radio) */
+  .f-options { display: grid; gap: 0.6rem; margin-top: 0.25rem; }
+  @media (min-width: 40rem) { .f-options { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .f-options-3 { grid-template-columns: repeat(3, 1fr); } }
+  .f-option { position: relative; display: block; cursor: pointer; }
+  .f-option input { position: absolute; z-index: 1; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .f-option-box {
+    display: grid; gap: 0.15rem;
+    height: 100%;
+    padding: 0.9rem 1rem 0.9rem 2.75rem;
+    background: var(--color-white);
+    border: 1.5px solid var(--color-line);
+    position: relative;
+    transition: border-color var(--dur-1), background-color var(--dur-1);
+  }
+  .f-option-box::before {
+    content: "";
+    position: absolute; left: 1rem; top: 1.05rem;
+    width: 1.1rem; height: 1.1rem;
+    border: 2px solid var(--color-ink-3);
+    border-radius: 50%;
+    transition: border-color var(--dur-1), box-shadow var(--dur-1);
+  }
+  .f-option-t { font-weight: 650; }
+  .f-option-d { font-size: 0.875rem; color: var(--color-ink-2); }
+  .f-option:hover .f-option-box { border-color: var(--color-ink-3); }
+  .f-option input:checked + .f-option-box { border-color: var(--color-blue-700); background: var(--color-blue-100); }
+  .f-option input:checked + .f-option-box::before { border-color: var(--color-blue-700); box-shadow: inset 0 0 0 3.5px var(--color-white), inset 0 0 0 10px var(--color-blue-700); }
+  .f-option input:focus-visible + .f-option-box { outline: 3px solid var(--color-blue-700); outline-offset: 2px; }
+  .has-error .f-option-box { border-color: var(--color-danger); }
+
+  .f-check { display: flex; gap: 0.75rem; align-items: flex-start; cursor: pointer; }
+  .f-check input { width: 1.5rem; height: 1.5rem; margin-top: 0.15rem; flex: none; accent-color: var(--color-blue-700); }
+
+  .f-file {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem;
+    padding: 1rem;
+    border: 1.5px dashed var(--color-ink-3);
+    background: var(--color-white);
+  }
+  .f-file input { font: inherit; font-size: 0.9375rem; width: 100%; min-width: 0; }
+  .f-file input::file-selector-button {
+    margin-right: 0.75rem; padding: 0.6rem 1rem;
+    font: inherit; font-weight: 650;
+    color: var(--color-ink); background: var(--color-paper-2);
+    border: 1.5px solid var(--color-ink); cursor: pointer;
+  }
+
+  .f-dims { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
+  .f-dim { position: relative; }
+  .f-dim .f-input { padding-right: 2.6rem; }
+  .f-dim-u { position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%); font-size: 0.875rem; color: var(--color-ink-3); pointer-events: none; }
+
+  .f-summary {
+    padding: 1.25rem 1.5rem;
+    border-left: 4px solid var(--color-danger);
+    background: #fbe9e7;
+    color: var(--color-ink);
+    margin-bottom: 2rem;
+  }
+  .f-summary:focus { outline: 3px solid var(--color-danger); outline-offset: 2px; }
+  .f-summary h2 { font-weight: 750; font-size: 1.0625rem; }
+  .f-summary ul { margin: 0.5rem 0 0; padding-left: 1.25rem; }
+  .f-summary a { color: var(--color-danger); font-weight: 600; }
+
+  .f-submit { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2.5rem; }
+  .btn[aria-busy="true"] { color: transparent; }
+  .btn[aria-busy="true"]::after {
+    content: ""; position: absolute; width: 1.25rem; height: 1.25rem;
+    border: 2.5px solid var(--color-white); border-right-color: transparent; border-radius: 50%;
+    animation: spin 700ms linear infinite;
+  }
+  .hp-field { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .result { padding: 2rem; border: 2px solid var(--color-blue-700); background: var(--color-white); }
+  .result:focus { outline: 3px solid var(--color-blue-700); outline-offset: 3px; }
+  .result[data-state="success"] { border-color: var(--color-green-700); }
+  .result-title { line-height: 1.05; font-variation-settings: "wdth" 75; font-weight: 800; font-size: 1.75rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .result[data-state="success"] .result-title { color: var(--color-green-700); }
+  .result-text { margin-top: 0.5rem; color: var(--color-ink-2); }
+  .result-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* =========================================================================
+   TONS DE SEÇÃO
+   Redefinem os tokens dentro da seção: títulos, textos, links e botões
+   continuam legíveis sem estilos específicos. Combinações validadas (WCAG AA).
+   ========================================================================= */
+.tone-white { --section-bg: var(--gp-branco); }
+.tone-paper { --section-bg: var(--gp-papel); }
+.tone-sage {
+  --section-bg: var(--gp-fibra);
+  --color-green-700: var(--gp-terra);   /* destaque verde → terra (contraste 7:1 sobre Fibra) */
+  --color-green-600: var(--gp-terra);
+  --color-green-800: var(--gp-terra);
+  --color-ink-2: #2f2621;
+  --color-ink-3: #3b302a;
+  --color-kraft-deep: #3b302a;
+  --color-line: rgb(59 48 42 / 0.28);
+  --color-paper-2: #b4c9b3;
+}
+.tone-blue, .tone-green, .tone-teal, .tone-terra {
+  --color-blue-700: var(--gp-branco);   /* títulos */
+  --color-green-700: var(--gp-fibra);   /* destaques */
+  --color-green-600: var(--gp-fibra);
+  --color-green-800: var(--gp-branco);
+  --color-ink: var(--gp-branco);
+  --color-ink-2: rgb(255 255 255 / 0.86);
+  --color-ink-3: rgb(255 255 255 / 0.74);
+  --color-kraft-deep: var(--gp-fibra);
+  --color-line: rgb(255 255 255 / 0.22);
+  --color-paper-2: rgb(255 255 255 / 0.08);
+  --color-paper-3: rgb(255 255 255 / 0.14);
+  color: var(--gp-branco);
+}
+.tone-blue { --section-bg: var(--gp-azul); }
+.tone-green { --section-bg: var(--gp-verde); --color-green-700: #d6e6d5; --color-green-600: #d6e6d5; }
+.tone-teal { --section-bg: var(--gp-teal); --color-green-700: #d6e6d5; --color-green-600: #d6e6d5; }
+.tone-terra { --section-bg: var(--gp-terra); }
+:is(.tone-blue, .tone-green, .tone-teal, .tone-terra) .btn { --btn-bg: var(--gp-branco); --btn-fg: var(--gp-azul); --btn-bd: var(--gp-branco); }
+:is(.tone-blue, .tone-green, .tone-teal, .tone-terra) .btn:hover { --btn-bg: var(--gp-papel); }
+:is(.tone-blue, .tone-green, .tone-teal, .tone-terra) .btn-ghost,
+:is(.tone-blue, .tone-green, .tone-teal, .tone-terra) .btn-ghost-light { --btn-bg: transparent; --btn-fg: var(--gp-branco); --btn-bd: rgb(255 255 255 / 0.7); }
+:is(.tone-blue, .tone-green, .tone-teal, .tone-terra) .btn-ghost:hover,
+:is(.tone-blue, .tone-green, .tone-teal, .tone-terra) .btn-ghost-light:hover { --btn-bg: var(--gp-branco); --btn-fg: var(--gp-azul); }
+:is(.tone-blue, .tone-green, .tone-teal, .tone-terra) :focus-visible { outline-color: var(--gp-branco); }
+:is(.tone-blue, .tone-green, .tone-teal, .tone-terra) .pending { color: #5c3d00; }
+
+/* =========================================================================
+   SISTEMA DE DOBRAS
+   Cada seção (depois da primeira) "dobra" sobre a anterior: avança --fold-h sobre ela
+   e recorta o topo numa forma de papelão. Uma regra (mesma altura, cortes a 45°) dá a
+   harmonia; quatro formas e a alternância de fundos evitam a monotonia:
+     aba (flap) · subida (rise) · vinco em V (notch) · descida (fall)
+   Fundo padrão alterna Branco Técnico / Papel Natural; seções podem fixar um tom.
+   ========================================================================= */
+main > section { background: var(--section-bg, var(--gp-papel)); }
+main > section:first-child { padding-bottom: calc(var(--fold-h) * 1.2); }
+main > section:not(:first-child) {
+  position: relative;
+  margin-top: calc(var(--fold-h) * -1);
+  padding-top: calc(var(--section-y) + var(--fold-h) * 0.6);
+}
+main > section:nth-of-type(even):not([class*="tone-"]) { --section-bg: var(--gp-branco); }
+main > section:nth-of-type(odd):not([class*="tone-"]) { --section-bg: var(--gp-papel); }
+/* sombra suave de papel dobrado, que acompanha o recorte */
+/* formas, em ciclo de 4 */
+main > section:where(:nth-of-type(4n+2)), main > section:is(.fold-flap, .fold-flap-r) {
+  clip-path: polygon(0 var(--fold-h), var(--flap-x, 6%) var(--fold-h), calc(var(--flap-x, 6%) + var(--fold-h)) 0,
+    calc(var(--flap-x, 6%) + var(--flap-w, 32%)) 0, calc(var(--flap-x, 6%) + var(--flap-w, 32%) + var(--fold-h)) var(--fold-h),
+    100% var(--fold-h), 100% 100%, 0 100%);
+}
+main > section:where(:nth-of-type(4n+3)), main > section.fold-rise {
+  clip-path: polygon(0 var(--fold-h), 100% 0, 100% 100%, 0 100%);
+}
+main > section:where(:nth-of-type(4n+4)), main > section.fold-notch {
+  clip-path: polygon(0 0, calc(var(--notch-x, 72%) - var(--fold-h)) 0, var(--notch-x, 72%) var(--fold-h),
+    calc(var(--notch-x, 72%) + var(--fold-h)) 0, 100% 0, 100% 100%, 0 100%);
+}
+main > section:where(:nth-of-type(4n+5)), main > section.fold-fall {
+  clip-path: polygon(0 0, 100% var(--fold-h), 100% 100%, 0 100%);
+}
+main > section.fold-flap-r { --flap-x: 62%; }
+@media (max-width: 47.99rem) {
+  main > section { --flap-w: 44%; }
+  main > section.fold-flap-r { --flap-x: 48%; }
+}
+
+/* =========================================================================
+   PADRÕES SUTIS POR TOM DE SEÇÃO
+   Papel: fibra real do papel (PDF p. 6) · Branco: limpo · Escuros: faca de caixa
+   (corte contínuo, vinco tracejado) · Verde Fibra: ondas do miolo em traço fino.
+   ========================================================================= */
+:root {
+  --pat-miolo: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2296%22%20height%3D%2240%22%20viewBox%3D%220%200%2096%2040%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%221%22%3E%3Cpath%20d%3D%22M0%204.5H96M0%2015.5H96%22%20stroke-opacity%3D%220.09%22/%3E%3Cpath%20d%3D%22M0%2010Q6%204.5%2012%2010T24%2010T36%2010T48%2010T60%2010T72%2010T84%2010T96%2010%22%20stroke-opacity%3D%220.11%22/%3E%3Cpath%20d%3D%22M0%2024.5H96M0%2035.5H96%22%20stroke-opacity%3D%220.09%22/%3E%3Cpath%20d%3D%22M-12%2030Q-6%2024.5%200%2030T12%2030T24%2030T36%2030T48%2030T60%2030T72%2030T84%2030T96%2030T108%2030%22%20stroke-opacity%3D%220.11%22%20transform%3D%22translate%286%200%29%22/%3E%3C/g%3E%3C/svg%3E");
+  --pat-fibra: url("../assets/texturas/fibra-suave.jpg");
+  --pat-faca-clara: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20520%20300%22%3E%3Cpath%20d%3D%22M40%2090%20L40%2030%20L168%2030%20L170%2090%20L172%2030%20L268%2030%20L270%2090%20L272%2030%20L398%2030%20L400%2090%20L402%2030%20L500%2030%20L500%20270%20L402%20270%20L400%20210%20L398%20270%20L272%20270%20L270%20210%20L268%20270%20L172%20270%20L170%20210%20L168%20270%20L40%20270%20L40%20210%20L14%20198%20L14%20102%20Z%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.07%22%20fill%3D%22none%22%20stroke-width%3D%221.2%22%20vector-effect%3D%22non-scaling-stroke%22/%3E%3Cpath%20d%3D%22M40%2090%20H500%20M40%20210%20H500%20M170%2090%20V210%20M270%2090%20V210%20M400%2090%20V210%20M40%2090%20V210%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%220.07%22%20fill%3D%22none%22%20stroke-width%3D%221.2%22%20stroke-dasharray%3D%226%205%22%20vector-effect%3D%22non-scaling-stroke%22/%3E%3C/svg%3E");
+  --pat-faca-terra: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20520%20300%22%3E%3Cpath%20d%3D%22M40%2090%20L40%2030%20L168%2030%20L170%2090%20L172%2030%20L268%2030%20L270%2090%20L272%2030%20L398%2030%20L400%2090%20L402%2030%20L500%2030%20L500%20270%20L402%20270%20L400%20210%20L398%20270%20L272%20270%20L270%20210%20L268%20270%20L172%20270%20L170%20210%20L168%20270%20L40%20270%20L40%20210%20L14%20198%20L14%20102%20Z%22%20stroke%3D%22%233b302a%22%20stroke-opacity%3D%220.12%22%20fill%3D%22none%22%20stroke-width%3D%221.2%22%20vector-effect%3D%22non-scaling-stroke%22/%3E%3Cpath%20d%3D%22M40%2090%20H500%20M40%20210%20H500%20M170%2090%20V210%20M270%2090%20V210%20M400%2090%20V210%20M40%2090%20V210%22%20stroke%3D%22%233b302a%22%20stroke-opacity%3D%220.12%22%20fill%3D%22none%22%20stroke-width%3D%221.2%22%20stroke-dasharray%3D%226%205%22%20vector-effect%3D%22non-scaling-stroke%22/%3E%3C/svg%3E");
+  --pat-onda-terra: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2248%22%20height%3D%2222%22%20viewBox%3D%220%200%2048%2022%22%3E%3Cpath%20d%3D%22M0%2011%20Q12%202%2024%2011%20T48%2011%22%20fill%3D%22none%22%20stroke%3D%22%233b302a%22%20stroke-opacity%3D%220.09%22%20stroke-width%3D%221%22/%3E%3C/svg%3E");
+  --tex-fibra: url("../assets/texturas/fibra.jpg");
+  --tex-miolo: url("../assets/texturas/miolo-tile.png");
+}
+main > section:nth-of-type(odd):not([class*="tone-"]), main > section.tone-paper {
+  background-image: var(--pat-fibra);
+  background-size: 327px auto;
+  background-blend-mode: soft-light;
+}
+/* Seções escuras: trama contínua do corte do papelão ondulado (capa · miolo · capa), fina e regular,
+   mais presente no canto inferior direito e esmaecendo em direção ao texto. */
+main > section:is(.tone-blue, .tone-green, .tone-teal, .tone-terra)::before {
+  content: "";
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: var(--pat-miolo) 0 0 / 96px 40px repeat;
+  -webkit-mask-image: radial-gradient(120% 90% at 100% 100%, #000 0%, rgb(0 0 0 / 0.55) 40%, transparent 75%);
+          mask-image: radial-gradient(120% 90% at 100% 100%, #000 0%, rgb(0 0 0 / 0.55) 40%, transparent 75%);
+}
+main > section:is(.tone-blue, .tone-green, .tone-teal, .tone-terra) { position: relative; }
+main > section.tone-sage {
+  background-image: var(--pat-onda-terra), var(--pat-faca-terra);
+  background-repeat: repeat, no-repeat;
+  background-size: 48px 22px, min(60vw, 820px) auto;
+  background-position: 0 0, 112% 100%;
+}
+@media print { main > section { background-image: none !important; } }
+
+/* =========================================================================
+   RECORTES NO ESTILO DA APRESENTAÇÃO
+   O recorte vale para a mídia (1º filho) e para a camada de revelação; o fio
+   (svg .cut-line, componente CutLine) corre paralelo ao corte, do lado de fora.
+   ========================================================================= */
+.cut { position: relative; isolation: isolate; }
+.cut > picture { display: block; } /* <picture> é inline: sem isso o recorte usa uma caixa de altura zero */
+.cut > :first-child, .cut::after { clip-path: var(--cut-shape); }
+.cut-bl { --cut-shape: polygon(0 0, 100% 0, 100% 100%, 30% 100%, 0 64%); }
+.cut-tr { --cut-shape: polygon(0 0, 68% 0, 100% 36%, 100% 100%, 0 100%); }
+.cut-tl { --cut-shape: polygon(30% 0, 100% 0, 100% 100%, 0 100%, 0 36%); }
+.cut-slant { --cut-shape: polygon(14% 0, 100% 0, 100% 100%, 0 100%); }
+.cut-line {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  overflow: visible; pointer-events: none; z-index: 3;
+}
+.cut-line * { fill: none; stroke: var(--cut-color, var(--color-green-600)); stroke-width: 1.6; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+@media (prefers-reduced-motion: no-preference) {
+  .js-motion .cut-line * { stroke-dasharray: 1; stroke-dashoffset: 1; animation: cut-draw 1200ms var(--ease-in-out-cut) 700ms forwards; }
+}
+@keyframes cut-draw { to { stroke-dashoffset: 0; } }
+@media (max-width: 47.99rem) {
+  /* telas pequenas: só o desenho de faca do canto inferior, longe dos títulos */
+  main > section.tone-sage { background-image: var(--pat-onda-terra); background-size: 48px 22px; }
+}
+
+@media (max-width: 47.99rem) { .cut-line { display: none; } }

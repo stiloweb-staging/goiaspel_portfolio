@@ -1,0 +1,89 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import CutLine from '../components/CutLine.astro';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import operadora from '../assets/fotos/operadora-expedicao.jpg';
+import fabrica from '../assets/fotos/fabrica-aerea.jpg';
+
+// Conteúdo do site original (/cultura-e-relacionamento-goiaspel/), com redação atualizada.
+const frentes = [
+  { t: 'Atendimento', p: 'Escuta antes da proposta: produto, volume e operação do cliente.' },
+  { t: 'Vendas', p: 'Representantes que visitam, medem e indicam a embalagem certa.' },
+  { t: 'Produção', p: 'Padrão constante e prazos combinados com transparência.' },
+  { t: 'Distribuição', p: 'Frota própria para entregar quando e onde foi pedido.' },
+  { t: 'Comunicação', p: 'Retorno claro em cada etapa, do pedido ao pós-venda.' },
+];
+---
+<Base
+  title="Cultura de relacionamento"
+  description="Relacionamento baseado em ética e confiança com clientes, colaboradores, fornecedores e mercado: a cultura que orienta a Goiaspel do atendimento à distribuição."
+>
+  <PageHero
+    crumb="Cultura de relacionamento"
+    eyebrow="Relacionamento com o cliente"
+    title="Proximidade é o nosso método"
+    accent="nosso método"
+    lead="Ética e confiança com clientes, colaboradores, fornecedores e com o mercado: é assim que entendemos necessidades reais e entregamos a embalagem certa."
+    image={operadora}
+    alt="Colaboradora da Goiaspel na área de expedição, apoiada sobre chapas de caixas prontas."
+    imagePos="60% 40%"
+  />
+
+  <section class="section" aria-labelledby="t-frentes">
+    <div class="container-x">
+      <SectionHead
+        id="t-frentes"
+        num="01"
+        eyebrow="Uma cultura permanente"
+        title="Presente em toda a operação"
+        accent="toda a operação"
+        lead="O foco em relacionamento não é um departamento: ele está em cada etapa e é disseminado em toda a organização."
+      />
+      <ol class="fr" data-reveal-group>
+        {frentes.map((f, i) => (
+          <li data-reveal><span class="num fr-n">0{i + 1}</span><span class="fr-t">{f.t}</span><span class="fr-p">{f.p}</span></li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section quote tone-sage" aria-label="Palavra da direção">
+    <div class="container-x q-grid">
+      <figure class="q-photo cut cut-bl" data-reveal="mask">
+        <Picture src={fabrica} formats={['avif', 'webp']} widths={[600, 1000, 1491]} sizes="(min-width: 64rem) 50vw, 92vw" alt="Vista aérea da sede da Goiaspel em Goiânia." loading="lazy" />
+        <CutLine shape="bl" />
+      </figure>
+      <blockquote class="q" data-reveal>
+        <p>“Estarmos próximos dos clientes nos faz entender seus negócios, seus anseios e nos ajuda a entregar soluções.”</p>
+        <footer>— A direção</footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <ContinueExplorando grupo={0} />
+  <CtaFinal />
+</Base>
+
+<style>
+  .fr { list-style: none; margin: clamp(3rem, 6vw, 4.5rem) 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); counter-reset: f; }
+  .fr li { position: relative; display: grid; gap: 0.5rem; padding: 1.5rem 1rem 1.75rem 0; border-top: 2px solid var(--color-ink); }
+  .fr li::after { /* seta de fluxo entre as etapas */
+    content: ""; position: absolute; top: -7px; right: 1rem; width: 12px; height: 12px;
+    border-top: 2px solid var(--gp-verde); border-right: 2px solid var(--gp-verde); transform: rotate(45deg);
+  }
+  .fr li:last-child::after { display: none; }
+  .fr-n { font-size: 2.6rem; color: var(--color-kraft-deep); }
+  .fr-t { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.6rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .fr-p { color: var(--color-ink-2); font-size: 0.9375rem; max-width: 26ch; }
+  .q-grid { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 64rem) { .q-grid { grid-template-columns: 1.1fr 1fr; gap: 5rem; } }
+  .q-photo { margin: 0; }
+  .q-photo :global(img) { width: 100%; height: auto; aspect-ratio: 1.3; object-fit: cover; }
+  .q { margin: 0; }
+  .q p { font-variation-settings: "wdth" 80; font-weight: 600; font-size: clamp(1.6rem, 3vw, 2.6rem); line-height: 1.15; color: var(--color-blue-700); text-wrap: balance; }
+  .q footer { margin-top: 1rem; color: var(--color-ink-2); font-weight: 600; }
+</style>

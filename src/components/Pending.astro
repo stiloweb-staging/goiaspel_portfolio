@@ -1,0 +1,11 @@
+---
+// Selos de pendência só aparecem com PUBLIC_SHOW_PENDING=true (revisão interna). O controle das
+// validações fica em 10_PENDENCIAS_PARA_PUBLICACAO.md.
+const SHOW = import.meta.env.PUBLIC_SHOW_PENDING === 'true';
+interface Props {
+  title?: string;
+  label?: string;
+}
+const { title = 'Informação aguardando validação da Goiaspel', label = 'Pendente de validação' } = Astro.props;
+---
+{SHOW && <span class="pending" title={title}>● {label}</span>}

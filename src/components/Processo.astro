@@ -1,0 +1,73 @@
+---
+/**
+ * Jornada "da necessidade à solução". A linha de papelão percorre as etapas e se desenha
+ * conforme a seção entra na tela. Horizontal no desktop, vertical no celular.
+ */
+import { processo } from '../data/conteudo';
+---
+<ol class="steps" data-reveal-group>
+  {processo.map((s) => (
+    <li class="step" data-reveal>
+      <span class="s-n num" aria-hidden="true">{s.n}</span>
+      <div class="s-node" aria-hidden="true"></div>
+      <h3 class="s-title">{s.titulo}</h3>
+      <p class="s-text">{s.texto}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .steps {
+    --node: 14px;
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2.25rem;
+    counter-reset: step;
+  }
+  /* trilho */
+  .steps::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--node) / 2 - 1px);
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 2px;
+    background: repeating-linear-gradient(180deg, var(--color-kraft-deep) 0 6px, transparent 6px 10px);
+  }
+  .step { position: relative; padding-left: calc(var(--node) + 1.5rem); }
+  .s-node {
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    width: var(--node);
+    height: var(--node);
+    background: var(--color-paper);
+    border: 3px solid var(--color-green-600);
+    transform: rotate(45deg);
+  }
+  .s-n { display: block; font-size: 3rem; color: var(--color-kraft-deep); margin-bottom: 0.25rem; }
+  .s-title {
+    font-variation-settings: "wdth" 75;
+    font-weight: 800;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    color: var(--color-blue-700);
+  }
+  .s-text { margin-top: 0.5rem; color: var(--color-ink-2); max-width: 36ch; font-size: 1rem; }
+
+  @media (min-width: 64rem) {
+    .steps { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2rem; padding-top: 0; }
+    .s-title { overflow-wrap: anywhere; hyphens: auto; }
+    .steps::before {
+      left: 0; right: 0; top: calc(4.25rem + var(--node) / 2 - 1px); bottom: auto;
+      width: auto; height: 2px;
+      background: repeating-linear-gradient(90deg, var(--color-kraft-deep) 0 6px, transparent 6px 10px);
+    }
+    .step { padding-left: 0; }
+    .s-n { font-size: 3.75rem; height: 3.75rem; margin-bottom: 0.5rem; }
+    .s-node { position: relative; top: 0; margin-bottom: 1.5rem; }
+  }
+</style>

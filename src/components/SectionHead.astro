@@ -1,0 +1,45 @@
+---
+interface Props {
+  num?: string;
+  eyebrow?: string;
+  title: string;
+  /** Palavras do título destacadas em verde (substring exata) */
+  accent?: string;
+  lead?: string;
+  align?: 'start' | 'split';
+  id?: string;
+  level?: 'h1' | 'h2';
+  size?: 'lg' | 'md';
+}
+const { num: numProp, eyebrow, title, accent, lead, align = 'split', id, level = 'h2', size = 'lg' } = Astro.props;
+const num = Astro.url.pathname === '/' ? numProp : undefined; // numeração editorial só na home
+const Tag = level;
+const parts = accent && title.includes(accent) ? title.split(accent) : [title];
+const lines = parts.length > 1 ? [parts[0], accent, parts[1]] : [title];
+---
+<div class:list={['sh', `sh-${align}`]}>
+  <div>
+    {eyebrow && <p class="eyebrow">{num && <span class="eyebrow-num">{num}</span>}{eyebrow}</p>}
+    <Tag id={id} class:list={['display', size === 'lg' ? 'display-lg' : 'display-md', 'sh-title']} data-reveal>
+      {lines.length > 1 ? (
+        <>{lines[0]}<span class="accent">{lines[1]}</span>{lines[2]}</>
+      ) : title}
+    </Tag>
+  </div>
+  {lead && <p class="lead sh-lead" data-reveal>{lead}</p>}
+  <slot />
+</div>
+
+<style>
+  .sh { display: grid; gap: 1.5rem; }
+  .sh-title { margin-top: 1.25rem; color: var(--color-blue-700); max-width: 16ch; }
+  .sh-title:first-child { margin-top: 0; }
+  .accent { color: var(--color-green-700); }
+  @media (min-width: 64rem) {
+    .sh-split { grid-template-columns: 1.4fr 1fr; align-items: end; gap: 4rem; }
+    .sh-split .sh-lead { justify-self: end; padding-bottom: 0.5rem; }
+  }
+  :global(.on-dark) .sh-title { color: var(--color-white); }
+  :global(.on-dark) .accent { color: var(--gp-fibra); }
+
+</style>

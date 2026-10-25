@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Pending from '../components/Pending.astro';
+import { site } from '../data/site';
+---
+<Base
+  title="Política de privacidade"
+  description="Como a Goiaspel trata os dados pessoais enviados pelos formulários do site, em conformidade com a LGPD."
+>
+  <PageHero crumb="Privacidade" eyebrow="LGPD" title="Política de privacidade" accent="privacidade" />
+  <section class="section">
+    <div class="container-x">
+      <p class="draft"><Pending label="Minuta — revisão jurídica obrigatória" title="Texto-base preparado para homologação. Deve ser revisado pelo jurídico da Goiaspel antes da publicação." /></p>
+      <div class="prose-g legal">
+        <h2>1. Quem somos</h2>
+        <p>{site.legalName}, com sede na {site.address.street}, {site.address.district}, {site.address.city}-{site.address.state}, CEP {site.address.postalCodeDisplay}.</p>
+        <h2>2. Quais dados coletamos</h2>
+        <p>Somente os dados que você informa nos formulários: nome, empresa, e-mail, telefone/WhatsApp, cidade, estado, informações sobre a embalagem e arquivos de referência anexados voluntariamente.</p>
+        <h2>3. Para que usamos</h2>
+        <p>Para responder à sua solicitação de orçamento, cadastro de fornecedor ou contato, e para o relacionamento comercial decorrente dela. Base legal: procedimentos preliminares a contrato e consentimento (LGPD, art. 7º, I e V).</p>
+        <h2>4. Compartilhamento</h2>
+        <p>Os dados não são vendidos. Podem ser processados por prestadores que operam o envio de formulários e e-mail, sob obrigação de confidencialidade.</p>
+        <h2>5. Cookies e medição</h2>
+        <p>Este site não usa cookies de publicidade. Ferramentas de medição de audiência só serão ativadas com aviso prévio nesta página. Vídeos do YouTube são carregados apenas quando você clica para assistir.</p>
+        <h2>6. Retenção</h2>
+        <p>Os dados são mantidos pelo tempo necessário ao atendimento e às obrigações legais.</p>
+        <h2>7. Seus direitos</h2>
+        <p>Você pode solicitar acesso, correção ou exclusão dos seus dados pelo e-mail <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .draft { margin-bottom: 2rem; }
+  .legal h2 { margin: 2.25rem 0 0.5rem; font-weight: 750; font-size: 1.25rem; color: var(--color-ink); }
+  .legal a { color: var(--color-blue-700); text-decoration: underline; text-underline-offset: 3px; }
+</style>

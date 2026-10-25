@@ -1,0 +1,137 @@
+---
+/**
+ * Setores atendidos, ancorados em embalagens reais da apresentação.
+ * Lista de botões (aria-pressed) que troca a fotografia — funciona por toque, clique e teclado;
+ * sem JS, a lista continua legível e a primeira imagem fica visível.
+ */
+import { Image } from 'astro:assets';
+import { segmentos, outrosSetores } from '../data/conteudo';
+import { galeria } from '../data/galeria';
+
+// embalagens do portfólio que pertencem a cada setor (categoria/número, como em assets/galeria/)
+const porSetor: Record<string, string[]> = {
+  alimentos: ['policromia/8', 'policromia/7', 'flexografia/25', 'flexografia/11', 'policromia/4', 'flexografia/20', 'policromia/15', 'flexografia/22', 'policromia/11'],
+  saneantes: ['flexografia/1', 'flexografia/6'],
+  construcao: ['policromia/1'],
+  automotivo: ['policromia/6', 'policromia/3', 'flexografia/17'],
+  farmaceutico: ['flexografia/10'],
+  varejo: ['policromia/5', 'flexografia/24', 'flexografia/14', 'especiais/4', 'flexografia/23', 'especiais/1'],
+};
+const item = (k: string) => {
+  const [cat, n] = k.split('/');
+  const g = galeria.find((x) => x.cat === cat && x.n === Number(n));
+  if (!g) throw new Error(`Setores: embalagem inexistente ${k}`);
+  return g;
+};
+const MAX = 6;
+---
+<div class="sx" data-sectors>
+  <div class="sx-media" aria-live="polite">
+    {segmentos.map((s, i) => {
+      const itens = (porSetor[s.id] ?? []).slice(0, MAX).map(item);
+      return (
+        <figure class="sx-fig" data-panel={s.id} data-n={Math.min(itens.length, MAX)} hidden={i !== 0}>
+          {itens.map((g, k) => (
+            <span class="sx-tile" style={`--d:${k * 70}ms`}>
+              <Image src={g.src} alt={g.alt} width={k === 0 ? 420 : 240} loading="lazy" />
+            </span>
+          ))}
+          <figcaption class="sx-cap">{s.nome} · {itens.length} {itens.length === 1 ? 'embalagem' : 'embalagens'} do portfólio</figcaption>
+        </figure>
+      );
+    })}
+  </div>
+  <div class="sx-list-wrap">
+    <ul class="sx-list" role="list">
+      {segmentos.map((s, i) => (
+        <li>
+          <button type="button" class="sx-btn" data-target={s.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+            <span class="sx-name">{s.nome}</span>
+            <span class="sx-ex">{s.exemplo}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+    <p class="sx-more">Também atendemos: {outrosSetores.join(', ').toLowerCase()} e outras aplicações sob consulta.</p>
+  </div>
+</div>
+
+<style>
+  .sx { display: grid; gap: 2rem; }
+  @media (min-width: 64rem) { .sx { grid-template-columns: 1.1fr 1fr; gap: 4rem; align-items: start; } }
+  /* mosaico das embalagens do setor: a primeira em destaque, as demais ao redor */
+  .sx-media { position: relative; min-height: 22rem; }
+  @media (min-width: 64rem) { .sx-media { position: sticky; top: calc(var(--header-h) + 2rem); min-height: 30rem; } }
+  .sx-fig { margin: 0; display: grid; gap: 0.75rem; grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(0, 1fr); aspect-ratio: 4 / 3; }
+  .sx-fig[hidden] { display: none; }
+  .sx-fig[data-n="1"] { grid-template-columns: 1fr; }
+  .sx-fig[data-n="2"] { grid-template-columns: 1fr 1fr; }
+  .sx-fig[data-n="3"] { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }
+  .sx-fig[data-n="3"] .sx-tile:first-child { grid-row: span 2; }
+  .sx-fig:is([data-n="4"], [data-n="5"], [data-n="6"]) { grid-template-rows: 1fr 1fr 1fr; }
+  .sx-fig:is([data-n="4"], [data-n="5"], [data-n="6"]) .sx-tile:first-child { grid-column: span 2; grid-row: span 2; }
+  .sx-fig[data-n="4"] .sx-tile:nth-child(4) { grid-column: span 3; }
+  .sx-fig[data-n="5"] .sx-tile:nth-child(5) { grid-column: span 2; }
+  .sx-tile { position: relative; display: grid; place-items: center; min-height: 0; background: var(--gp-branco); border: 1px solid var(--color-line); overflow: hidden; animation: sx-in 520ms var(--d, 0ms) var(--ease-out-quart) both; }
+  .sx-tile :global(img) { width: 100%; height: 100%; object-fit: contain; padding: 8%; mix-blend-mode: multiply; transition: transform 0.5s var(--ease-out-quart); }
+  .sx-tile:hover :global(img) { transform: scale(1.05); }
+  .sx-cap { grid-column: 1 / -1; position: absolute; left: 0; bottom: -2rem; font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ink-3); }
+  @media (prefers-reduced-motion: reduce) { .sx-tile { animation: none; } }
+  @keyframes sx-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
+  .sx-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-line); }
+  .sx-list li { border-bottom: 1px solid var(--color-line); }
+  .sx-btn {
+    position: relative;
+    display: grid;
+    gap: 0.15rem;
+    width: 100%;
+    padding: 1.15rem 3rem 1.15rem 0;
+    text-align: left;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: var(--color-ink);
+    font: inherit;
+  }
+  .sx-btn::after {
+    content: "";
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 2px solid var(--color-line);
+    transform: translateY(-50%) rotate(45deg);
+    transition: background-color var(--dur-2), border-color var(--dur-2);
+  }
+  .sx-name {
+    font-variation-settings: "wdth" 72;
+    font-weight: 800;
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    line-height: 1.05;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    transition: color var(--dur-2);
+  }
+  .sx-ex { color: var(--color-ink-3); font-size: 0.9375rem; }
+  .sx-btn:hover .sx-name { color: var(--color-ink); }
+  .sx-btn[aria-pressed="true"] .sx-name { color: var(--color-blue-700); }
+  .sx-btn[aria-pressed="true"]::after { background: var(--color-green-600); border-color: var(--color-green-600); }
+  .sx-more { margin-top: 1.5rem; color: var(--color-ink-2); font-size: 0.9375rem; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-sectors]').forEach((root) => {
+    const buttons = root.querySelectorAll<HTMLButtonElement>('[data-target]');
+    const panels = root.querySelectorAll<HTMLElement>('[data-panel]');
+    const select = (id: string) => {
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.target === id)));
+      panels.forEach((p) => (p.hidden = p.dataset.panel !== id));
+    };
+    buttons.forEach((b) => {
+      b.addEventListener('click', () => select(b.dataset.target!));
+      // Pré-visualização ao passar o mouse, sem depender dela
+      b.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') select(b.dataset.target!); });
+    });
+  });
+</script>

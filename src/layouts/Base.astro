@@ -1,0 +1,113 @@
+---
+import Intro from '../components/Intro.astro';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import { getImage } from 'astro:assets';
+import ogSource from '../assets/fotos/fabrica-aerea.jpg';
+import { site, STAGING } from '../data/site';
+// Pré-carrega a fonte do subconjunto latino: evita o deslocamento de layout (CLS) quando a Archivo chega
+import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Dados estruturados adicionais (Schema.org) da página */
+  schema?: Record<string, unknown>[];
+  hideMobileBar?: boolean;
+}
+const { title, description, schema = [], hideMobileBar = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const fullTitle = Astro.url.pathname === '/' ? title : `${title} | Goiaspel`;
+const og = await getImage({ src: ogSource, width: 1200, height: 630, format: 'jpg', fit: 'cover' });
+const ogUrl = new URL(og.src, Astro.site);
+
+const org = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${Astro.site}#organizacao`,
+  name: site.name,
+  legalName: site.legalName,
+  url: Astro.site?.toString(),
+  logo: new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/logo-goiaspel.png`, Astro.site).toString(),
+  foundingDate: '1992',
+  email: site.email,
+  telephone: site.phoneE164,
+  sameAs: [site.instagram, site.facebook, site.youtube],
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.state,
+    postalCode: site.address.postalCode,
+    addressCountry: 'BR',
+  },
+};
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="canonical" href={canonical} />
+    {STAGING && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#f5ede1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Goiaspel Embalagens de Papelão" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Vista aérea da fábrica da Goiaspel em Goiânia, com painéis solares na cobertura." />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json" set:html={JSON.stringify([org, ...schema])} />
+
+    <!-- Ativa as animações apenas com JS e sem preferência por movimento reduzido -->
+    <script is:inline>
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('js-motion');
+        // abertura com a logo: uma vez por sessão
+        try { if (!sessionStorage.getItem('gp-intro')) { sessionStorage.setItem('gp-intro', '1'); document.documentElement.classList.add('gp-intro'); } } catch {}
+      }
+    </script>
+  </head>
+  <body>
+    <Intro />
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <Header />
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    {!hideMobileBar && <MobileBar />}
+
+    <script>
+      import { initMotion } from '../scripts/motion';
+      initMotion();
+    </script>
+  </body>
+</html>
+
+<style>
+  .staging-bar {
+    padding: 0.4rem var(--gutter);
+    font-size: 0.75rem;
+    text-align: center;
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  main:focus { outline: none; }
+</style>

@@ -1,0 +1,172 @@
+---
+/**
+ * Portfólio filtrável com lightbox. Padrão de referência: "Gallery Grid with Lightbox" (21st.dev),
+ * reimplementado sem framework: filtros com aria-pressed, <dialog> nativo, teclado (← → Esc),
+ * foco devolvido à miniatura. Sem JS: grade completa e navegável, sem filtros.
+ */
+import { Image, getImage } from 'astro:assets';
+import { galeria, categorias, type Categoria } from '../data/galeria';
+import Icon from './Icon.astro';
+
+interface Props { initial?: Categoria | 'todas'; only?: Categoria }
+const { initial = 'todas', only } = Astro.props;
+
+const items = await Promise.all(
+  galeria.filter((g) => !only || g.cat === only).map(async (g) => {
+    const full = await getImage({ src: g.src, format: 'webp', width: g.src.width });
+    return { ...g, full: full.src };
+  }),
+);
+const count = (c: Categoria) => galeria.filter((g) => g.cat === c).length;
+const nomeCat = Object.fromEntries(categorias.map((c) => [c.id, c.nome]));
+---
+<div class="gal" data-gallery>
+  {!only && <div class="gal-filters" role="group" aria-label="Filtrar portfólio por tipo" hidden data-filters>
+    <button type="button" class="gal-f" data-filter="todas" aria-pressed={initial === 'todas' ? 'true' : 'false'}>Todas <span>{galeria.length}</span></button>
+    {categorias.map((c) => (
+      <button type="button" class="gal-f" data-filter={c.id} aria-pressed={initial === c.id ? 'true' : 'false'}>{c.nome} <span>{count(c.id)}</span></button>
+    ))}
+  </div>}
+  <p class="gal-status sr-only" aria-live="polite" data-status></p>
+
+  <ul class="gal-grid">
+    {items.map((it, i) => (
+      <li data-cat={it.cat} hidden={initial !== 'todas' && initial !== it.cat}>
+        <button type="button" class="gal-item" data-index={i} data-full={it.full} data-w={it.src.width} data-h={it.src.height} data-caption={it.alt} data-cat-name={nomeCat[it.cat]}>
+          <Image src={it.src} alt={it.alt} width={360} widths={[240, 360]} sizes="(min-width: 64rem) 16vw, (min-width: 40rem) 30vw, 46vw" loading="lazy" class="gal-img" />
+          <span class="gal-cat" aria-hidden="true">{nomeCat[it.cat]}</span>
+        </button>
+      </li>
+    ))}
+  </ul>
+
+  <dialog class="lb" data-lightbox aria-label="Visualização ampliada">
+    <div class="lb-inner">
+      <figure class="lb-fig">
+        <figcaption><span class="lb-cat" data-lb-cat></span><span data-lb-cap></span><span class="lb-count" data-lb-count></span></figcaption>
+      </figure>
+      <button type="button" class="lb-btn lb-prev" data-lb-prev aria-label="Imagem anterior"><Icon name="arrow" /></button>
+      <button type="button" class="lb-btn lb-next" data-lb-next aria-label="Próxima imagem"><Icon name="arrow" /></button>
+      <button type="button" class="lb-btn lb-close" data-lb-close aria-label="Fechar"><Icon name="close" /></button>
+    </div>
+  </dialog>
+</div>
+
+<style>
+  .gal-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+  .gal-f {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    min-height: 2.75rem; padding: 0.5rem 1rem;
+    font: inherit; font-weight: 600; font-size: 0.9375rem;
+    color: var(--color-ink); background: transparent;
+    border: 1.5px solid var(--color-line); cursor: pointer;
+    transition: background-color var(--dur-1), border-color var(--dur-1), color var(--dur-1);
+  }
+  .gal-f span { font-size: 0.8125rem; color: var(--color-ink-3); font-variant-numeric: tabular-nums; }
+  .gal-f:hover { border-color: var(--color-ink); }
+  .gal-f[aria-pressed="true"] { background: var(--color-blue-700); border-color: var(--color-blue-700); color: var(--color-white); }
+  .gal-f[aria-pressed="true"] span { color: rgb(255 255 255 / 0.75); }
+
+  .gal-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 40rem) { .gal-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 64rem) { .gal-grid { grid-template-columns: repeat(5, 1fr); } }
+  @media (min-width: 90rem) { .gal-grid { grid-template-columns: repeat(6, 1fr); } }
+  .gal-grid li[hidden] { display: none; }
+  .gal-item {
+    position: relative; display: block; width: 100%;
+    padding: 0; border: 0; background: #fff; cursor: zoom-in;
+    aspect-ratio: 1; overflow: hidden;
+  }
+  .gal-img { width: 100%; height: 100%; object-fit: contain; padding: 8%; transition: transform 700ms var(--ease-out-quart); }
+  .gal-item:hover .gal-img, .gal-item:focus-visible .gal-img { transform: scale(1.06); }
+  .gal-cat {
+    position: absolute; left: 0; bottom: 0;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--color-white); background: var(--color-blue-700);
+    transform: translateY(100%); transition: transform var(--dur-2) var(--ease-out-quart);
+  }
+  .gal-item:hover .gal-cat, .gal-item:focus-visible .gal-cat { transform: none; }
+  .gal-item:focus-visible { outline: 3px solid var(--color-blue-700); outline-offset: 2px; }
+
+  .lb { width: 100%; max-width: 100%; height: 100%; max-height: 100%; margin: 0; padding: 0; border: 0; background: rgb(11 31 69 / 0.94); color: var(--color-white); }
+  .lb::backdrop { background: rgb(11 31 69 / 0.6); }
+  .lb-inner { position: relative; display: grid; place-items: center; height: 100%; padding: 4.5rem 1rem 2rem; }
+  .lb-fig { margin: 0; display: grid; gap: 1rem; justify-items: center; max-width: min(92vw, 44rem); }
+  .lb-fig :global(img) { width: auto; max-width: 100%; max-height: 68vh; background: #fff; padding: 1.5rem; object-fit: contain; }
+  .lb-fig figcaption { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; justify-content: center; text-align: center; font-size: 1rem; }
+  .lb-cat { font-weight: 700; color: var(--gp-fibra); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8125rem; align-self: center; }
+  .lb-count { color: rgb(255 255 255 / 0.7); font-variant-numeric: tabular-nums; }
+  .lb-btn {
+    position: absolute; display: grid; place-items: center;
+    width: 3rem; height: 3rem;
+    color: var(--color-white); background: rgb(255 255 255 / 0.1);
+    border: 1.5px solid rgb(255 255 255 / 0.4); cursor: pointer;
+  }
+  .lb-btn:hover { background: var(--color-white); color: var(--color-blue-900); }
+  .lb-btn:focus-visible { outline: 3px solid var(--color-white); outline-offset: 2px; }
+  .lb-close { top: 1rem; right: 1rem; }
+  .lb-prev { left: 1rem; top: 50%; transform: translateY(-50%) rotate(180deg); }
+  .lb-next { right: 1rem; top: 50%; transform: translateY(-50%); }
+  @media (max-width: 40rem) { .lb-prev, .lb-next { top: auto; bottom: 1rem; transform: none; } .lb-prev { transform: rotate(180deg); } }
+  @media (prefers-reduced-motion: no-preference) { .lb[open] .lb-fig { animation: auto-fade 320ms var(--ease-out-quart); } }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+    const filters = root.querySelector<HTMLElement>('[data-filters]');
+    const status = root.querySelector<HTMLElement>('[data-status]')!;
+    const lis = [...root.querySelectorAll<HTMLLIElement>('li[data-cat]')];
+    const dialog = root.querySelector<HTMLDialogElement>('[data-lightbox]')!;
+    // <img> criado aqui: um <img> sem src no HTML é inválido e conta como imagem quebrada
+    const img = document.createElement('img');
+    const fig = dialog.querySelector('.lb-fig')!;
+    const cap = dialog.querySelector<HTMLElement>('[data-lb-cap]')!;
+    const cat = dialog.querySelector<HTMLElement>('[data-lb-cat]')!;
+    const cnt = dialog.querySelector<HTMLElement>('[data-lb-count]')!;
+    let current = 0;
+    let opener: HTMLElement | null = null;
+
+    if (filters) filters.hidden = false;
+    const visible = () => lis.filter((li) => !li.hidden).map((li) => li.querySelector<HTMLButtonElement>('button')!);
+
+    filters?.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-filter]');
+      if (!btn) return;
+      const f = btn.dataset.filter!;
+      filters!.querySelectorAll('[data-filter]').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      lis.forEach((li) => (li.hidden = f !== 'todas' && li.dataset.cat !== f));
+      status.textContent = `${visible().length} embalagens exibidas`;
+    });
+
+    const show = (i: number) => {
+      const list = visible();
+      current = (i + list.length) % list.length;
+      const b = list[current];
+      if (!img.isConnected) fig.prepend(img);
+      img.src = b.dataset.full!;
+      img.width = Number(b.dataset.w);
+      img.height = Number(b.dataset.h);
+      img.alt = b.dataset.caption!;
+      cap.textContent = b.dataset.caption!;
+      cat.textContent = b.dataset.catName!;
+      cnt.textContent = `${current + 1} / ${list.length}`;
+    };
+    root.querySelector('.gal-grid')!.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>('.gal-item');
+      if (!b) return;
+      opener = b;
+      show(visible().indexOf(b));
+      dialog.showModal();
+    });
+    dialog.querySelector('[data-lb-prev]')!.addEventListener('click', () => show(current - 1));
+    dialog.querySelector('[data-lb-next]')!.addEventListener('click', () => show(current + 1));
+    dialog.querySelector('[data-lb-close]')!.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => { if (e.target === dialog || (e.target as HTMLElement).classList.contains('lb-inner')) dialog.close(); });
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(current - 1);
+      if (e.key === 'ArrowRight') show(current + 1);
+    });
+    dialog.addEventListener('close', () => opener?.focus());
+  });
+</script>

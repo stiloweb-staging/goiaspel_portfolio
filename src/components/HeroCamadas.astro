@@ -1,0 +1,320 @@
+---
+/**
+ * HERO EM CAMADAS (alternativa com a FOTO REAL da fábrica) — "Da força da nossa indústria nasce a proteção de cada produto."
+ *
+ * Composição em camadas (decisão do próprio briefing: não gerar a cena num único vídeo):
+ *   céu (CSS) → fotografia REAL da fábrica (plate fixa) → papelão ondulado → mesa kraft
+ *   → 4 caixas 3D em CSS (sem texto na imagem; números em HTML) → mascote.
+ * Storyboard (s): 0–2 dolly-in da fábrica · 2–4 o papelão avança · 3,5–6,5 caixas entram e assentam
+ *   · 6–8 o mascote surge da última caixa · 8+ só microanimações (loop sem saltos).
+ * Movimento reduzido: composição final estática. Números editáveis em src/data/conteudo.ts.
+ */
+import { Image, Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+import Pending from './Pending.astro';
+import fabrica from '../assets/hero/fabrica-real.jpg';
+import onda from '../assets/hero/onda.png';
+import mascote from '../assets/hero/mascote.png';
+import { indicadores } from '../data/conteudo';
+import { site, yearsSinceFounding } from '../data/site';
+
+const byId = Object.fromEntries(indicadores.map((i) => [i.id, i]));
+const fmt = new Intl.NumberFormat('pt-BR');
+const caixas = [
+  { id: 'anos', valor: String(yearsSinceFounding()), rotulo: 'anos de mercado', cor: 'azul', status: 'validado' as const, nota: 'Calculado a partir da fundação (maio de 1992).' },
+  { id: 'caixas', valor: String(byId.caixas.valor), rotulo: 'caixas por minuto', cor: 'verde', status: byId.caixas.status, nota: byId.caixas.nota },
+  { id: 'toneladas', valor: `${fmt.format(byId.toneladas.valor)}+`, rotulo: 'toneladas de capacidade produtiva', cor: 'azul', status: byId.toneladas.status, nota: byId.toneladas.nota },
+  { id: 'area', valor: fmt.format(byId.area.valor), sufixo: 'm²', rotulo: 'de estrutura física', cor: 'verde', status: byId.area.status, nota: byId.area.nota, count: byId.area.valor },
+];
+---
+<section class="hero-cine tone-sky" aria-labelledby="t-hero">
+  <div class="sun" aria-hidden="true"></div>
+
+  <div class="container-x hc-text">
+    <p class="eyebrow">Indústria de embalagens · {site.city}-{site.state} · desde 1992</p>
+    <h1 id="t-hero" class="display hc-title kinetic" data-auto>
+      <span class="line"><span>Embalagens que protegem produtos.</span></span>
+      <span class="line" style="--line-i:1"><span class="g">E valorizam marcas.</span></span>
+    </h1>
+    <div class="hc-row" data-auto-fade style="--delay:420ms">
+      <p class="lead hc-lead">Da força da nossa indústria nasce a proteção de cada produto — do projeto à assistência técnica.</p>
+      <div class="hc-actions">
+        <a href="/orcamento/" class="btn" data-cta-primary>Solicitar orçamento <Icon name="arrow" class="arrow" /></a>
+        <a href="#solucoes" class="btn btn-ghost">Conhecer soluções</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="plate">
+      <Picture
+        src={fabrica}
+        formats={['avif', 'webp']}
+        widths={[800, 1200, 1600, 2018]}
+        sizes="(min-width: 48rem) 112vw, 230vw"
+        quality={70}
+        alt="Sede da Goiaspel em Goiânia: galpão branco e verde com o logotipo na fachada, docas com caminhões e estacionamento, cercado de vegetação."
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+    <div class="veil" aria-hidden="true"></div>
+    <div class="hc-desk" aria-hidden="true"></div>
+    <Image src={onda} alt="" widths={[700, 1200, 2191]} sizes="(min-width: 48rem) 62vw, 140vw" class="wave wave-rear" loading="eager" fetchpriority="low" aria-hidden="true" />
+    <Image src={onda} alt="" widths={[500, 900]} sizes="(min-width: 48rem) 36vw, 1px" class="wave wave-front" loading="lazy" aria-hidden="true" />
+
+    <ul class="boxes" aria-label="A Goiaspel em números">
+      {caixas.map((c, i) => (
+        <li class:list={['box', `box-${i + 1}`]} style={`--i:${i}`}>
+          <span class="b-top" aria-hidden="true"></span>
+          <span class="b-side" aria-hidden="true"></span>
+          <span class="b-shadow" aria-hidden="true"></span>
+          {i === 3 && (
+            <Image src={mascote} alt="" widths={[220, 360, 520]} sizes="(min-width: 48rem) 19vw, 34vw" class="mascote" loading="eager" fetchpriority="low" aria-hidden="true" />
+          )}
+          <div class="b-front">
+            {c.status === 'pendente' && <span class="b-pend"><Pending label="Pendente" title={c.nota} /></span>}
+            <span class:list={['num', 'b-num', `c-${c.cor}`]}>
+              <span data-count={c.count}>{c.valor}</span>{c.sufixo && <span class="b-suf">{c.sufixo}</span>}
+            </span>
+            <span class="b-label">{c.rotulo}</span>
+            <span class="b-rule" aria-hidden="true"></span>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* ---------- Céu de fim de tarde (sem imagem: leve e nítido em qualquer tela) ---------- */
+  .hero-cine {
+    --section-bg:
+      radial-gradient(60% 70% at 4% 0%, rgb(255 222 168 / 0.75), transparent 60%),
+      linear-gradient(180deg, #f3ecdf 0%, #e6eef0 46%, #d9ecf6 100%);
+    position: relative;
+    overflow: hidden;
+    padding-top: clamp(1.5rem, 3.5vw, 3rem);
+  }
+  /* véu de céu à esquerda: legibilidade do texto sobre o topo da fotografia */
+  .veil {
+    position: absolute; z-index: 2; left: 0; top: 0; width: 60%; height: 45%;
+    background: linear-gradient(90deg, #ece9df 0%, rgb(236 233 223 / 0.85) 40%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent);
+            mask-image: linear-gradient(to bottom, #000 40%, transparent);
+    pointer-events: none;
+  }
+  @media (max-width: 47.99rem) { .veil { display: none; } }
+  .sun {
+    position: absolute; left: -12vw; top: -18vw; width: 52vw; aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(255 236 200 / 0.9), rgb(255 214 150 / 0.25) 45%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ---------- Texto (HTML, acessível, sobre o céu) ---------- */
+  .hc-text { position: relative; z-index: 4; }
+  .hc-title {
+    margin-top: 1rem;
+    color: var(--color-blue-700);
+    font-size: clamp(2.3rem, 4.4vw, 4.6rem);
+    max-width: none;
+  }
+  .hc-title .g { color: var(--color-green-700); }
+  .hc-row { display: grid; gap: 1.25rem; margin-top: 1.25rem; max-width: 40rem; }
+  .hc-lead { max-width: 44ch; }
+  .hc-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+  /* ---------- Palco: tudo em cqw (escala junto com a largura) ---------- */
+  .stage {
+    position: relative;
+    container-type: inline-size;
+    width: 100%;
+    max-width: 1720px;
+    margin: clamp(0.5rem, 2vw, 1.5rem) auto 0;
+    height: 120cqw;                      /* celular */
+    overflow-x: clip;
+  }
+  @media (min-width: 48rem) { .stage { height: 34cqw; margin-top: -8cqw; } }
+
+  .plate {
+    position: absolute; z-index: 1;
+    top: 0; left: -65cqw; width: 230cqw;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 16%);
+            mask-image: linear-gradient(to bottom, transparent 0, #000 16%);
+  }
+  @media (min-width: 48rem) {
+    .plate {
+      top: 0.8cqw; left: 0; width: 100cqw;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 26%), linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+      -webkit-mask-composite: source-in;
+              mask-image: linear-gradient(to bottom, transparent 0, #000 26%), linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+              mask-composite: intersect;
+    }
+  }
+  .plate :global(img) { width: 100%; height: auto; display: block; transform-origin: 50% 70%; }
+
+  /* mesa de papelão onde as caixas assentam */
+  .hc-desk {
+    position: absolute; z-index: 2; left: 0; right: 0; bottom: 0;
+    height: 78cqw;
+    background:
+      linear-gradient(180deg, rgb(255 244 222 / 0.55) 0, transparent 1.4cqw),
+      linear-gradient(180deg, transparent 40%, rgb(70 45 20 / 0.22)),
+      url('../assets/texturas/kraft.jpg') 0 0 / 327px auto;
+    box-shadow: 0 -1px 0 rgb(120 90 55 / 0.35);
+  }
+  @media (min-width: 48rem) { .hc-desk { height: 5.4cqw; } }
+
+  /* papelão ondulado (asset fornecido) */
+  .wave { position: absolute; z-index: 3; height: auto; max-width: none; pointer-events: none; }
+  .wave-rear { width: 140cqw; left: -22cqw; top: 33cqw; filter: drop-shadow(0 1.2cqw 1.2cqw rgb(50 30 10 / 0.28)); }
+  .wave-front { display: none; }
+  @media (min-width: 48rem) {
+    .wave-rear { width: 46cqw; left: -8cqw; top: auto; bottom: 2.2cqw; }
+    .wave-front {
+      display: block; width: 28cqw; left: -6cqw; bottom: -2cqw; z-index: 5;
+      transform: scaleX(-1); filter: brightness(0.93) drop-shadow(0 1cqw 1.4cqw rgb(50 30 10 / 0.35));
+    }
+  }
+
+  /* ---------- Caixas 3D (projeção oblíqua, luz do canto superior esquerdo) ---------- */
+  .boxes {
+    list-style: none; margin: 0; padding: 0;
+    position: absolute; z-index: 4;
+    top: 50cqw; left: 4cqw; right: 7cqw;
+    display: grid; grid-template-columns: 1fr 1fr; column-gap: 8cqw; row-gap: 9cqw;
+    --dx: 3cqw; --dy: 2.6cqw;
+  }
+  .box { position: relative; height: 25cqw; }
+  .box-4 { order: 2; } .box-2 { order: 3; } .box-3 { order: 4; } /* celular: mascote na caixa do canto superior direito */
+  @media (min-width: 48rem) {
+    .boxes {
+      top: auto; left: auto; right: 4cqw; bottom: 1.4cqw;
+      display: flex; align-items: flex-end; gap: 2cqw;
+      --dx: 1.9cqw; --dy: 1.6cqw;
+    }
+    .box { order: 0 !important; }
+    .box-1 { width: 7.8cqw; height: 7.8cqw; }
+    .box-2 { width: 9.6cqw; height: 10cqw; }
+    .box-3 { width: 13.4cqw; height: 12cqw; }
+    .box-4 { width: 15.6cqw; height: 10cqw; }
+  }
+  .b-front, .b-top, .b-side {
+    position: absolute;
+    background-image: url('../assets/texturas/kraft.jpg');
+    background-size: 327px auto;
+  }
+  .b-front {
+    /* contêiner: números e rótulos escalam pela largura da caixa e cabem também na fonte de fallback */
+    container-type: inline-size;
+    z-index: 2; inset: 0;
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 0.6cqw;
+    padding: 1.6cqw 2cqw 1.8cqw 2.4cqw;
+    color: var(--gp-terra);
+    background-image:
+      linear-gradient(135deg, rgb(255 240 215 / 0.28), transparent 45%, rgb(60 35 15 / 0.18)),
+      url('../assets/texturas/kraft.jpg');
+    box-shadow: inset 0 -0.6cqw 0.8cqw -0.5cqw rgb(50 30 10 / 0.35);
+  }
+  /* borda de corte com o miolo real (como as chapas da apresentação) */
+  .b-front::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: max(4px, 0.4cqw);
+    background: url('../assets/texturas/miolo-tile.png') 0 0 / 100% auto repeat-y;
+    opacity: 0.85;
+  }
+  /* vinco da aba */
+  .b-front::after {
+    content: ""; position: absolute; left: 0; right: 0; top: 0.9cqw; height: 1px;
+    background: rgb(80 55 30 / 0.22); box-shadow: 0 1px 0 rgb(255 245 225 / 0.35);
+  }
+  .b-top {
+    z-index: 2; left: 0; bottom: 100%;
+    width: calc(100% + var(--dx)); height: var(--dy);
+    background-image: linear-gradient(rgb(255 245 228 / 0.42), rgb(255 245 228 / 0.42)), url('../assets/texturas/kraft.jpg');
+    clip-path: polygon(0 100%, var(--dx) 0, 100% 0, calc(100% - var(--dx)) 100%);
+  }
+  .b-top::after { /* encontro das abas */
+    content: ""; position: absolute; top: 50%; left: calc(var(--dx) / 2); right: calc(var(--dx) / 2); height: 1px;
+    background: rgb(90 60 30 / 0.3);
+  }
+  .b-side {
+    z-index: 2; left: 100%; bottom: 0;
+    width: var(--dx); height: calc(100% + var(--dy));
+    background-image: linear-gradient(rgb(55 32 12 / 0.4), rgb(55 32 12 / 0.48)), url('../assets/texturas/kraft.jpg');
+    clip-path: polygon(0 var(--dy), 100% 0, 100% calc(100% - var(--dy)), 0 100%);
+  }
+  .b-shadow {
+    position: absolute; z-index: 0;
+    left: -8%; right: -30%; bottom: -1.6cqw; height: 3.2cqw;
+    background: url('../assets/hero/sombra.png') center / 100% 100% no-repeat;
+    opacity: 0.9;
+  }
+  .b-num {
+    display: flex; align-items: baseline; gap: 0.25em;
+    white-space: nowrap;
+    font-size: 26cqi; line-height: 0.85;
+  }
+  .box-1 .b-num { font-size: 44cqi; }
+  .box-2 .b-num { font-size: 40cqi; }
+  .box-3 .b-num { font-size: 27cqi; }
+  .box-4 .b-num { font-size: 22cqi; }
+  .b-suf { font-size: 0.45em; }
+  .c-azul { color: var(--gp-azul); }
+  .c-verde { color: #1f5a40; } /* Verde Circular escurecido: contraste ≥ 3:1 sobre kraft (texto grande) */
+  .b-label {
+    font-variation-settings: "wdth" 75; font-weight: 750; text-transform: uppercase; letter-spacing: 0.02em;
+    font-size: clamp(10.5px, 9cqi, 15px); line-height: 1.12; max-width: 22ch;
+  }
+  .b-rule { display: block; width: 18%; height: max(2px, 0.25cqw); background: var(--gp-verde); margin-top: 0.4cqw; }
+  .b-pend { position: absolute; top: 7%; left: 9%; }
+  .b-pend :global(.pending) { font-size: 9px; padding: 0.1rem 0.35rem; }
+  @media (min-width: 48rem) {
+    .b-front { gap: 0.35cqw; padding: 1cqw 1.2cqw 1.1cqw 1.4cqw; }
+    .b-front::after { top: 0.6cqw; }
+  }
+
+  /* mascote sobre a última caixa (surge de trás da aba) */
+  .mascote {
+    position: absolute; z-index: 1;
+    bottom: calc(100% + var(--dy) * 0.55);
+    right: 4%;
+    height: 36cqw; width: auto; max-width: none;
+    transform-origin: 50% 100%;
+    filter: drop-shadow(0 0.8cqw 0.8cqw rgb(40 25 10 / 0.3));
+    transition: scale var(--dur-2) var(--ease-out-quart);
+  }
+  @media (min-width: 48rem) { .mascote { height: 17cqw; right: 6%; } }
+  .hero-cine:has([data-cta-primary]:is(:hover, :focus-visible)) .mascote { scale: 1.05; }
+
+  /* ---------- Coreografia (10 s) + loop ambiente ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js-motion) .plate :global(img) { animation: hc-dolly 9s cubic-bezier(0.22, 0.61, 0.36, 1) both; }
+    :global(.js-motion) .sun { animation: hc-sun 11s ease-in-out infinite alternate; }
+    :global(.js-motion) .wave-rear {
+      animation: hc-feed 2.4s var(--ease-in-out-cut) 1.7s both, hc-drift 8s ease-in-out 4.1s infinite alternate;
+    }
+    :global(.js-motion) .wave-front { animation: hc-feed-flip 2.2s var(--ease-in-out-cut) 2.1s both; }
+    :global(.js-motion) .box { animation: hc-land 0.95s cubic-bezier(0.2, 0.7, 0.2, 1) calc(3.5s + var(--i) * 0.45s) both; transform-origin: 50% 100%; }
+    :global(.js-motion) .b-front > :not(.b-rule) { animation: hc-fade 0.6s ease calc(4.1s + var(--i) * 0.45s) both; }
+    :global(.js-motion) .b-rule { animation: hc-grow 0.6s var(--ease-out-quart) calc(4.4s + var(--i) * 0.45s) both; transform-origin: 0 50%; }
+    :global(.js-motion) .mascote {
+      animation: hc-rise 1s cubic-bezier(0.2, 0.8, 0.25, 1.1) 6s both, hc-sway 4.6s ease-in-out 7s infinite alternate;
+    }
+  }
+  @keyframes hc-dolly { from { transform: scale(1.07) translateY(1.5%); } to { transform: none; } }
+  @keyframes hc-sun { from { opacity: 0.75; } to { opacity: 1; } }
+  @keyframes hc-feed { from { clip-path: inset(0 100% 0 0); transform: translateX(-8cqw); } to { clip-path: inset(0 0 0 0); transform: none; } }
+  @keyframes hc-feed-flip { from { clip-path: inset(0 0 0 100%); transform: scaleX(-1) translateX(6cqw); } to { clip-path: inset(0 0 0 0); transform: scaleX(-1); } }
+  @keyframes hc-drift { from { translate: 0 0; } to { translate: 0.6cqw -0.35cqw; } }
+  @keyframes hc-land {
+    0% { opacity: 0; transform: translateX(-5cqw); }
+    65% { opacity: 1; transform: translateX(0.25cqw); }
+    82% { transform: translateX(0) scaleY(0.975); }
+    100% { opacity: 1; transform: none; }
+  }
+  @keyframes hc-fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes hc-grow { from { transform: scaleX(0); } to { transform: none; } }
+  @keyframes hc-rise { from { opacity: 0; transform: translateY(42%); } to { opacity: 1; transform: none; } }
+  @keyframes hc-sway { from { rotate: -1.2deg; } to { rotate: 1.2deg; } }
+</style>

@@ -1,0 +1,17 @@
+---
+// Painel de retorno do envio (sucesso, integração pendente ou erro). Preenchido por scripts/form.ts.
+import Icon from './Icon.astro';
+import { site, whatsappLink } from '../data/site';
+---
+<div class="result" data-result hidden tabindex="-1" role="status" aria-live="polite">
+  <h2 class="result-title" data-result-title></h2>
+  <p class="result-text" data-result-text></p>
+  <div class="result-actions" data-result-fallback hidden>
+    <a class="btn btn-green" data-fallback-wa data-base={whatsappLink()} href={whatsappLink()} target="_blank" rel="noopener">
+      <Icon name="whatsapp" /> Enviar resumo pelo WhatsApp
+    </a>
+    <a class="btn btn-ghost" data-fallback-mail data-to={site.email} href={`mailto:${site.email}`}>
+      <Icon name="mail" /> Enviar por e-mail
+    </a>
+  </div>
+</div>

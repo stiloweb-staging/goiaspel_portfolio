@@ -1,0 +1,327 @@
+---
+/**
+ * Cabeçalho com a MESMA arquitetura do menu original (A Goiaspel · Produtos e serviços ·
+ * Goiaspel responde · Fale conosco), agora em mega-menu. Referência de padrão: "Rich Navigation
+ * Menu" (21st.dev), reimplementado sem framework.
+ * Acessibilidade: botões com aria-expanded/aria-controls, Esc fecha, abre por clique, teclado e hover
+ * (com intenção, para não piscar), foco nunca preso. Celular: acordeões.
+ */
+import { Image } from 'astro:assets';
+import logo from '../assets/marca/logo.png';
+import Icon from './Icon.astro';
+import { menu, R } from '../data/rotas';
+import { site, whatsappLink } from '../data/site';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+// Cartão de papelão hiper-realista do cliente (src/assets/marca/cartao-papelao.png). Sem o arquivo, cai no cartão em CSS.
+const cartaoMod = Object.values(import.meta.glob<{ default: ImageMetadata }>('../assets/marca/cartao-papelao.{png,webp,jpg}', { eager: true }))[0];
+const cartao = cartaoMod ? (await getImage({ src: cartaoMod.default, format: 'webp', width: 720, quality: 86 })).src : null;
+
+const path = Astro.url.pathname;
+const inGroup = (g: (typeof menu)[number]) => g.itens.some((i) => path === i.href);
+---
+<header class="site-header" data-header>
+  <div class="container-x bar">
+    <a href={R.home} class="brand" aria-label="Goiaspel — página inicial">
+      <Image src={logo} alt="" width={132} height={68} loading="eager" class="brand-logo" />
+    </a>
+
+    <nav class="nav-desktop" aria-label="Principal">
+      <ul class="nd-list">
+        {menu.map((g, gi) => (
+          <li class="nd-item" data-mega-item>
+            <button type="button" class="nd-trigger" aria-expanded="false" aria-controls={`mega-${gi}`} data-mega-trigger data-current={inGroup(g) ? '' : undefined}>
+              {g.label}
+              <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" /></svg>
+            </button>
+            <div class="mega" id={`mega-${gi}`} data-mega-panel hidden>
+              <div class="container-x mega-in">
+                <a class:list={['mega-feat', cartao && 'is-asset']} href={g.destaque.href} style={cartao ? `--cartao:url(${cartao})` : undefined}>
+                  <span class="mf-top">
+                    <span class="mf-eyebrow">{g.label}</span>
+                    <span class:list={["mf-title", g.destaque.titulo.length > 22 && "is-long"]}>{g.destaque.titulo}</span>
+                    <span class="num mf-n" aria-hidden="true">0{gi + 1}</span>
+                  </span>
+                  <span class="mf-bottom">
+                    <span class="mf-text">{g.destaque.texto}</span>
+                    <span class="mf-rule" aria-hidden="true"></span>
+                    <span class="mf-go">Ver mais <Icon name="arrow" /></span>
+                  </span>
+                  <span class="mf-peel" aria-hidden="true"></span>
+                </a>
+                <ul class:list={['mega-list', g.itens.length > 4 && 'cols-2']}>
+                  {g.itens.map((i) => (
+                    <li>
+                      <a href={i.href} aria-current={path === i.href ? 'page' : undefined}>
+                        <span class="ml-label">{i.label}</span>
+                        <span class="ml-desc">{i.desc}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </li>
+        ))}
+        <li class="nd-item"><a class="nd-link" href={R.contato} aria-current={path === R.contato ? 'page' : undefined}>Fale conosco</a></li>
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <a class="phone" href={`tel:${site.phoneE164}`}><Icon name="phone" class="i" /><span>{site.phoneDisplay}</span></a>
+      <a href={R.orcamento} class="btn btn-sm cta" aria-current={path === R.orcamento ? 'page' : undefined}>Solicitar orçamento</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu-mobile" data-menu-toggle>
+        <Icon name="menu" class="i i-open" />
+        <Icon name="close" class="i i-close" />
+        <span class="sr-only" data-menu-label>Abrir menu</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="menu-mobile" class="menu-mobile" data-menu hidden>
+    <nav aria-label="Principal (celular)" class="container-x">
+      <ul class="mm-list">
+        <li><a class="mm-top" href={R.home}>Início</a></li>
+        {menu.map((g) => (
+          <li>
+            <details class="mm-group" open={inGroup(g)}>
+              <summary class="mm-top">{g.label}<span class="mm-plus" aria-hidden="true"></span></summary>
+              <ul class="mm-sub">
+                {g.itens.map((i) => <li><a href={i.href} aria-current={path === i.href ? 'page' : undefined}>{i.label}</a></li>)}
+              </ul>
+            </details>
+          </li>
+        ))}
+        <li><a class="mm-top" href={R.contato}>Fale conosco</a></li>
+      </ul>
+      <a href={R.orcamento} class="btn btn-green m-cta">Solicitar orçamento <Icon name="arrow" class="arrow" /></a>
+      <div class="m-contact">
+        <a href={`tel:${site.phoneE164}`}><Icon name="phone" class="i" />{site.phoneDisplay}</a>
+        <a href={whatsappLink()} target="_blank" rel="noopener"><Icon name="whatsapp" class="i" />WhatsApp</a>
+        <a href={`mailto:${site.email}`}><Icon name="mail" class="i" />{site.email}</a>
+        <a href={`${R.contato}#nos-ligamos`}><Icon name="phone" class="i" />Prefere? Nós ligamos para você</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--gp-papel) 94%, transparent);
+    backdrop-filter: saturate(1.2) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur-2), background-color var(--dur-2);
+  }
+  .site-header.is-scrolled, .site-header.is-open { border-bottom-color: var(--color-line); background: var(--gp-papel); }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: var(--header-h); }
+  .brand { display: block; flex: none; }
+  .brand-logo { width: 112px; height: auto; }
+  @media (min-width: 64rem) { .brand-logo { width: 124px; } }
+
+  /* ---------- Desktop ---------- */
+  .nav-desktop { display: none; align-self: stretch; }
+  .nd-list { display: flex; height: 100%; list-style: none; margin: 0; padding: 0; }
+  .nd-item { display: flex; align-items: stretch; }
+  .nd-trigger, .nd-link {
+    position: relative; display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0 0.85rem;
+    font: inherit; font-weight: 560; font-size: 0.95rem;
+    color: var(--color-ink-2); text-decoration: none;
+    background: none; border: 0; cursor: pointer;
+    transition: color var(--dur-1);
+  }
+  .nd-trigger::after, .nd-link::after {
+    content: ""; position: absolute; left: 0.85rem; right: 0.85rem; bottom: 1.1rem; height: 2px;
+    background: var(--gp-verde); transform: scaleX(0); transform-origin: left;
+    transition: transform var(--dur-2) var(--ease-out-quart);
+  }
+  .nd-trigger:hover, .nd-link:hover, .nd-trigger[aria-expanded="true"] { color: var(--color-ink); }
+  .nd-trigger[aria-expanded="true"]::after, .nd-trigger[data-current]::after, .nd-link[aria-current]::after, .nd-link:hover::after { transform: scaleX(1); }
+  .chev { width: 0.75rem; height: 0.75rem; transition: transform var(--dur-2) var(--ease-out-quart); }
+  .nd-trigger[aria-expanded="true"] .chev { transform: rotate(180deg); }
+
+  .mega {
+    position: absolute; left: 0; right: 0; top: 100%;
+    background: var(--gp-papel);
+    border-top: 1px solid var(--color-line);
+    box-shadow: 0 24px 40px -24px rgb(59 48 42 / 0.35);
+  }
+  .mega[hidden] { display: none; }
+  .mega-in { display: grid; grid-template-columns: 20rem 1fr; gap: 2.5rem; padding-block: 2rem 2.25rem; }
+  /* Cartão de papelão (asset de referência do cliente): borda de miolo ondulado, topo em Azul
+     Estrutura com fibra, base em papel, chanfro no canto e canto inferior descolado mostrando as ondas. */
+  .mega-feat {
+    --ch: 26px;
+    position: relative; display: grid; grid-template-rows: auto 1fr;
+    padding: 6px; /* espessura da borda de papelão */
+    text-decoration: none;
+    /* borda: miolo visto de lado (ondas finas em kraft) */
+    background:
+      radial-gradient(circle at 50% 100%, transparent 2.1px, #9c774d 2.4px, #9c774d 3px, transparent 3.3px) 0 0 / 7px 6px,
+      #d4b083;
+    clip-path: polygon(0 0, calc(100% - var(--ch)) 0, 100% var(--ch), 100% 100%, 0 100%);
+    filter: drop-shadow(0 10px 14px rgb(11 33 53 / 0.25));
+    transition: transform var(--dur-2) var(--ease-out-quart);
+  }
+  .mega-feat:hover { transform: translateY(-2px); }
+  /* Com o asset: a imagem é o cartão inteiro (borda, papel, chanfro e canto descolado);
+     o texto é posicionado nas áreas azul (topo ~50%) e papel (base). */
+  .mega-feat.is-asset {
+    aspect-ratio: 1 / 1; padding: 0; clip-path: none;
+    background: var(--cartao) center / 100% 100% no-repeat;
+    grid-template-rows: 51% 1fr;
+    filter: drop-shadow(0 14px 18px rgb(11 33 53 / 0.28));
+  }
+  .mega-feat.is-asset .mf-top, .mega-feat.is-asset .mf-bottom { background: none; clip-path: none; padding: 9% 10% 7% 11%; }
+  .mega-feat.is-asset .mf-title { font-size: 1.7rem; line-height: 0.98; max-width: 12ch; }
+  .mega-feat.is-asset .mf-title.is-long { font-size: 1.5rem; max-width: 14ch; }
+  .mega-feat.is-asset .mf-n { right: 9%; bottom: 6%; font-size: 5rem; color: rgb(255 255 255 / 0.07); }
+  .mega-feat.is-asset .mf-top { align-content: start; gap: 0.6rem; overflow: hidden; }
+  .mega-feat.is-asset .mf-bottom { padding-top: 7%; padding-right: 28%; gap: 0.55rem; }
+  .mega-feat.is-asset .mf-text { font-size: 1.05rem; }
+  .mega-feat.is-asset .mf-peel { display: none; }
+  .mf-top, .mf-bottom { position: relative; display: grid; gap: 0.35rem; padding: 1.2rem 1.3rem; }
+  .mf-top {
+    color: var(--gp-branco);
+    background: var(--tex-fibra) 0 0 / 260px auto, var(--gp-azul);
+    background-blend-mode: soft-light;
+    clip-path: polygon(0 0, calc(100% - var(--ch) + 4px) 0, 100% calc(var(--ch) - 4px), 100% 100%, 0 100%);
+    overflow: hidden;
+  }
+  .mf-bottom {
+    align-content: start;
+    color: var(--gp-terra);
+    background: var(--tex-fibra) 0 0 / 260px auto, #f4efe4;
+    background-blend-mode: soft-light;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3.2rem), calc(100% - 3.2rem) 100%, 0 100%);
+  }
+  .mf-eyebrow { font-size: 0.72rem; font-weight: 650; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gp-fibra); }
+  .mf-title { position: relative; z-index: 1; font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.75rem; line-height: 1; text-transform: uppercase; max-width: 13ch; text-wrap: balance; }
+  .mf-n { position: absolute; right: 0.6rem; bottom: -0.35rem; font-size: 5.5rem; line-height: 1; color: rgb(255 255 255 / 0.08); }
+  .mf-text { font-size: 0.975rem; line-height: 1.35; max-width: 22ch; }
+  .mf-rule { display: block; width: 2.6rem; height: 3px; background: var(--gp-verde); margin-top: 0.3rem; }
+  .mf-go { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 0.15rem; font-weight: 750; font-size: 0.975rem; color: var(--gp-azul); }
+  .mf-go :global(svg) { width: 1rem; height: 1rem; transition: transform var(--dur-2) var(--ease-out-quart); }
+  .mega-feat:hover .mf-go :global(svg) { transform: translateX(4px); }
+  /* canto descolado: aba de papel dobrada sobre o miolo exposto */
+  .mf-peel {
+    position: absolute; right: 6px; bottom: 6px; width: 3.2rem; height: 3.2rem;
+    background: repeating-linear-gradient(135deg, #c79f6e 0 3px, #9c774d 3px 4.5px, #d8b78b 4.5px 7px);
+  }
+  .mf-peel::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(315deg, #fbf8f2 0%, #efe7d8 45%, #d9cdb8 100%);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+    border-radius: 0 0 0 2px;
+    filter: drop-shadow(2px 2px 2px rgb(0 0 0 / 0.25));
+    transform-origin: 0 0;
+    transition: transform var(--dur-2) var(--ease-out-quart);
+  }
+  .mega-feat:hover .mf-peel::after { transform: scale(1.12); }
+  .mega-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem 2rem; align-content: start; }
+  .mega-list.cols-2 { grid-template-columns: 1fr 1fr; }
+  .mega-list a {
+    display: grid; gap: 0.1rem; padding: 0.75rem 0.9rem 0.8rem;
+    text-decoration: none; color: var(--color-ink);
+    border-left: 2px solid transparent;
+    transition: background-color var(--dur-1), border-color var(--dur-1);
+  }
+  .mega-list a:hover, .mega-list a:focus-visible { background: var(--gp-branco); border-left-color: var(--gp-verde); }
+  .mega-list a[aria-current="page"] { border-left-color: var(--gp-azul); }
+  .ml-label { font-weight: 650; }
+  .ml-desc { font-size: 0.875rem; color: var(--color-ink-3); }
+  @media (prefers-reduced-motion: no-preference) {
+    .mega:not([hidden]) .mega-in { animation: mega-in 280ms var(--ease-out-quart); }
+    .mega:not([hidden]) .mega-list li { animation: mega-in 360ms var(--ease-out-quart) both; }
+    .mega:not([hidden]) .mega-list li:nth-child(2) { animation-delay: 30ms; }
+    .mega:not([hidden]) .mega-list li:nth-child(3) { animation-delay: 60ms; }
+    .mega:not([hidden]) .mega-list li:nth-child(4) { animation-delay: 90ms; }
+    .mega:not([hidden]) .mega-list li:nth-child(n+5) { animation-delay: 120ms; }
+  }
+  @keyframes mega-in { from { opacity: 0; transform: translateY(-6px); } }
+
+  .actions { display: flex; align-items: center; gap: 0.75rem; }
+  .phone { display: none; align-items: center; gap: 0.5rem; font-weight: 600; text-decoration: none; color: var(--color-ink); white-space: nowrap; }
+  .phone .i { width: 1.1rem; height: 1.1rem; color: var(--gp-verde); }
+  .cta { display: none; }
+  .menu-btn { display: inline-grid; place-items: center; width: 3rem; height: 3rem; border: 1.5px solid var(--color-ink); background: transparent; color: var(--color-ink); cursor: pointer; }
+  .menu-btn .i { width: 1.4rem; height: 1.4rem; grid-area: 1 / 1; transition: opacity var(--dur-1), transform var(--dur-2) var(--ease-out-quart); }
+  .menu-btn .i-close { opacity: 0; transform: rotate(-45deg); }
+  .menu-btn[aria-expanded="true"] .i-open { opacity: 0; transform: rotate(45deg); }
+  .menu-btn[aria-expanded="true"] .i-close { opacity: 1; transform: none; }
+  @media (min-width: 40rem) { .cta { display: inline-flex; } }
+  @media (min-width: 64rem) { .nav-desktop { display: block; } .menu-btn { display: none; } }
+  @media (min-width: 82rem) { .phone { display: inline-flex; } }
+
+  /* ---------- Celular ---------- */
+  .menu-mobile { position: fixed; inset: var(--header-h) 0 0 0; overflow-y: auto; background: var(--gp-papel); border-top: 1px solid var(--color-line); padding-block: 1rem 3rem; }
+  .menu-mobile[hidden] { display: none; }
+  .mm-list { list-style: none; margin: 0; padding: 0; }
+  .mm-list > li { border-bottom: 1px solid var(--color-line); }
+  .mm-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 0; cursor: pointer; list-style: none;
+    font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.6rem; line-height: 1; text-transform: uppercase;
+    color: var(--color-ink); text-decoration: none;
+  }
+  .mm-top::-webkit-details-marker { display: none; }
+  .mm-plus { position: relative; width: 1rem; height: 1rem; }
+  .mm-plus::before, .mm-plus::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: var(--gp-verde); transition: transform var(--dur-2); }
+  .mm-plus::after { transform: rotate(90deg); }
+  .mm-group[open] .mm-plus::after { transform: none; }
+  .mm-sub { list-style: none; margin: 0 0 1rem; padding: 0 0 0 0.75rem; border-left: 2px solid var(--gp-verde); }
+  .mm-sub a { display: block; padding: 0.6rem 0.25rem; color: var(--color-ink-2); text-decoration: none; font-weight: 560; }
+  .mm-sub a[aria-current="page"] { color: var(--gp-azul); font-weight: 700; }
+  .m-cta { width: 100%; margin-top: 1.75rem; }
+  .m-contact { display: grid; gap: 0.25rem; margin-top: 1.5rem; }
+  .m-contact a { display: flex; align-items: center; gap: 0.75rem; min-height: 3rem; font-weight: 560; text-decoration: none; color: var(--color-ink); }
+  .m-contact .i { width: 1.25rem; height: 1.25rem; color: var(--gp-verde); }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const sentinel = document.createElement('div');
+  sentinel.style.cssText = 'position:absolute;top:0;height:1px;width:1px;pointer-events:none';
+  document.body.prepend(sentinel);
+  new IntersectionObserver(([e]) => header.classList.toggle('is-scrolled', !e.isIntersecting)).observe(sentinel);
+
+  // ---------- Mega-menu ----------
+  const items = [...header.querySelectorAll<HTMLElement>('[data-mega-item]')];
+  let timer = 0;
+  const setMega = (item: HTMLElement | null) => {
+    items.forEach((it) => {
+      const open = it === item;
+      it.querySelector('[data-mega-trigger]')!.setAttribute('aria-expanded', String(open));
+      (it.querySelector('[data-mega-panel]') as HTMLElement).hidden = !open;
+    });
+    header.classList.toggle('is-open', Boolean(item));
+  };
+  items.forEach((it) => {
+    const trigger = it.querySelector<HTMLButtonElement>('[data-mega-trigger]')!;
+    trigger.addEventListener('click', () => setMega(trigger.getAttribute('aria-expanded') === 'true' ? null : it));
+    it.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'mouse') return; clearTimeout(timer); timer = window.setTimeout(() => setMega(it), 90); });
+    it.addEventListener('pointerleave', (e) => { if (e.pointerType !== 'mouse') return; clearTimeout(timer); timer = window.setTimeout(() => setMega(null), 220); });
+    it.addEventListener('focusout', (e) => { if (!it.contains(e.relatedTarget as Node)) setMega(null); });
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const open = items.find((it) => it.querySelector('[aria-expanded="true"]'));
+    if (open) { setMega(null); open.querySelector<HTMLElement>('[data-mega-trigger]')!.focus(); }
+  });
+  document.addEventListener('click', (e) => { if (!header.contains(e.target as Node)) setMega(null); });
+
+  // ---------- Menu do celular ----------
+  const toggle = header.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+  const menu = header.querySelector<HTMLElement>('[data-menu]')!;
+  const label = header.querySelector<HTMLElement>('[data-menu-label]')!;
+  const setOpen = (open: boolean) => {
+    toggle.setAttribute('aria-expanded', String(open));
+    menu.hidden = !open;
+    document.documentElement.style.overflow = open ? 'hidden' : '';
+    label.textContent = open ? 'Fechar menu' : 'Abrir menu';
+  };
+  toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') { setOpen(false); toggle.focus(); } });
+  matchMedia('(min-width: 64rem)').addEventListener('change', (m) => m.matches && setOpen(false));
+</script>

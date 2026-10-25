@@ -1,0 +1,90 @@
+---
+import { Picture } from 'astro:assets';
+import equipe from '../assets/fotos/equipe-atendimento.jpg';
+import impressora from '../assets/fotos/impressora-flexo.jpg';
+import aerea from '../assets/fotos/fabrica-aerea.jpg';
+import Icon from './Icon.astro';
+import { site, whatsappLink } from '../data/site';
+import type { ImageMetadata } from 'astro';
+
+interface Props { image?: ImageMetadata; alt?: string }
+// rodízio determinístico por página: cada rota tem sempre a mesma foto, mas páginas vizinhas variam
+// só fotos com resolução suficiente para a coluna sangrada (≥ 1.200 px de altura)
+const pool = [
+  { src: equipe, pos: '0% 45%', alt: 'Equipe comercial da Goiaspel conversando com uma cliente na recepção da empresa.' },
+  { src: impressora, pos: '50% 40%', alt: 'Impressora flexográfica no parque fabril da Goiaspel.' },
+  { src: aerea, pos: '50% 70%', alt: 'Sede da Goiaspel vista do alto, com painéis solares na cobertura e o logotipo na fachada.' },
+];
+const h = [...Astro.url.pathname].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+const pick = pool[h % pool.length];
+const { image = pick.src, alt = pick.alt } = Astro.props;
+const pos = Astro.props.image ? '50% 50%' : pick.pos;
+---
+<section class="cta on-dark tone-teal fold-flap-r" aria-labelledby="t-cta">
+  <div class="container-x cta-grid">
+    <div class="cta-text">
+      <p class="eyebrow">Próximo passo</p>
+      <h2 id="t-cta" class="display display-lg kinetic">
+        <span class="line"><span>Vamos desenvolver</span></span>
+        <span class="line"><span>sua próxima</span></span>
+        <span class="line"><span class="g">embalagem?</span></span>
+      </h2>
+      <p class="lead">Conte o que você precisa embalar. Nossa equipe retorna com uma proposta técnica e comercial.</p>
+      <div class="cta-actions">
+        <a href="/orcamento/" class="btn btn-light">Solicitar orçamento <Icon name="arrow" class="arrow" /></a>
+        <a href={whatsappLink('Olá! Gostaria de falar com a equipe comercial da Goiaspel.')} class="btn btn-ghost-light" target="_blank" rel="noopener">
+          <Icon name="whatsapp" /> Conversar no WhatsApp
+        </a>
+      </div>
+      <p class="cta-contact">
+        <a href={`tel:${site.phoneE164}`}><Icon name="phone" /> {site.phoneDisplay}</a>
+        <span class="sep" aria-hidden="true"></span>
+        <a href={`mailto:${site.email}`}><Icon name="mail" /> {site.email}</a>
+      </p>
+    </div>
+    <figure class="cta-photo">
+      <Picture src={image} formats={['avif', 'webp']} widths={[640, 960, 1365]} sizes="(min-width: 64rem) 58vw, 100vw" alt={alt} loading="lazy" style={`object-position:${pos}`} />
+      <span class="cta-lines" aria-hidden="true"><i></i><i></i></span>
+    </figure>
+  </div>
+</section>
+
+<style>
+  /* foto sangrando à direita, fundida ao teal por um degradê diagonal (sem moldura nem recorte duro) */
+  .cta { position: relative; overflow: hidden; }
+  .cta-grid { display: grid; padding-block: clamp(4rem, 8vw, 7rem) 0; }
+  .cta-text { position: relative; z-index: 1; }
+  .cta-text > * { max-width: 34rem; }
+  h2 { margin-top: 1.25rem; }
+  .g { color: var(--gp-fibra); }
+  .lead { margin-top: 1.5rem; max-width: 30rem; }
+  .cta-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+  .cta-contact { overflow-wrap: anywhere; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.25rem; margin-top: 1.75rem; color: rgb(255 255 255 / 0.85); }
+  .cta-contact a { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--color-white); text-decoration: none; }
+  .cta-contact a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .cta-contact :global(svg) { width: 1.15rem; height: 1.15rem; opacity: 0.85; }
+  .cta-contact .sep { width: 1px; height: 1.1rem; background: rgb(255 255 255 / 0.4); }
+
+  .cta-photo { position: relative; margin: 2.5rem 0 0; height: min(78vw, 26rem); }
+  .cta-photo :global(picture) { display: contents; }
+  .cta-photo :global(img) {
+    width: 100%; height: 100%; object-fit: cover;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 22%); mask-image: linear-gradient(180deg, transparent 0, #000 22%);
+  }
+  .cta-lines { display: none; }
+
+  @media (min-width: 64rem) {
+    .cta-grid { padding-block: clamp(5rem, 9vw, 8rem) calc(clamp(5rem, 9vw, 8rem) + var(--fold-h, 0px)); }
+    .cta-text { max-width: 46%; }
+    .cta-photo { position: absolute; inset: 0 0 0 auto; width: 58%; height: auto; margin: 0; z-index: 0; }
+    .cta-photo :global(img) {
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, rgb(0 0 0 / 0.6) 7%, #000 15%);
+      mask-image: linear-gradient(90deg, transparent 0, rgb(0 0 0 / 0.6) 7%, #000 15%);
+    }
+    /* dois filetes diagonais na emenda, como cortes de faca */
+    .cta-lines { display: block; position: absolute; inset: 0; pointer-events: none; }
+    .cta-lines i { position: absolute; width: 1.5px; background: rgb(255 255 255 / 0.55); transform: rotate(9deg); transform-origin: top; }
+    .cta-lines i:nth-child(1) { left: 14%; top: 4%; height: 26%; }
+    .cta-lines i:nth-child(2) { left: 7%; top: 44%; height: 30%; background: rgb(255 255 255 / 0.35); }
+  }
+</style>

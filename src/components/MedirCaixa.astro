@@ -1,0 +1,150 @@
+---
+/**
+ * Guia "Como medir sua caixa": caixa aberta ilustrada (vetor, cores do kraft da paleta), com cotas
+ * C · L · A e etiquetas; lista com ícones e cartão "Ordem das medidas". As cotas se desenham ao entrar
+ * na tela; com movimento reduzido aparecem prontas.
+ */
+import Icon from './Icon.astro';
+
+// borda ondulada (miolo) ao longo de um segmento — usada nas abas para dar materialidade ao papelão
+function flute(x1: number, y1: number, x2: number, y2: number, n: number, amp = 2.6) {
+  const dx = (x2 - x1) / n, dy = (y2 - y1) / n;
+  const len = Math.hypot(dx, dy), nx = (-dy / len) * amp, ny = (dx / len) * amp;
+  let d = `M${x1} ${y1}`;
+  for (let i = 0; i < n; i++) {
+    const cx = x1 + dx * (i + 0.5) + (i % 2 ? -nx : nx), cy = y1 + dy * (i + 0.5) + (i % 2 ? -ny : ny);
+    d += ` Q${cx.toFixed(1)} ${cy.toFixed(1)} ${(x1 + dx * (i + 1)).toFixed(1)} ${(y1 + dy * (i + 1)).toFixed(1)}`;
+  }
+  return d;
+}
+const itens = [
+  { l: 'C', t: 'Comprimento', p: 'O maior lado da abertura.', cor: 'azul', icon: 'h' },
+  { l: 'L', t: 'Largura', p: 'O menor lado da abertura.', cor: 'verde', icon: 'd' },
+  { l: 'A', t: 'Altura', p: 'Do fundo até a abertura.', cor: 'azul', icon: 'v' },
+];
+const setas = {
+  h: '<path d="M4 12h16M7.5 8.5 4 12l3.5 3.5M16.5 8.5 20 12l-3.5 3.5"/>',
+  d: '<path d="M6 18 18 6M8.5 18H6v-2.5M15.5 6H18v2.5"/>',
+  v: '<path d="M12 4v16M8.5 7.5 12 4l3.5 3.5M8.5 16.5 12 20l3.5-3.5"/>',
+};
+---
+<div class="mc">
+  <div class="mc-text">
+    <p class="eyebrow">Guia rápido</p>
+    <h2 id="t-medir" class="display display-md mc-title" data-reveal>Como medir<br /><span class="g">sua caixa</span></h2>
+    <p class="mc-lead" data-reveal>Meça sempre por dentro, em milímetros, e informe nessa ordem: <strong>C × L × A</strong>.</p>
+    <ul class="mc-list" data-reveal-group>
+      {itens.map((i) => (
+        <li data-reveal>
+          <span class:list={['mc-ico', `c-${i.cor}`]}><svg viewBox="0 0 24 24" aria-hidden="true" set:html={setas[i.icon as keyof typeof setas]} /></span>
+          <span><strong class={`t-${i.cor}`}><span class="mc-l">{i.l} ·</span> {i.t}</strong><span class="mc-p">{i.p}</span></span>
+        </li>
+      ))}
+    </ul>
+    <div class="mc-card" data-reveal>
+      <span class="mc-card-ico"><Icon name="box" /></span>
+      <span>
+        <span class="mc-card-k">Ordem das medidas</span>
+        <span class="num mc-order"><span class="t-azul">C</span><i>×</i><span class="t-verde">L</span><i>×</i><span class="t-azul">A</span></span>
+      </span>
+    </div>
+  </div>
+
+  <figure class="mc-fig" aria-labelledby="mc-cap">
+    <svg viewBox="0 0 720 540" role="img" aria-labelledby="mc-title-svg" class="mc-svg" data-flute>
+      <title id="mc-title-svg">Caixa de papelão aberta com as medidas internas: comprimento (C) na frente, largura (L) na lateral e altura (A) na vertical</title>
+      <defs>
+        <linearGradient id="mc-front" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d6b48a" /><stop offset="1" stop-color="#c49c6c" /></linearGradient>
+        <linearGradient id="mc-side" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b38a5b" /><stop offset="1" stop-color="#a27a4e" /></linearGradient>
+        <linearGradient id="mc-in" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8f6b44" /><stop offset="1" stop-color="#a98157" /></linearGradient>
+        <linearGradient id="mc-flap" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dcbb92" /><stop offset="1" stop-color="#c9a275" /></linearGradient>
+        <radialGradient id="mc-shadow"><stop offset="0" stop-color="#3b302a" stop-opacity=".28" /><stop offset="1" stop-color="#3b302a" stop-opacity="0" /></radialGradient>
+        <marker id="mc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="context-stroke" /></marker>
+      </defs>
+
+      <!-- folha da marca, decorativa, ao fundo -->
+      <path class="mc-leaf" d="M520 30c120 0 190 70 190 170-110 0-190-60-190-170z" />
+
+      <ellipse cx="420" cy="452" rx="300" ry="34" fill="url(#mc-shadow)" />
+
+      <!-- abertura e parede interna do fundo -->
+      <polygon points="190,210 320,148 650,148 520,210" fill="url(#mc-in)" />
+      <polygon points="320,148 650,148 650,176 320,176" fill="#9c774d" opacity=".55" />
+      <!-- aba esquerda (presa à borda de trás-esquerda) -->
+      <polygon points="190,210 320,148 255,62 112,116" fill="url(#mc-flap)" />
+      <path d={flute(112, 116, 255, 62, 22)} class="mc-flute" />
+      <!-- aba direita -->
+      <polygon points="520,210 650,148 712,196 600,268" fill="url(#mc-flap)" />
+      <path d={flute(600, 268, 712, 196, 18)} class="mc-flute" />
+      <!-- faces -->
+      <polygon points="520,210 650,148 650,372 520,436" fill="url(#mc-side)" />
+      <rect x="190" y="210" width="330" height="226" fill="url(#mc-front)" />
+      <path d={flute(190, 210, 520, 210, 52, 2)} class="mc-flute" />
+      <path d={flute(520, 210, 650, 148, 22, 2)} class="mc-flute" />
+      <!-- fita/vinco -->
+      <line x1="190" y1="212" x2="520" y2="212" stroke="#8a6a45" stroke-width="1.2" opacity=".6" />
+      <line x1="520" y1="210" x2="520" y2="436" stroke="#8a6a45" stroke-width="1" opacity=".5" />
+
+      <!-- cotas -->
+      <g class="mc-dim c-azul">
+        <path d="M190 210H140M190 436H140" class="mc-ext" />
+        <line x1="154" y1="214" x2="154" y2="432" class="mc-line" marker-start="url(#mc-arrow)" marker-end="url(#mc-arrow)" pathLength="1" />
+        <rect x="128" y="300" width="52" height="46" rx="10" class="mc-pill" /><text x="154" y="333" class="mc-tag">A</text>
+      </g>
+      <g class="mc-dim c-azul">
+        <path d="M190 436V492M520 436V492" class="mc-ext" />
+        <line x1="194" y1="478" x2="516" y2="478" class="mc-line" marker-start="url(#mc-arrow)" marker-end="url(#mc-arrow)" pathLength="1" />
+        <rect x="329" y="455" width="52" height="46" rx="10" class="mc-pill" /><text x="355" y="488" class="mc-tag">C</text>
+      </g>
+      <g class="mc-dim c-verde">
+        <path d="M520 436 548 474M650 372 678 410" class="mc-ext" />
+        <line x1="546" y1="466" x2="670" y2="404" class="mc-line" marker-start="url(#mc-arrow)" marker-end="url(#mc-arrow)" pathLength="1" />
+        <rect x="604" y="438" width="52" height="46" rx="10" class="mc-pill" /><text x="630" y="471" class="mc-tag">L</text>
+      </g>
+    </svg>
+    <figcaption id="mc-cap" class="sr-only">C é o comprimento, L a largura e A a altura, medidos por dentro da caixa.</figcaption>
+  </figure>
+</div>
+
+<style>
+  .mc { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 64rem) { .mc { grid-template-columns: 0.85fr 1.15fr; gap: 3rem; } }
+  .mc-title { margin-top: 1rem; color: var(--gp-azul); }
+  .mc-title .g { color: var(--gp-verde); }
+  .mc-lead { margin-top: 1.25rem; font-size: 1.1875rem; color: var(--color-ink-2); max-width: 32ch; }
+  .mc-lead strong { color: var(--gp-azul); }
+  .mc-list { list-style: none; margin: 1.75rem 0 0; padding: 0; display: grid; gap: 1rem; }
+  .mc-list li { display: grid; grid-template-columns: 3.25rem 1fr; gap: 1rem; align-items: center; }
+  .mc-ico { display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 50%; color: #fff; }
+  .mc-ico svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .mc-ico.c-azul { background: var(--gp-azul); }
+  .mc-ico.c-verde { background: var(--gp-verde); }
+  .mc-list strong { display: block; font-size: 1.15rem; font-weight: 750; }
+  .mc-l { color: var(--color-ink-3); font-weight: 600; }
+  .mc-p { display: block; color: var(--color-ink-2); }
+  .t-azul { color: var(--gp-azul); }
+  .t-verde { color: var(--gp-verde); }
+  .mc-card { display: flex; align-items: center; gap: 1.25rem; margin-top: 2rem; padding: 1.1rem 1.5rem; background: var(--gp-branco); border: 1px solid var(--color-line); }
+  .mc-card-ico { display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 50%; background: var(--color-green-100); color: var(--gp-verde); flex: none; }
+  .mc-card-ico :global(svg) { width: 2rem; height: 2rem; }
+  .mc-card-k { display: block; font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gp-verde); }
+  .mc-order { display: flex; align-items: baseline; gap: 0.6rem; font-size: 3.25rem; }
+  .mc-order i { font-style: normal; font-size: 0.55em; color: var(--color-kraft-deep); }
+
+  .mc-fig { margin: 0; }
+  .mc-svg { width: 100%; height: auto; overflow: visible; }
+  .mc-leaf { fill: var(--gp-fibra); opacity: 0.32; }
+  .mc-flute { fill: none; stroke: #7a5a37; stroke-width: 1.6; opacity: 0.75; }
+  .mc-dim { color: var(--gp-azul); }
+  .mc-dim.c-verde { color: var(--gp-verde); }
+  .mc-ext { stroke: var(--gp-terra); stroke-width: 1.2; stroke-dasharray: 5 5; opacity: 0.55; fill: none; }
+  .mc-line { stroke: currentColor; stroke-width: 3; }
+  .mc-pill { fill: currentColor; }
+  .mc-tag { fill: #fff; font-family: var(--font-sans); font-weight: 800; font-size: 28px; text-anchor: middle; }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js-motion) [data-flute] .mc-line { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1s var(--ease-in-out-cut); }
+    :global(.js-motion) [data-flute] .mc-dim:nth-of-type(2) .mc-line { transition-delay: 0.2s; }
+    :global(.js-motion) [data-flute] .mc-dim:nth-of-type(3) .mc-line { transition-delay: 0.4s; }
+    :global(.js-motion) [data-flute].is-in .mc-line { stroke-dashoffset: 0; }
+  }
+</style>

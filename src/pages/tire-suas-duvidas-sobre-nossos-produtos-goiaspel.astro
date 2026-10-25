@@ -1,0 +1,159 @@
+---
+import TiposPapelao from '../components/TiposPapelao.astro';
+import MedirCaixa from '../components/MedirCaixa.astro';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import Pending from '../components/Pending.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+
+interface Faq { q: string; a: string; pending?: string }
+const faq: Faq[] = [
+  {
+    q: 'Como faço a primeira compra?',
+    a: 'Envie as dimensões internas da caixa (comprimento × largura × altura), a quantidade e o tipo de impressão pelo formulário de orçamento ou WhatsApp. Se não tiver as medidas, nossa equipe comercial pode visitar sua empresa para definir a medida e o tipo de papelão ideal para o produto.',
+  },
+  {
+    q: 'Como defino as dimensões da embalagem?',
+    a: 'Conhecer o produto e como ele será acomodado dentro da caixa é suficiente para chegar às dimensões básicas e ao tipo de papel. Use sempre as medidas internas, em milímetros. Veja abaixo como medir.',
+  },
+  {
+    q: 'Quantas cores posso imprimir na caixa?',
+    a: 'Na flexografia, a impressão é feita diretamente no papelão com clichê e tintas à base d’água, em até 3 cores. Para imagens e muitas cores, a policromia imprime em cartão acoplado ao papelão. Nossa equipe comercial e o setor de arte ajudam a escolher o processo.',
+    pending: 'Limite de 3 cores: PDF p. 4 e FAQ do site atual.',
+  },
+  {
+    q: 'A Goiaspel oferece suporte técnico?',
+    a: 'Sim. Antes da venda, a equipe coleta os dados do produto, desenvolve e testa amostras. Depois da entrega, acompanhamos o desempenho das embalagens na operação — manuseio, estocagem e empilhamento — e propomos melhorias.',
+  },
+  {
+    q: 'Existe pedido mínimo?',
+    a: 'Sim, há uma quantidade mínima por referência ou medida. As condições vigentes são informadas pela equipe comercial no orçamento.',
+    pending: 'O site atual informa “R$ 2.500,00 por referência”. Valor não republicado até confirmação.',
+  },
+  {
+    q: 'Preciso de poucas caixas. É possível?',
+    a: 'Consulte nossa equipe: pode haver medidas padrão disponíveis que atendam ao seu produto.',
+    pending: 'O site atual menciona “medidas padrão a pronta entrega”. Confirmar se o serviço continua ativo.',
+  },
+  {
+    q: 'A umidade afeta a resistência da caixa?',
+    a: 'Sim, significativamente. O papelão ondulado perde resistência em ambientes úmidos, por isso medidas que evitem a umidade na estocagem e no transporte trazem ganhos de desempenho e de custo. Informe no orçamento se a embalagem ficará em câmara fria ou área úmida.',
+  },
+  {
+    q: 'Em que sentido devem ficar as ondas do papelão?',
+    a: 'Na vertical. Nas caixas de transporte, as ondulações funcionam como pilares de um edifício e sustentam o empilhamento durante a estocagem.',
+  },
+];
+
+const tipos = [
+  { t: 'Face simples', d: 'Um miolo ondulado colado a uma capa plana.', liners: 1, flutes: 1 },
+  { t: 'Parede simples', d: 'Um miolo ondulado entre duas capas.', liners: 2, flutes: 1 },
+  { t: 'Parede dupla', d: 'Dois miolos intercalados com três capas.', liners: 3, flutes: 2 },
+  { t: 'Parede tripla', d: 'Três miolos intercalados com quatro capas.', liners: 4, flutes: 3 },
+];
+function wave(y: number, w = 240, p = 16, a = 6) {
+  let d = `M0 ${y}`;
+  for (let x = 0; x < w; x += p) d += ` Q${x + p / 4} ${y - a} ${x + p / 2} ${y} T${x + p} ${y}`;
+  return d;
+}
+
+const schema = [{
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.filter((f) => !f.pending).map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+}];
+---
+<Base
+  title="Dúvidas frequentes sobre embalagens de papelão"
+  description="Como medir sua caixa, tipos de papelão ondulado, cores de impressão, pedido mínimo e suporte técnico. Respostas da equipe Goiaspel."
+  schema={schema}
+>
+  <PageHero
+    crumb="Sobre produtos"
+    eyebrow="Goiaspel responde"
+    title="Dúvidas frequentes"
+    accent="frequentes"
+    lead="Respostas diretas para quem está comprando embalagem de papelão ondulado — da primeira compra aos detalhes técnicos."
+  />
+
+  <section class="section" aria-labelledby="t-faq">
+    <div class="container-x faq-grid">
+      <h2 id="t-faq" class="sr-only">Perguntas e respostas</h2>
+      <div class="faq">
+        {faq.map((f, i) => (
+          <details class="qa" open={i === 0}>
+            <summary>
+              <span class="qa-q">{f.q}</span>
+              <span class="qa-ico" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-a">
+              <p>{f.a}</p>
+              {f.pending && <Pending title={f.pending} label="Condição comercial a confirmar" />}
+            </div>
+          </details>
+        ))}
+      </div>
+      <aside class="faq-aside">
+        <p class="fa-t">Não encontrou sua dúvida?</p>
+        <a class="btn" href="/orcamento/">Fale com a equipe <Icon name="arrow" class="arrow" /></a>
+      </aside>
+    </div>
+  </section>
+
+  <section id="medir" class="section medir" aria-labelledby="t-medir">
+    <div class="container-x"><MedirCaixa /></div>
+  </section>
+
+  <section class="section tipos" aria-labelledby="t-tipos">
+    <div class="container-x"><TiposPapelao /></div>
+  </section>
+
+  <ContinueExplorando grupo={2} />
+  <CtaFinal />
+</Base>
+
+<style>
+  .faq-grid { display: grid; gap: 3rem; }
+  @media (min-width: 64rem) { .faq-grid { grid-template-columns: 1fr 20rem; gap: 5rem; align-items: start; } }
+  .faq { border-top: 2px solid var(--color-ink); }
+  .qa { border-bottom: 1px solid var(--color-line); }
+  .qa summary {
+    display: flex; justify-content: space-between; align-items: center; gap: 1.5rem;
+    padding: 1.4rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .qa summary::-webkit-details-marker { display: none; }
+  .qa-q { font-weight: 700; font-size: clamp(1.0625rem, 1.6vw, 1.25rem); color: var(--color-ink); }
+  .qa summary:hover .qa-q { color: var(--color-blue-700); }
+  .qa-ico { position: relative; width: 1.5rem; height: 1.5rem; flex: none; }
+  .qa-ico::before, .qa-ico::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 2px; background: var(--color-blue-700); transform: translate(-50%, -50%); transition: transform var(--dur-2) var(--ease-out-quart); }
+  .qa-ico::after { transform: translate(-50%, -50%) rotate(90deg); }
+  .qa[open] .qa-ico::after { transform: translate(-50%, -50%) rotate(0deg); }
+  .qa-a { display: grid; gap: 0.75rem; justify-items: start; padding: 0 3rem 1.6rem 0; color: var(--color-ink-2); max-width: 70ch; }
+  @media (prefers-reduced-motion: no-preference) {
+    .qa[open] .qa-a { animation: auto-fade 360ms var(--ease-out-quart); }
+  }
+  .faq-aside { padding: 2rem; background: var(--color-paper-2); display: grid; gap: 1rem; justify-items: start; }
+  @media (min-width: 64rem) { .faq-aside { position: sticky; top: calc(var(--header-h) + 2rem); } }
+  .fa-t { font-variation-settings: "wdth" 75; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; color: var(--color-blue-700); line-height: 1.05; }
+
+  .medir-grid { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 64rem) { .medir-grid { grid-template-columns: 1fr 1fr; gap: 5rem; } }
+  .medir-list { margin: 2rem 0 0; padding-left: 1.25rem; display: grid; gap: 0.6rem; font-size: 1.0625rem; }
+  .medir-note { margin-top: 1.25rem; color: var(--color-ink-2); }
+  .box-fig { margin: 0; }
+  .box-fig svg { width: 100%; max-width: 32rem; height: auto; margin-inline: auto; }
+
+  .tipos-grid { list-style: none; margin: 3rem 0 0; padding: 0; display: grid; gap: 1px; background: var(--color-line); border: 1px solid var(--color-line); }
+  @media (min-width: 40rem) { .tipos-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .tipos-grid { grid-template-columns: repeat(4, 1fr); } }
+  .tipos-grid li { background: var(--color-paper); padding: 2rem 1.5rem; display: grid; gap: 0.5rem; align-content: start; }
+  .tipo-svg { width: 100%; height: 4.5rem; margin-bottom: 1rem; }
+  .tipos-grid h3 { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.375rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .tipos-grid p { color: var(--color-ink-2); font-size: 0.975rem; }
+  .tipos-note { margin-top: 1.25rem; color: var(--color-ink-2); font-size: 0.9375rem; }
+</style>

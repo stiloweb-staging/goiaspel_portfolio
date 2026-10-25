@@ -1,0 +1,63 @@
+---
+/**
+ * "Continue explorando": as outras páginas do mesmo grupo do menu original, em sequência.
+ * Mantém o caminho de navegação do site antigo (A Goiaspel → Quem somos → Valores → ...).
+ * Cada cartão é uma "aba" de papelão: número grande, título, descrição; a seta corre no hover.
+ */
+import Icon from './Icon.astro';
+import { menu } from '../data/rotas';
+
+interface Props { grupo: 0 | 1 | 2 }
+const { grupo } = Astro.props;
+const path = Astro.url.pathname;
+const g = menu[grupo];
+let itens: { href: string; label: string; desc: string }[] = g.itens.filter((i) => i.href !== path);
+if (itens.length < 3) itens = [...itens, ...menu[1].itens.slice(0, 3 - itens.length + 1), { href: '/canais-de-contato-com-a-goiaspel/', label: 'Fale conosco', desc: 'Telefone, WhatsApp, e-mail e endereço' }].slice(0, 4);
+const cols = itens.length % 3 === 0 ? 3 : itens.length % 4 === 0 ? 4 : Math.min(itens.length, 3);
+---
+<nav class="section ce" aria-labelledby="t-ce">
+  <div class="container-x">
+    <div class="ce-head">
+      <p class="eyebrow">{g.label}</p>
+      <h2 id="t-ce" class="display display-sm ce-t">Continue explorando</h2>
+    </div>
+    <ul class="ce-list" style={`--cols:${cols}`}>
+      {itens.map((i, n) => (
+        <li>
+          <a href={i.href} class="ce-card">
+            <span class="num ce-n" aria-hidden="true">{String(n + 1).padStart(2, '0')}</span>
+            <span class="ce-label">{i.label}</span>
+            <span class="ce-desc">{i.desc}</span>
+            <Icon name="arrow" class="ce-arrow" />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<style>
+  .ce-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem; }
+  .ce-t { margin-top: 0.75rem; color: var(--color-blue-700); }
+  .ce-list { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; gap: 1px; background: var(--color-line); border: 1px solid var(--color-line); grid-template-columns: 1fr; }
+  @media (min-width: 48rem) { .ce-list { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .ce-list { grid-template-columns: repeat(var(--cols), 1fr); } }
+  .ce-card {
+    position: relative; display: grid; gap: 0.35rem; align-content: start;
+    height: 100%; padding: 1.5rem 3.25rem 1.6rem 1.5rem;
+    background: var(--section-bg, var(--gp-papel)); color: var(--color-ink); text-decoration: none;
+    transition: background-color var(--dur-2);
+  }
+  .ce-card::before { /* aba que sobe no hover */
+    content: ""; position: absolute; left: 0; top: 0; height: 3px; width: 100%;
+    background: var(--gp-verde); transform: scaleX(0); transform-origin: left;
+    transition: transform var(--dur-3) var(--ease-out-quart);
+  }
+  .ce-card:hover::before, .ce-card:focus-visible::before { transform: scaleX(1); }
+  .ce-card:hover { background: var(--gp-branco); }
+  .ce-n { font-size: 1.6rem; color: var(--color-kraft-deep); }
+  .ce-label { font-variation-settings: "wdth" 75; font-weight: 800; font-size: 1.25rem; line-height: 1.1; text-transform: uppercase; color: var(--color-blue-700); }
+  .ce-desc { font-size: 0.9375rem; color: var(--color-ink-2); }
+  .ce-card :global(.ce-arrow) { position: absolute; right: 1.25rem; top: 1.6rem; width: 1.25rem; height: 1.25rem; color: var(--gp-verde); transition: transform var(--dur-2) var(--ease-out-quart); }
+  .ce-card:hover :global(.ce-arrow) { transform: translateX(4px); }
+</style>

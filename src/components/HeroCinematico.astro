@@ -1,0 +1,295 @@
+---
+/**
+ * HERO CINEMATOGRÁFICO 2027 — "Da força da nossa indústria nasce a proteção de cada produto."
+ *
+ * Vídeo do cliente (Gemini, 10 s) tratado em 08_ASSETS/video (hero-tratado-master.mp4):
+ *   · cortado em 6,6 s: depois disso o papelão perde as flautas e "derrete" em dunas — o vídeo
+ *     termina no último quadro bom (caixas assentadas, mascote na última caixa) e fica parado ali;
+ *   · redução de cintilação temporal (hqdn3d) e nenhum reenquadramento "assado" no arquivo.
+ * As faixas pretas de letterbox do início (0–3,4 s) são escondidas AQUI, com um zoom aplicado ao
+ * <video> e sincronizado quadro a quadro (requestVideoFrameCallback): transformação subpixel na GPU,
+ * sem a trepidação do zoompan do ffmpeg. Termina em escala 1 — idêntico ao poster.
+ * As caixas do vídeo vêm sem texto: os números são HTML em forma de carimbo, posicionados sobre as
+ * faces frontais (em % do quadro 16:9) e "carimbados" quando as caixas assentam.
+ * Movimento reduzido, economia de dados ou autoplay bloqueado: quadro final (poster) + carimbos.
+ * Alternativa com a foto real da fábrica: HeroCamadas.astro.
+ */
+import { getImage } from 'astro:assets';
+import Icon from './Icon.astro';
+import poster from '../assets/hero/poster.jpg';
+import primeiro from '../assets/hero/primeiro-quadro.jpg';
+import { indicadores } from '../data/conteudo';
+import { site, yearsSinceFounding } from '../data/site';
+
+const posterImg = await getImage({ src: poster, format: 'webp', width: 1280, quality: 80 });
+const primeiroImg = await getImage({ src: primeiro, format: 'webp', width: 1280, quality: 72 });
+
+const byId = Object.fromEntries(indicadores.map((i) => [i.id, i]));
+const fmt = new Intl.NumberFormat('pt-BR');
+/**
+ * Faces frontais das caixas no quadro final (medidas no poster 1280×720): [left, top, width, height] em %.
+ * ink: cor do carimbo (Azul Estrutura / Verde Circular escurecido); rot: inclinação;
+ * at: instante (s) em que a caixa e a câmera já estão imóveis (diferença de quadros < 1%).
+ * Faces medidas por detecção de borda no poster — só a FRENTE da caixa, sem a lateral escura.
+ */
+const icones: Record<string, string> = {
+  engrenagem: '<circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="3.4"/><path fill="currentColor" fill-rule="evenodd" d="M21.6 9.5h4.8l.8 4.1 2.6 1.1 3.5-2.4 3.4 3.4-2.4 3.5 1.1 2.6 4.1.8v4.8l-4.1.8-1.1 2.6 2.4 3.5-3.4 3.4-3.5-2.4-2.6 1.1-.8 4.1h-4.8l-.8-4.1-2.6-1.1-3.5 2.4-3.4-3.4 2.4-3.5-1.1-2.6-4.1-.8v-4.8l4.1-.8 1.1-2.6-2.4-3.5 3.4-3.4 3.5 2.4 2.6-1.1zM24 18.6a5.4 5.4 0 1 0 0 10.8 5.4 5.4 0 0 0 0-10.8z"/>',
+  velocimetro: '<path d="M8.5 37A19 19 0 1 1 39.5 37" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/><path d="M24 11v4M12.5 15.8l2.8 2.8M35.5 15.8l-2.8 2.8M9.5 27h4M34.5 27h4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M22 29.2l11.4-8.6-8.2 11.6z" fill="currentColor"/><circle cx="23.6" cy="30" r="3.4" fill="currentColor"/>',
+  fabrica: '<circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="3.4"/><path fill="currentColor" fill-rule="evenodd" d="M11 34V22.5l6-3.4v3.4l6-3.4v3.4l6-3.4V34zm3.2-8v3h2.6v-3zm5 0v3h2.6v-3zm5 0v3h2.6v-3z"/><path fill="currentColor" d="M30.5 34V16h3.6v18z"/><path d="M32 13.4c-1.6-1.2-1.4-2.8.2-3.4 1.4-.5 2.3-1.6 1.9-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+  predio: '<path d="M7.8 30A17.8 17.8 0 1 1 40.2 30" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><path d="M9.5 34.5a17.6 17.6 0 0 0 29 0" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><path fill="currentColor" fill-rule="evenodd" d="M12 33V20.5l6-3v15.5zm7 0V15.5L24 12l5 3.5V33h-3.4v-4.8h-3.2V33zm10 0V17.5l7 3V33zM14 23v2h2v-2zm0 4v2h2v-2zm7.2-7.4v2.2h2v-2.2zm3.6 0v2.2h2v-2.2zm-3.6 4v2.2h2v-2.2zm3.6 0v2.2h2v-2.2zM32 23v2h2v-2zm0 4v2h2v-2z"/>',
+};
+const caixas = [
+  { valor: String(yearsSinceFounding()), linhas: ['anos de mercado'], icon: 'engrenagem', ink: '#14395a', rot: -1.2, at: 5.8, pos: [30.23, 77.92, 11.48, 14.86] },
+  { valor: String(byId.caixas.valor), linhas: ['caixas por minuto'], icon: 'velocimetro', ink: '#155a36', rot: 0.8, at: 5.95, pos: [45.86, 75.14, 11.8, 17.64] },
+  { valor: `${fmt.format(byId.toneladas.valor)}+`, linhas: ['toneladas de', 'capacidade produtiva'], icon: 'fabrica', ink: '#14395a', rot: -0.6, at: 6.1, pos: [61.33, 70.83, 14.22, 22.5] },
+  { valor: fmt.format(byId.area.valor), sufixo: 'm²', linhas: ['de estrutura física'], icon: 'predio', ink: '#155a36', rot: 0.9, at: 6.25, pos: [78.91, 73.61, 17.66, 20.69] },
+].map((c) => {
+  // Layout num viewBox próprio, com a proporção da face: ícone AO LADO do número nas faces largas
+  // (row) e ACIMA na face alta (caixa 3). Larguras estimadas para Archivo condensada; textLength
+  // força exatamente essa largura — nem uma fonte de fallback ultrapassa o desenho.
+  const charW = (ch: string) => (/[.,]/.test(ch) ? 0.26 : ch === '+' ? 0.56 : 0.54);
+  const row = c.linhas.length === 1;
+  const FS = c.valor.length > 4 ? 60 : 72, LS = 16;
+  const ICON = row ? Math.round(FS * 0.7) : 44;
+  const sufW = c.sufixo ? FS * 0.45 * 1.15 + 4 : 0;
+  const numW = [...c.valor].reduce((a, ch) => a + charW(ch), 0) * FS;
+  const labW = Math.max(...c.linhas.map((t) => t.length * 0.53 * LS));
+  const rowW = row ? ICON + 8 + numW + sufW : numW + sufW;
+  const W = Math.ceil(Math.max(rowW, labW, ICON) + 6);
+  const rowX = (W - rowW) / 2;
+  const numX = row ? rowX + ICON + 8 : rowX;
+  const numY = row ? FS * 0.74 + 2 : ICON + 8 + FS * 0.74;
+  const iconX = row ? rowX : (W - ICON) / 2;
+  const iconY = row ? numY - FS * 0.72 + (FS * 0.72 - ICON) / 2 : 0;
+  const lines = c.linhas.map((t, i) => ({ t: t.toUpperCase(), w: t.length * 0.53 * LS, y: numY + 8 + LS * 0.9 + i * LS * 1.12 }));
+  const ruleY = lines[lines.length - 1].y + 8;
+  return { ...c, W, H: ruleY + 6, ICON, iconX, iconY, FS, LS, numW, numX, numY, sufX: numX + numW + 4, lines, ruleY };
+});
+---
+<section class="hero-cine tone-sky" aria-labelledby="t-hero">
+  <!-- textura de tinta do carimbo: falhas de tinta + borda irregular -->
+  <svg class="defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <filter id="hc-carimbo" x="-4%" y="-4%" width="108%" height="108%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="7" result="grao" />
+      <feColorMatrix in="grao" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -5 0 0 0 4.4" result="falhas" />
+      <feComposite in="SourceGraphic" in2="falhas" operator="in" result="tinta" />
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="1" seed="3" result="ondas" />
+      <feDisplacementMap in="tinta" in2="ondas" scale="2" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+
+  <div class="stage">
+    <div class="frame" data-hero-frame>
+      <div class="vid">
+        <div class="media" style={`--first:url(${primeiroImg.src})`}>
+          <video
+            class="hc-video"
+            muted
+            playsinline
+            preload="metadata"
+            poster={posterImg.src}
+            width="1280"
+            height="720"
+            aria-hidden="true"
+            data-hero-video
+          >
+            <source src="/video/hero-854.mp4" type="video/mp4" media="(max-width: 47.99rem)" />
+            <source src="/video/hero-1280.webm" type="video/webm" />
+            <source src="/video/hero-1280.mp4" type="video/mp4" />
+          </video>
+        </div>
+
+        <ul class="labels" aria-label="A Goiaspel em números">
+          {caixas.map((c, i) => (
+            <li class:list={['lbl', `lbl-${i + 1}`]} data-at={c.at} style={`--l:${c.pos[0]}%;--t:${c.pos[1]}%;--w:${c.pos[2]}%;--h:${c.pos[3]}%;--ink:${c.ink};--rot:${c.rot}deg`}>
+              <span class="l-in">
+                <svg class="stamp" viewBox={`0 0 ${c.W} ${c.H.toFixed(1)}`} preserveAspectRatio="xMidYMid meet" role="img" aria-label={`${c.valor}${c.sufixo ? ' ' + c.sufixo : ''} ${c.linhas.join(' ')}`}>
+                  <g filter="url(#hc-carimbo)">
+                    <svg x={c.iconX.toFixed(1)} y={c.iconY.toFixed(1)} width={c.ICON} height={c.ICON} viewBox="0 0 48 48" set:html={icones[c.icon]} />
+                    <text class="s-num" x={c.numX.toFixed(1)} y={c.numY.toFixed(1)} font-size={c.FS} textLength={c.numW.toFixed(1)} lengthAdjust="spacingAndGlyphs">{c.valor}</text>
+                    {c.sufixo && <text class="s-num" x={c.sufX.toFixed(1)} y={c.numY.toFixed(1)} font-size={(c.FS * 0.45).toFixed(1)}>{c.sufixo}</text>}
+                    {c.lines.map((l) => (
+                      <text class="s-label" x={c.W / 2} y={l.y.toFixed(1)} font-size={c.LS} text-anchor="middle" textLength={l.w.toFixed(1)} lengthAdjust="spacingAndGlyphs">{l.t}</text>
+                    ))}
+                    <rect x={c.W / 2 - 16} y={c.ruleY.toFixed(1)} width="32" height="3.2" />
+                  </g>
+                </svg>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="veil" aria-hidden="true"></div>
+    </div>
+
+    <div class="container-x hc-text">
+      <p class="eyebrow">Indústria de embalagens · {site.city}-{site.state} · desde 1992</p>
+      <h1 id="t-hero" class="display hc-title kinetic" data-auto>
+        <span class="line"><span>Embalagens que</span></span>
+        <span class="line" style="--line-i:1"><span>protegem produtos.</span></span>
+        <span class="line" style="--line-i:2"><span class="g">E valorizam marcas.</span></span>
+      </h1>
+      <p class="lead hc-lead" data-auto-fade style="--delay:380ms">Da força da nossa indústria nasce a proteção de cada produto.</p>
+      <div class="hc-actions" data-auto-fade style="--delay:480ms">
+        <a href="/orcamento/" class="btn" data-cta-primary>Solicitar orçamento <Icon name="arrow" class="arrow" /></a>
+        <a href="#solucoes" class="btn btn-ghost">Conhecer soluções</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-cine {
+    --section-bg: var(--gp-papel);
+    position: relative;
+    overflow: hidden;
+    padding-top: 0;
+    padding-bottom: var(--fold-h) !important; /* a dobra da próxima seção encosta no vídeo */
+  }
+  .defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  /* ---------- Palco ---------- */
+  .stage { position: relative; display: flex; flex-direction: column-reverse; }
+  .hc-text { position: relative; z-index: 3; padding-top: 1.5rem; padding-bottom: 1.25rem; } /* celular: acima do vídeo */
+
+  .frame { position: relative; width: 100%; }
+  .vid { position: relative; width: 100%; container-type: inline-size; }
+  .media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #dfecf3; }
+  .hc-video {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+  /* com JS + movimento: o 1º quadro (já reenquadrado) aparece até o vídeo começar — troca invisível */
+  :global(.js-motion) .media { background: var(--first) center / cover no-repeat; }
+  :global(.js-motion) .hc-video { opacity: 0; transform: scale(1.3235); }
+  :global(.js-motion) .hc-video.is-on { opacity: 1; }
+  :global(.js-motion) .hc-video.is-static { opacity: 1; transform: none; }
+
+  @media (min-width: 48rem) {
+    .stage { display: block; }
+    /* o quadro ocupa a largura toda e a altura útil da tela; se faltar altura, corta só o céu */
+    .frame { height: min(56.25vw, calc(100svh - 6.75rem)); overflow: hidden; }
+    .vid { position: absolute; left: 0; right: 0; bottom: 0; aspect-ratio: 16 / 9; }
+    .media { position: absolute; inset: 0; aspect-ratio: auto; }
+    .hc-text { position: absolute; inset: 0 0 auto 0; padding-top: clamp(1.25rem, 3vw, 2.75rem); }
+    .veil {
+      /* véu só na metade esquerda (céu e vegetação): a fábrica, no centro, fica intacta */
+      position: absolute; z-index: 1; left: 0; top: 0; width: 50%; height: 72%;
+      background: linear-gradient(90deg, rgb(241 236 225 / 0.86) 0%, rgb(241 236 225 / 0.62) 55%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent);
+              mask-image: linear-gradient(to bottom, #000 55%, transparent);
+      pointer-events: none;
+    }
+  }
+  @media (max-width: 47.99rem) { .veil { display: none; } }
+
+  .hc-title { margin-top: 0.85rem; color: var(--color-blue-700); font-size: clamp(2.2rem, 3.3vw, 3.7rem); max-width: none; }
+  @media (min-width: 48rem) { .hc-title .line { white-space: nowrap; } } /* sempre 3 linhas, à esquerda */
+  /* halo claro e difuso: separa o texto da foto sem precisar lavar a paisagem */
+  .hc-text :is(.eyebrow, .hc-title, .hc-lead) {
+    text-shadow: 0 0 1.1em rgb(241 236 225 / 0.95), 0 0 0.35em rgb(241 236 225 / 0.9), 0 1px 0 rgb(255 255 255 / 0.55);
+  }
+  .hc-title .g { color: var(--color-green-700); }
+  .hc-lead { margin-top: 0.75rem; font-size: clamp(1.0625rem, 1.25vw, 1.25rem); max-width: 34ch; color: var(--color-ink); font-weight: 500; }
+  .hc-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.1rem; }
+  .hc-actions .btn-ghost { --btn-bg: rgb(241 236 225 / 0.94); }
+  .hc-actions .btn-ghost:hover { --btn-bg: var(--color-ink); }
+
+  /* ---------- Carimbos ---------- */
+  .labels { list-style: none; margin: 0; padding: 0; }
+  /* carimbo de tinta sólida, como nas referências: ícone em círculo + número + rótulo + fio */
+  .stamp {
+    display: block; width: 100%; height: 100%;
+    color: var(--ink); fill: currentColor;
+    overflow: hidden;            /* nada do carimbo sai da área da face */
+    transform: rotate(var(--rot));
+    mix-blend-mode: multiply;    /* a tinta assenta no papelão */
+    opacity: 0.95;
+  }
+  .s-num { font-family: var(--font-sans); font-weight: 800; font-variation-settings: "wdth" 70; }
+  .s-label { font-family: var(--font-sans); font-weight: 800; font-variation-settings: "wdth" 75; }
+
+  @media (min-width: 48rem) {
+    .labels { position: absolute; inset: 0; z-index: 1; }
+    .lbl {
+      position: absolute; left: var(--l); top: var(--t); width: var(--w); height: var(--h);
+      container-type: inline-size;
+    }
+    /* margem interna da face: o carimbo fica centralizado e longe das arestas */
+    .l-in { display: block; height: 100%; padding: 11% 10% 12%; }
+  }
+
+  /* celular: carimbos numa mesa de kraft abaixo do vídeo (16:9 é pequeno demais para texto legível) */
+  @media (max-width: 47.99rem) {
+    .labels {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 0.75rem;
+      padding: 1.25rem var(--gutter) 1.75rem;
+      background: url('../assets/texturas/kraft.jpg') 0 0 / 327px auto;
+      box-shadow: inset 0 10px 14px -12px rgb(40 25 10 / 0.5);
+    }
+    .lbl { min-height: 8rem; }
+    .l-in { display: block; height: 8rem; padding: 0.75rem; }
+  }
+
+  /* ---------- Coreografia ---------- */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js-motion) .lbl:not(.is-stamped) .stamp { opacity: 0; }
+    :global(.js-motion) .lbl.is-stamped .stamp { animation: hc-stamp 0.38s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+  }
+  @keyframes hc-stamp {
+    0% { opacity: 0; transform: rotate(var(--rot)) scale(1.35); }
+    55% { opacity: 0.95; transform: rotate(var(--rot)) scale(0.95); }
+    100% { opacity: 0.95; transform: rotate(var(--rot)) scale(1); }
+  }
+</style>
+
+<script>
+  const frame = document.querySelector<HTMLElement>('[data-hero-frame]');
+  const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+  if (frame && video) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    const labels = [...frame.querySelectorAll<HTMLElement>('[data-at]')];
+    const stampUntil = (t: number) => labels.forEach((l) => { if (t >= Number(l.dataset.at)) l.classList.add('is-stamped'); });
+    const final = () => { frame.classList.add('is-final'); stampUntil(Infinity); };
+    const showPoster = () => { video.classList.add('is-static'); final(); };
+
+    /* Zoom que acompanha o fechamento das faixas pretas do original (medido quadro a quadro):
+       faixa ≈ 77 px até 1,4 s e some em 3,4 s. A escala cobre a faixa com 6–10 px de folga e chega a 1. */
+    const zoom = (t: number) => {
+      const u = Math.min(1, Math.max(0, (t - 1.45) / 2.05));
+      const ease = u * u * (3 - 2 * u);
+      const bar = 88 * (1 - ease);
+      return 720 / (720 - 2 * bar);
+    };
+    const apply = (t: number) => { video.style.transform = `scale(${zoom(t).toFixed(5)})`; };
+
+    if (reduce || saveData) {
+      video.preload = 'none'; // o poster já é o quadro final
+      showPoster();
+    } else {
+      video.preload = 'auto';
+      const rvfc = 'requestVideoFrameCallback' in video;
+      const onFrame = (_now: number, meta: { mediaTime: number }) => {
+        apply(meta.mediaTime);
+        stampUntil(meta.mediaTime); // precisão de quadro: o carimbo bate quando a caixa para
+        if (!video.ended) (video as any).requestVideoFrameCallback(onFrame);
+      };
+      const onRaf = () => { apply(video.currentTime); stampUntil(video.currentTime); if (!video.ended) requestAnimationFrame(onRaf); };
+      video.addEventListener('playing', () => {
+        video.classList.add('is-on');
+        rvfc ? (video as any).requestVideoFrameCallback(onFrame) : requestAnimationFrame(onRaf);
+      }, { once: true });
+      video.addEventListener('timeupdate', () => stampUntil(video.currentTime));
+      video.addEventListener('ended', () => { video.style.transform = 'none'; final(); });
+      // erro de mídia: só quando TODAS as fontes falharem (um <source> não suportado, como WebM, apenas cede a vez)
+      video.addEventListener('error', showPoster);
+      video.querySelector('source:last-of-type')?.addEventListener('error', showPoster);
+      apply(0);
+      // autoplay bloqueado: quadro final com os carimbos. Com a abertura na tela, o vídeo espera ela sair.
+      const start = () => video.play().catch(showPoster);
+      document.documentElement.classList.contains('gp-intro') ? window.addEventListener('gp:intro-done', start, { once: true }) : start();
+    }
+  }
+</script>

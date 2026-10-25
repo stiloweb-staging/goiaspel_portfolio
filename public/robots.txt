@@ -1,0 +1,4 @@
+# Homologação: o layout também envia <meta name="robots" content="noindex"> enquanto PUBLIC_STAGING != false.
+User-agent: *
+Allow: /
+Sitemap: https://www.goiaspel.com.br/sitemap-index.xml

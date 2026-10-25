@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import FluteLine from '../components/FluteLine.astro';
+import Icon from '../components/Icon.astro';
+import { nav } from '../data/site';
+import { Image } from 'astro:assets';
+import mascote from '../assets/mascote/acenando.png';
+---
+<Base title="Página não encontrada" description="A página procurada não existe ou mudou de endereço.">
+  <section class="section nf">
+    <div class="container-x nf-grid">
+      <div>
+      <p class="eyebrow">Erro 404</p>
+      <h1 class="display display-lg nf-t">Esta caixa <span class="g">está vazia</span></h1>
+      <p class="lead nf-lead">A página que você procurou não existe ou mudou de endereço com o novo site.</p>
+      <div class="nf-actions">
+        <a class="btn" href="/">Ir para o início <Icon name="arrow" class="arrow" /></a>
+        <a class="btn btn-ghost" href="/orcamento/">Solicitar orçamento</a>
+      </div>
+      <ul class="nf-links">
+        {nav.map((n) => <li><a class="link-arrow" href={n.href}>{n.label} <Icon name="arrow" /></a></li>)}
+      </ul>
+      </div>
+      <Image src={mascote} alt="Mascote da Goiaspel, uma caixa de papelão de tênis azul, acenando." width={360} class="nf-img" />
+    </div>
+  </section>
+  <FluteLine variant="double" />
+</Base>
+
+<style>
+  .nf-grid { display: grid; gap: 2rem; align-items: center; }
+  @media (min-width: 48rem) { .nf-grid { grid-template-columns: 1.4fr 1fr; } }
+  .nf-img { width: 100%; max-width: 20rem; height: auto; justify-self: center; filter: drop-shadow(0 16px 16px rgb(28 26 23 / 0.18)); }
+  .nf-t { margin-top: 1.25rem; color: var(--color-blue-700); }
+  .g { color: var(--color-green-700); }
+  .nf-lead { margin-top: 1.5rem; }
+  .nf-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+  .nf-links { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; margin: 3rem 0 0; padding: 0; }
+</style>

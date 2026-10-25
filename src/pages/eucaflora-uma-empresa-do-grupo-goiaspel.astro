@@ -1,0 +1,76 @@
+---
+import CtaFinal from '../components/CtaFinal.astro';
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Pending from '../components/Pending.astro';
+import Icon from '../components/Icon.astro';
+import f1 from '../assets/eucaflora/foto_01.png';
+import f2 from '../assets/eucaflora/foto_02.png';
+import f3 from '../assets/eucaflora/foto_03.png';
+import f4 from '../assets/eucaflora/foto_04.png';
+
+// Conteúdo migrado integralmente de /eucaflora-uma-empresa-do-grupo-goiaspel/ (site atual).
+const blocos = [
+  { t: 'Segmento', itens: ['Plantio de eucaliptos', 'Tratamento', 'Reflorestamento', 'Comercialização de madeira de eucalipto'] },
+  { t: 'Produtos', itens: ['Madeira de eucalipto tratado', 'Estacas para cercas', 'Galpões e varandas de madeira de eucalipto (madeira, construção e montagem)', 'Mourões', 'Esticadores', 'Esteios', 'Varões', 'Porteiras', 'Postes'] },
+  { t: 'Serviços', itens: ['Entrega', 'Parceria com profissionais de montagem e produção'] },
+  { t: 'Diferenciais', itens: ['Garantia de 15 anos contra ataques de cupins, insetos ou fungos de apodrecimento', 'Madeira de qualidade apropriada para o tratamento', 'Profissionais especializados e capacitados para o tratamento da madeira', 'Atendimento personalizado'] },
+];
+const fotos = [
+  { src: f1, alt: 'Pergolado de madeira de eucalipto tratado em área externa.' },
+  { src: f2, alt: 'Galpão com paredes de toras de eucalipto.' },
+  { src: f3, alt: 'Estrutura de varanda com esteios de eucalipto.' },
+  { src: f4, alt: 'Plantação de eucaliptos em fileiras.' },
+];
+---
+<Base
+  title="Eucaflora — empresa do grupo Goiaspel"
+  description="Eucaflora, empresa do grupo Goiaspel: plantio, tratamento e comercialização de madeira de eucalipto tratado. Atendimento em todo o Brasil."
+>
+  <PageHero
+    crumb="Eucaflora"
+    eyebrow="Empresa do grupo"
+    title="Eucaflora: eucalipto tratado"
+    accent="eucalipto tratado"
+    lead="Uma das maiores empresas do Centro-Oeste na comercialização de eucalipto tratado, com atendimento a clientes de todo o Brasil."
+  />
+  <section class="section">
+    <div class="container-x">
+      <p class="pend"><Pending label="Confirmar dados com a Eucaflora" title="Conteúdo e telefone migrados do site atual. Verificar vigência (telefone, garantia, linha de produtos)." /></p>
+      <div class="eu-grid">
+        {blocos.map((b) => (
+          <article class="eu-b" data-reveal>
+            <h2>{b.t}</h2>
+            <ul>{b.itens.map((i) => <li><Icon name="check" class="i" />{i}</li>)}</ul>
+          </article>
+        ))}
+      </div>
+      <ul class="eu-fotos" data-reveal-group>
+        {fotos.map((f) => <li data-reveal><Image src={f.src} alt={f.alt} width={206} loading="lazy" /></li>)}
+      </ul>
+      <div class="eu-contact">
+        <p class="eu-ct">Fale com a Eucaflora</p>
+        <a class="btn" href="tel:+556232058060"><Icon name="phone" /> (62) 3205-8060</a>
+      </div>
+    </div>
+  </section>
+  <CtaFinal />
+</Base>
+
+<style>
+  .pend { margin-bottom: 2rem; }
+  .eu-grid { display: grid; gap: 1px; background: var(--color-line); border: 1px solid var(--color-line); }
+  @media (min-width: 48rem) { .eu-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 80rem) { .eu-grid { grid-template-columns: repeat(4, 1fr); } }
+  .eu-b { padding: 2rem 1.75rem; background: var(--color-paper); }
+  .eu-b h2 { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; color: var(--color-blue-700); margin-bottom: 1rem; }
+  .eu-b ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+  .eu-b li { display: flex; gap: 0.6rem; color: var(--color-ink-2); }
+  .eu-b .i { width: 1.1rem; height: 1.1rem; color: var(--color-green-700); margin-top: 0.25rem; }
+  .eu-fotos { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  @media (min-width: 48rem) { .eu-fotos { grid-template-columns: repeat(4, 1fr); } }
+  .eu-fotos :global(img) { width: 100%; height: auto; aspect-ratio: 206 / 183; object-fit: cover; }
+  .eu-contact { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2.5rem; padding: 2rem; background: var(--color-paper-2); }
+  .eu-ct { font-variation-settings: "wdth" 75; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; color: var(--color-blue-700); }
+</style>

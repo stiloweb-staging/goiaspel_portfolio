@@ -1,0 +1,176 @@
+---
+/**
+ * Tipos de papelão ondulado (NBR 5985) — layout da referência do cliente:
+ * abertura com macro do material, 4 cartões em progressão de resistência, barra menor→maior,
+ * faixa das ondas mais comuns e nota da parede múltipla.
+ * Fotos: src/assets/gerado/{tipos-hero,papelao-face-simples,papelao-parede-simples,papelao-parede-dupla,papelao-parede-tripla}.(png|jpg|webp)
+ * (prompts em 11_PROMPTS_IMAGENS.md). Enquanto não existirem, cada cartão mostra o corte em vetor.
+ */
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/gerado/*.{png,jpg,jpeg,webp}', { eager: true });
+const img = (name: string) => Object.entries(files).find(([k]) => k.includes(`/${name}.`))?.[1].default;
+
+const tipos = [
+  { slug: 'papelao-face-simples', t: 'Face simples', d: 'Um miolo ondulado colado a uma capa plana.', liners: 1, flutes: 1 },
+  { slug: 'papelao-parede-simples', t: 'Parede simples', d: 'Um miolo ondulado entre duas capas.', liners: 2, flutes: 1 },
+  { slug: 'papelao-parede-dupla', t: 'Parede dupla', d: 'Dois miolos intercalados com três capas.', liners: 3, flutes: 2 },
+  { slug: 'papelao-parede-tripla', t: 'Parede tripla', d: 'Três miolos intercalados com quatro capas.', liners: 4, flutes: 3 },
+].map((t) => ({ ...t, foto: img(t.slug) }));
+const hero = img('tipos-hero');
+
+const ondas = [
+  { n: 'Onda E', d: 'Onda baixa (1,2–1,5 mm), ideal para impressão de alta qualidade.', amp: 3, per: 10 },
+  { n: 'Onda B', d: 'Equilíbrio entre resistência e acabamento (2,5–3,0 mm).', amp: 5, per: 14 },
+  { n: 'Onda C', d: 'Mais absorção de impacto e resistência (3,5–4,0 mm).', amp: 7, per: 18 },
+  { n: 'Onda BC', d: 'Combina as ondas B e C, para parede dupla.', amp: 5, per: 14, dupla: true },
+];
+
+function wave(y: number, w: number, p: number, a: number) {
+  let d = `M0 ${y}`;
+  for (let x = 0; x < w; x += p) d += ` Q${x + p / 4} ${y - a} ${x + p / 2} ${y} T${x + p} ${y}`;
+  return d;
+}
+// corte em vetor (fallback): capas em kraft escuro, miolo em kraft claro
+function corte(liners: number, flutes: number) {
+  const gap = 22, top = 8;
+  const L = liners === 1 ? [top + gap] : Array.from({ length: liners }, (_, i) => top + i * gap);
+  const F = liners === 1 ? [top + gap / 2 + 2] : Array.from({ length: flutes }, (_, i) => top + gap / 2 + i * gap);
+  return { h: Math.max(...L) + 10, L, F };
+}
+---
+<div class="tp">
+  <header class:list={['tp-head', hero && 'has-hero']}>
+    {hero && (
+      <figure class="tp-hero">
+        <Picture src={hero} formats={['avif', 'webp']} widths={[800, 1400, 2048]} sizes="100vw" alt="Pilha de chapas de papelão ondulado vistas pela borda, mostrando as ondas entre as capas." loading="lazy" />
+      </figure>
+    )}
+    <div class="tp-head-in">
+      <p class="eyebrow">Material</p>
+      <h2 id="t-tipos" class="display display-md tp-title" data-reveal>Tipos de papelão<br /><span class="g">ondulado</span></h2>
+      <div class="tp-intro" data-reveal>
+        <span class="tp-intro-ico"><Icon name="box" /></span>
+        <p><strong>Terminologia da NBR 5985.</strong> Quanto mais paredes, maior a resistência ao empilhamento e ao impacto.</p>
+      </div>
+    </div>
+  </header>
+
+  <ol class="tp-cards" data-reveal-group>
+    {tipos.map((t, i) => {
+      const c = corte(t.liners, t.flutes);
+      return (
+        <li class="tp-card" data-reveal>
+          <div class="tp-card-h">
+            <span class="num tp-n">0{i + 1}</span>
+            <div><h3>{t.t}</h3><p>{t.d}</p></div>
+          </div>
+          <div class="tp-vis">
+            {t.foto ? (
+              <Picture src={t.foto} formats={['avif', 'webp']} widths={[400, 700]} sizes="(min-width: 64rem) 24vw, 90vw" alt={`Corte de papelão ondulado ${t.t.toLowerCase()}: ${t.d}`} loading="lazy" />
+            ) : (
+              <svg viewBox={`0 0 260 ${c.h}`} aria-hidden="true">
+                {c.F.map((y) => <path d={wave(y, 260, 22, 9)} class="v-flute" />)}
+                {c.L.map((y) => <line x1="0" x2="260" y1={y} y2={y} class="v-liner" />)}
+              </svg>
+            )}
+          </div>
+        </li>
+      );
+    })}
+  </ol>
+
+  <div class="tp-bar" aria-hidden="true">
+    <span class="tp-bar-k"><svg viewBox="0 0 18 14"><rect x="0" y="9" width="4" height="5" /><rect x="7" y="5" width="4" height="9" opacity=".5" /><rect x="14" y="1" width="4" height="13" opacity=".3" /></svg>Menor resistência</span>
+    <span class="tp-bar-track"></span>
+    <span class="tp-bar-k is-max"><svg viewBox="0 0 18 14"><rect x="0" y="9" width="4" height="5" /><rect x="7" y="5" width="4" height="9" /><rect x="14" y="1" width="4" height="13" /></svg>Maior resistência</span>
+  </div>
+
+  <div class="tp-ondas">
+    <div class="tp-ondas-h">
+      <h3>Ondas mais comuns</h3>
+      <p>Os perfis de onda combinam resistência e desempenho para cada aplicação.</p>
+    </div>
+    <ul data-reveal-group>
+      {ondas.map((o) => (
+        <li data-reveal>
+          <strong>{o.n}</strong>
+          <svg viewBox="0 0 220 34" aria-hidden="true">
+            <rect x="0" y="2" width="220" height="3" class="o-liner" />
+            {o.dupla ? (
+              <><path d={wave(10, 220, o.per, 4)} class="o-flute" /><rect x="0" y="16" width="220" height="3" class="o-liner" /><path d={wave(24, 220, 18, 5)} class="o-flute" /><rect x="0" y="30" width="220" height="3" class="o-liner" /></>
+            ) : (
+              <><path d={wave(17, 220, o.per, o.amp + 4)} class="o-flute" /><rect x="0" y="29" width="220" height="3" class="o-liner" /></>
+            )}
+          </svg>
+          <span>{o.d}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <p class="tp-note"><span class="tp-note-i" aria-hidden="true">i</span>Também existe a <strong>parede múltipla</strong>: cinco ou mais capas coladas a quatro ou mais miolos.</p>
+</div>
+
+<style>
+  .tp-head { position: relative; display: grid; }
+  .tp-head.has-hero { min-height: clamp(18rem, 34vw, 30rem); align-items: center; margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); overflow: hidden; }
+  .tp-hero { position: absolute; inset: 0; margin: 0; }
+  .tp-hero :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 70% 50%; }
+  .tp-head-in { position: relative; max-width: 34rem; }
+  .tp-title { margin-top: 1rem; color: var(--gp-azul); }
+  .tp-title .g { color: var(--gp-verde); }
+  .tp-intro { display: flex; gap: 1rem; align-items: center; margin-top: 1.5rem; padding-left: 1rem; border-left: 2px solid var(--color-line); }
+  .tp-intro-ico { display: grid; place-items: center; width: 3.25rem; height: 3.25rem; flex: none; border-radius: 50%; border: 1px solid var(--color-line); background: var(--gp-branco); color: var(--gp-azul); }
+  .tp-intro-ico :global(svg) { width: 1.5rem; height: 1.5rem; }
+  .tp-intro p { color: var(--color-ink-2); }
+  .tp-intro strong { display: block; color: var(--color-ink); }
+
+  .tp-cards { list-style: none; margin: 2.5rem 0 0; padding: 0; display: grid; gap: 1rem; counter-reset: c; }
+  @media (min-width: 40rem) { .tp-cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .tp-cards { grid-template-columns: repeat(4, 1fr); } }
+  .tp-card { position: relative; display: grid; grid-template-rows: auto 1fr; background: var(--gp-branco); border: 1px solid var(--color-line); overflow: hidden; }
+  @media (min-width: 64rem) {
+    .tp-card:not(:last-child)::after { content: "›"; position: absolute; right: -0.85rem; top: 50%; z-index: 2; translate: 0 -50%; font-size: 1.6rem; color: var(--color-ink-3); }
+    .tp-card { overflow: visible; }
+  }
+  .tp-card-h { display: grid; grid-template-columns: auto 1fr; gap: 0.85rem; padding: 1.1rem 1.25rem 0.75rem; }
+  .tp-n { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 50%; background: var(--gp-papel); font-size: 1.1rem; color: var(--gp-terra); }
+  .tp-card h3 { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.45rem; line-height: 1; text-transform: uppercase; color: var(--gp-azul); }
+  .tp-card p { margin-top: 0.35rem; font-size: 0.9375rem; color: var(--color-ink-2); }
+  .tp-vis { position: relative; display: grid; place-items: center; min-height: 10rem; padding: 0.5rem 1rem 1.25rem; background: linear-gradient(180deg, var(--gp-branco), var(--gp-papel)); }
+  .tp-vis :global(picture), .tp-vis :global(img) { width: 100%; height: 100%; }
+  .tp-vis :global(img) { aspect-ratio: 4 / 3; object-fit: cover; }
+  .tp-vis:has(:global(img)) { padding: 0; }
+  .tp-vis svg { width: 100%; height: auto; max-height: 7rem; filter: drop-shadow(0 6px 6px rgb(59 48 42 / 0.18)); }
+  .v-liner { stroke: #8a6a45; stroke-width: 4; stroke-linecap: round; }
+  .v-flute { fill: none; stroke: #c9a57b; stroke-width: 3; }
+
+  .tp-bar { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: center; margin-top: 1.25rem; }
+  .tp-bar-k { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-ink-3); }
+  .tp-bar-k.is-max { color: var(--gp-verde); }
+  .tp-bar-k svg { width: 1.1rem; height: 0.9rem; fill: currentColor; }
+  .tp-bar-track { position: relative; height: 0.6rem; border-radius: 99px; background: linear-gradient(90deg, var(--gp-papel), var(--gp-fibra) 45%, var(--gp-verde)); }
+  .tp-bar-track::after { content: ""; position: absolute; right: -0.5rem; top: 50%; translate: 0 -50%; border: 0.65rem solid transparent; border-left-color: var(--gp-verde); border-right: 0; }
+
+  .tp-ondas { display: grid; gap: 1.5rem; margin-top: 1.5rem; padding: 1.5rem; background: var(--gp-branco); border: 1px solid var(--color-line); }
+  @media (min-width: 64rem) { .tp-ondas { grid-template-columns: 14rem 1fr; gap: 2rem; } }
+  .tp-ondas-h h3 { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.4rem; text-transform: uppercase; color: var(--gp-azul); }
+  .tp-ondas-h p { margin-top: 0.35rem; font-size: 0.9375rem; color: var(--color-ink-2); }
+  @media (min-width: 64rem) { .tp-ondas-h { padding-right: 2rem; border-right: 1px solid var(--color-line); } }
+  .tp-ondas ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.25rem 1.5rem; }
+  @media (min-width: 40rem) { .tp-ondas ul { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 80rem) { .tp-ondas ul { grid-template-columns: repeat(4, 1fr); } }
+  .tp-ondas li { display: grid; gap: 0.4rem; align-content: start; }
+  .tp-ondas strong { color: var(--gp-azul); }
+  .tp-ondas svg { width: 100%; height: 2.2rem; }
+  .o-liner { fill: #a98157; }
+  .o-flute { fill: none; stroke: #c9a57b; stroke-width: 2.4; }
+  .tp-ondas span { font-size: 0.9rem; color: var(--color-ink-2); }
+
+  .tp-note { display: flex; gap: 1rem; align-items: center; margin-top: 1rem; padding: 0.9rem 1.25rem; border: 1px solid var(--color-line); background: var(--gp-branco); color: var(--color-ink-2); }
+  .tp-note-i { display: grid; place-items: center; width: 1.9rem; height: 1.9rem; flex: none; border-radius: 50%; border: 2px solid var(--gp-verde); color: var(--gp-verde); font-weight: 800; font-family: serif; }
+  .tp-note strong { color: var(--color-ink); }
+</style>

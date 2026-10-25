@@ -1,0 +1,211 @@
+---
+import CutLine from '../components/CutLine.astro';
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Indicadores from '../components/Indicadores.astro';
+import Icon from '../components/Icon.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+
+import fabrica from '../assets/fotos/fabrica-aerea.jpg';
+import maquina from '../assets/fotos/operador-maquina.jpg';
+import esteira from '../assets/fotos/caixas-esteira.jpg';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+import operadora from '../assets/fotos/operadora-expedicao.jpg';
+import operador from '../assets/fotos/operador-caixas.jpg';
+import equipe from '../assets/fotos/equipe-atendimento.jpg';
+
+const pilares = [
+  {
+    t: 'Estrutura',
+    p: 'Parque fabril próprio de 11.000 m² em Goiânia, inaugurado em 2015 e preparado para produção em larga escala.',
+  },
+  {
+    t: 'Tecnologia',
+    p: 'Máquinas que automatizam grande parte do processo produtivo, além de softwares de gestão e consultorias de processo.',
+  },
+  {
+    t: 'Qualidade',
+    p: 'Controle de qualidade atuante e treinamento contínuo da equipe, com critérios de impressão, matéria-prima, colagem e fechamento.',
+  },
+];
+---
+<Base
+  title="Know-how e infraestrutura"
+  description="Parque fabril próprio de 11.000 m² em Goiânia, impressão flexográfica, controle de qualidade e assistência técnica pós-venda para embalagens de papelão ondulado."
+>
+  <PageHero
+    crumb="Know-how e infraestrutura"
+    eyebrow="Conhecimento e estrutura"
+    title="Estrutura que acompanha o crescimento"
+    accent="o crescimento"
+    lead="Uma indústria que amplia continuamente sua capacidade, investindo em tecnologia, pessoas e processos para transformar papelão ondulado em embalagens sob medida."
+    image={fabrica}
+    alt="Fábrica da Goiaspel vista do alto: galpão verde e branco com painéis solares, em Goiânia."
+  />
+
+  <section class="section" aria-labelledby="t-pilares">
+    <div class="container-x">
+      <h2 id="t-pilares" class="sr-only">Pilares da operação</h2>
+      <ol class="pilares" data-reveal-group>
+        {pilares.map((p, i) => (
+          <li data-reveal>
+            <span class="num pil-n">0{i + 1}</span>
+            <h3 class="pil-t">{p.t}</h3>
+            <p>{p.p}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section capacidade tone-blue" aria-labelledby="t-cap">
+    <div class="container-x">
+      <SectionHead
+        id="t-cap"
+        num="01"
+        eyebrow="Capacidade operacional"
+        title="A dimensão da nossa operação"
+        accent="nossa operação"
+        lead="Parque próprio, linhas automatizadas e uma equipe treinada para produzir em escala com padrão constante."
+      />
+      <div class="cap-body"><Indicadores /></div>
+    </div>
+  </section>
+
+  <section class="section tec" aria-labelledby="t-tec">
+    <div class="container-x tec-grid">
+      <div>
+      <figure class="tec-photo cut cut-tr" data-reveal="mask">
+        <Picture src={maquina} formats={['avif', 'webp']} widths={[600, 1000, 1690]} sizes="(min-width: 64rem) 45vw, 92vw" alt="Colaborador da Goiaspel alimentando com chapas de papelão uma máquina de produção de 250 caixas por minuto." loading="lazy" />
+        <CutLine shape="tr" />
+      </figure>
+      </div>
+      <div>
+        <SectionHead id="t-tec" num="02" eyebrow="Processo produtivo" title="Precisão em cada etapa" accent="cada etapa" align="start" size="md" />
+        <div class="prose-g tec-text" data-reveal>
+          <p>Da chapa de papelão ondulado à caixa pronta, o processo combina <strong>impressão, corte, vinco, colagem e fechamento</strong>. A flexografia imprime até três cores diretamente no papelão; a policromia aplica impressão em cartão acoplado para reprodução fotográfica.</p>
+          <p>O crescimento da Goiaspel é sustentado por investimentos constantes em <strong>capacitação das pessoas, consultorias de processo, softwares de gestão e tecnologia de produção</strong> — com um objetivo claro: acompanhar o mercado e crescer de forma sustentável.</p>
+        </div>
+        <ul class="tec-list">
+          <li><Icon name="check" class="i" />Impressão flexográfica em até 3 cores</li>
+          <li><Icon name="check" class="i" />Impressão em cartão acoplado (policromia)</li>
+          <li><Icon name="check" class="i" />Setor de layout e desenvolvimento de amostras</li>
+          <li><Icon name="check" class="i" />Controle de qualidade e treinamento contínuo</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section pessoas" aria-labelledby="t-pessoas">
+    <div class="container-x">
+      <SectionHead
+        id="t-pessoas"
+        num="03"
+        eyebrow="Pessoas"
+        title="Gente que conhece embalagem"
+        accent="conhece embalagem"
+        lead="Uma equipe qualificada e atualizada, próxima dos clientes. Estar perto da operação de quem compra é o que permite entregar a solução certa."
+      />
+      <div class="pes-grid" data-reveal-group>
+        <figure class="pes-a chamfer" data-reveal="mask">
+          <Picture src={operadora} formats={['avif', 'webp']} widths={[480, 800, 1095]} sizes="(min-width: 64rem) 50vw, 92vw" alt="Colaboradora da Goiaspel com protetor auricular apoiada sobre chapas de caixas prontas." loading="lazy" />
+        </figure>
+        <figure class="pes-b chamfer" data-reveal="mask">
+          <Picture src={operador} formats={['avif', 'webp']} widths={[480, 800, 1161]} sizes="(min-width: 64rem) 40vw, 92vw" alt="Colaborador da Goiaspel segurando caixas de papelão na área de expedição." loading="lazy" />
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <figure class="strip" data-reveal="fade">
+    <Picture src={esteira} formats={['avif', 'webp']} widths={[900, 1600, 2600]} sizes="100vw" alt="Fardo de caixas de papelão planificadas avançando sobre a esteira de roletes na fábrica da Goiaspel." loading="lazy" />
+  </figure>
+
+  <section id="logistica" class="section logistica tone-sage" aria-labelledby="t-log">
+    <div class="container-x lg-grid">
+      <SectionHead id="t-log" num="04" eyebrow="Logística de distribuição" title="Do pedido à sua doca" accent="à sua doca" align="start" size="md" />
+      <div class="prose-g" data-reveal>
+        <p>A Goiaspel tem <strong>frota própria de caminhões</strong> para distribuir os pedidos. Tratamos o serviço como parte do produto: o investimento em logística é o que permite entregar <strong>quando, onde e conforme solicitado</strong>.</p>
+        <p>O cuidado com a cadeia, da entrada do pedido até a entrega, é um compromisso contínuo — e um dos motivos pelos quais somos escolhidos pelo prazo curto, viável e cumprido.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="assistencia" class="section assist" aria-labelledby="t-assist">
+    <div class="container-x as-grid">
+      <div>
+        <SectionHead
+          id="t-assist"
+          num="05"
+          eyebrow="Assistência técnica"
+          title="Assistência técnica que vai além da venda"
+          accent="além da venda"
+          align="start"
+          size="md"
+        />
+        <div class="prose-g as-text" data-reveal>
+          <p>O suporte começa antes do pedido — com a coleta de dados do produto, o desenvolvimento e o teste de amostras — e continua depois da entrega.</p>
+          <p>Nossa equipe <strong>acompanha o desempenho das embalagens no cliente</strong>, identifica oportunidades de melhoria e desenvolve soluções para reduzir perdas, aumentar a produtividade e melhorar a performance das caixas.</p>
+        </div>
+        <ul class="as-list" data-reveal-group>
+          <li data-reveal><Icon name="check" class="i" /><div><strong>Acompanhamento técnico no cliente</strong><span>Observação da embalagem em uso real.</span></div></li>
+          <li data-reveal><Icon name="check" class="i" /><div><strong>Análise da operação</strong><span>Manuseio, estocagem, empilhamento e transporte.</span></div></li>
+          <li data-reveal><Icon name="check" class="i" /><div><strong>Redução de perdas</strong><span>Ajustes de estrutura, onda e dimensões.</span></div></li>
+          <li data-reveal><Icon name="check" class="i" /><div><strong>Mais produtividade</strong><span>Embalagens mais adequadas à linha do cliente.</span></div></li>
+        </ul>
+      </div>
+      <figure class="as-photo cut cut-slant" data-reveal="mask">
+        <Picture src={equipe} formats={['avif', 'webp']} widths={[480, 800, 1365]} sizes="(min-width: 64rem) 42vw, 92vw" alt="Representante comercial da Goiaspel revisando um documento com uma cliente." loading="lazy" />
+        <CutLine shape="slant" />
+      </figure>
+    </div>
+  </section>
+
+  <ContinueExplorando grupo={0} />
+  <CtaFinal />
+</Base>
+
+<style>
+  .pilares { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.5rem; }
+  @media (min-width: 48rem) { .pilares { grid-template-columns: repeat(3, 1fr); gap: 3rem; } }
+  .pilares li { border-top: 2px solid var(--color-ink); padding-top: 1.25rem; }
+  .pil-n { font-size: 3.5rem; color: var(--color-kraft-deep); display: block; }
+  .pil-t { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 2rem; text-transform: uppercase; color: var(--color-blue-700); margin: 0.5rem 0; }
+  .pilares p { color: var(--color-ink-2); }
+
+  .cap-body { margin-top: clamp(3rem, 6vw, 4.5rem); }
+
+  .tec-grid { display: grid; gap: 3rem; }
+  @media (min-width: 64rem) { .tec-grid { grid-template-columns: 1fr 1.1fr; gap: 5rem; align-items: center; } }
+  .tec-photo { --chamfer: 40px; margin: 0; }
+  .tec-photo :global(img) { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: 25% 50%; }
+  .tec-cap { margin-top: 0.6rem; }
+  .tec-text { margin-top: 1.5rem; }
+  .tec-list { list-style: none; margin: 1.75rem 0 0; padding: 0; display: grid; gap: 0.6rem; }
+  .tec-list li { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; font-weight: 600; }
+  .tec-list .i { width: 1.15rem; height: 1.15rem; color: var(--color-green-700); }
+
+  .pes-grid { display: grid; gap: 0.75rem; margin-top: clamp(3rem, 6vw, 4.5rem); }
+  @media (min-width: 48rem) { .pes-grid { grid-template-columns: 1.25fr 1fr; align-items: end; } }
+  .pes-a, .pes-b { margin: 0; --chamfer: 36px; }
+  .pes-a :global(img) { width: 100%; height: auto; aspect-ratio: 1.4; object-fit: cover; }
+  .pes-b :global(img) { width: 100%; height: auto; aspect-ratio: 1.1; object-fit: cover; object-position: 75% 50%; }
+
+  .as-grid { display: grid; gap: 3rem; }
+  @media (min-width: 64rem) { .as-grid { grid-template-columns: 1.1fr 1fr; gap: 5rem; align-items: center; } }
+  .as-text { margin-top: 1.5rem; }
+  .as-list { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; }
+  .as-list li { display: flex; gap: 0.9rem; padding-block: 1rem; border-top: 1px solid var(--color-line); }
+  .as-list .i { width: 1.25rem; height: 1.25rem; color: var(--color-green-700); margin-top: 0.2rem; }
+  .as-list strong { display: block; }
+  .as-list span { color: var(--color-ink-2); font-size: 0.9375rem; }
+  .as-note { margin-top: 1.25rem; font-size: 0.875rem; color: var(--color-ink-3); }
+  .as-photo { --chamfer: 40px; margin: 0; }
+  .as-photo :global(img) { width: 100%; height: auto; aspect-ratio: 0.9; object-fit: cover; }
+  .strip { margin: 0; }
+  .strip :global(img) { width: 100%; height: clamp(12rem, 22vw, 26rem); object-fit: cover; object-position: 35% 50%; }
+  .lg-grid { display: grid; gap: 2rem; }
+  @media (min-width: 64rem) { .lg-grid { grid-template-columns: 1fr 1.1fr; gap: 5rem; align-items: end; } }
+</style>

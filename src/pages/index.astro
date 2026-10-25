@@ -1,0 +1,458 @@
+---
+import CutLine from '../components/CutLine.astro';
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Setores from '../components/Setores.astro';
+import Clientes from '../components/Clientes.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import Instagram from '../components/Instagram.astro';
+import Pending from '../components/Pending.astro';
+import VideoFacade from '../components/VideoFacade.astro';
+import HeroCinematico from '../components/HeroCinematico.astro';
+import { Image } from 'astro:assets';
+import { galeria } from '../data/galeria';
+import ambPapelao from '../assets/ambiental/papelao.png';
+import ambFolhaGota from '../assets/ambiental/folha-gota.png';
+import ambFolhagemEsq from '../assets/ambiental/folhagem-esq.png';
+import ambFolhagemDir from '../assets/ambiental/folhagem-dir.png';
+import ambSolar from '../assets/ambiental/foto-solar.png';
+import ambAgua from '../assets/ambiental/foto-agua.png';
+import ambAparas from '../assets/ambiental/foto-aparas.png';
+import capa30 from '../assets/outros/capa_video_30_anos.jpg';
+
+import maquina from '../assets/fotos/operador-maquina.jpg';
+import operador from '../assets/fotos/operador-caixas.jpg';
+
+import { solucoes, outrasSolucoes, praticasAmbientais } from '../data/conteudo';
+
+const iconByPratica = { energia: 'sun', agua: 'water', aparas: 'recycle' } as const;
+const fotoPratica = { energia: ambSolar, agua: ambAgua, aparas: ambAparas } as const;
+---
+<Base
+  title="Goiaspel — Indústria de embalagens de papelão ondulado em Goiânia"
+  description="Caixas de papelão ondulado sob medida em flexografia e policromia. Parque fabril de 11.000 m² em Goiânia-GO, desenvolvimento de amostras e assistência técnica pós-venda."
+>
+  <!-- 00 · HERO CINEMATOGRÁFICO -->
+  <HeroCinematico />
+
+  <!-- 01 · SOLUÇÕES — uma única dobra: as duas tecnologias lado a lado -->
+  <section id="solucoes" class="section solucoes" aria-labelledby="t-solucoes">
+    <div class="container-x">
+      <header class="so-head">
+        <div>
+          <span class="tag tag-green">Soluções de embalagem</span>
+          <h2 id="t-solucoes" class="display display-md so-title" data-reveal>Impressão que<br /><span class="g">valoriza a sua marca</span></h2>
+        </div>
+        <div class="so-aside" data-reveal>
+          <p class="so-lead">Do grande volume à alta definição gráfica: duas tecnologias de impressão para cada necessidade, com <strong>qualidade e padronização</strong> em todos os lotes.</p>
+          <ul class="so-bens">
+            <li><Icon name="box" class="so-i" /><span>Mais produtividade</span></li>
+            <li><Icon name="badge" class="so-i" /><span>Padronização da marca</span></li>
+            <li><Icon name="chart" class="so-i" /><span>Impacto no ponto de venda</span></li>
+          </ul>
+        </div>
+      </header>
+
+      <div class="so-cards" data-reveal-group>
+        {solucoes.map((s) => (
+          <article class="so-card" aria-labelledby={`t-${s.id}`} data-reveal>
+            <div class="so-body">
+              <span class:list={['tag', s.tagCor === 'green' && 'tag-green']}>{s.tag}</span>
+              <h3 id={`t-${s.id}`} class="display so-ct">{s.nome}</h3>
+              <p class="so-resumo">{s.resumo}</p>
+              <ul class="so-ben">
+                {s.beneficios.map((b) => <li><Icon name="check" class="i" />{b}</li>)}
+              </ul>
+              <div class="so-links">
+                <a class="link-arrow" href={`/produtos-goiaspel/caixa-em-${s.id}/`}>Ver detalhes <Icon name="arrow" /></a>
+                <a class="link-arrow" href={`/orcamento/?tipo=${s.id}`}>Orçar {s.id} <Icon name="arrow" /></a>
+              </div>
+            </div>
+            <figure class="so-media" style={`--pos:${s.id === 'flexografia' ? '30% 50%' : '70% 50%'}`}>
+              <Picture src={s.imagem} formats={['avif', 'webp']} widths={[480, 760, 1100]} sizes="(min-width: 64rem) 24vw, 60vw" alt={s.alt} loading="lazy" />
+            </figure>
+          </article>
+        ))}
+      </div>
+
+      <!-- fila de produtos: passagem lenta, ordem aleatória a cada visita -->
+      <div class="port-strip">
+        <div class="ps-marquee" data-ps role="region" aria-label="Embalagens do portfólio" tabindex="0">
+          <ul class="ps-track" data-ps-track>
+            {galeria.map((g) => (
+              <li><Image src={g.src} alt={g.alt} width={200} widths={[140, 200]} sizes="140px" loading="lazy" class="ps-img" /></li>
+            ))}
+          </ul>
+        </div>
+        <a class="ps-link" href="/produtos-goiaspel-embalagens-de-papelao/#portfolio">
+          <span class="num ps-n">{galeria.length}</span>
+          <span class="ps-t">embalagens<br />no portfólio</span>
+          <Icon name="arrow" class="ps-i" />
+        </a>
+      </div>
+
+      <div class="sol-more" data-reveal-group>
+        {outrasSolucoes.map((o) => (
+          <a href={o.id === 'especiais' ? '/produtos-goiaspel/caixas-especiais/' : '/produtos-goiaspel/acessorios-de-papelao/'} class="sol-card" data-reveal>
+            <h3 class="sol-card-t">{o.nome}</h3>
+            <p>{o.texto}</p>
+            <span class="link-arrow" aria-hidden="true">Ver modelos <Icon name="arrow" /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 · PRECISÃO INDUSTRIAL -->
+  <section class="section precisao tone-blue" aria-labelledby="t-precisao">
+    <div class="container-x">
+      <div class="pre-grid">
+        <div class="pre-head">
+          <SectionHead
+            id="t-precisao"
+            title="Precisão que ganha escala"
+            accent="ganha escala"
+            align="start"
+            lead="Estrutura própria, equipamentos de impressão e equipe treinada para atender demandas de diferentes volumes com consistência."
+          />
+          <figure class="pre-photo cut cut-tr" data-reveal="mask">
+            <Picture src={maquina} formats={['avif', 'webp']} widths={[600, 1000, 1690]} sizes="(min-width: 64rem) 34vw, 92vw" alt="Colaborador da Goiaspel alimentando com chapas de papelão uma máquina de 250 caixas por minuto." loading="lazy" />
+            <CutLine shape="tr" />
+          </figure>
+        </div>
+        <ol class="pilares" data-reveal-group>
+          <li data-reveal><span class="num pl-n">01</span><h3>Estrutura</h3><p>Parque fabril próprio de 11.000 m² em Goiânia, inaugurado em 2015 e preparado para produção em larga escala.</p></li>
+          <li data-reveal><span class="num pl-n">02</span><h3>Tecnologia</h3><p>Máquinas que automatizam grande parte do processo, impressão flexográfica e em policromia, softwares de gestão.</p></li>
+          <li data-reveal><span class="num pl-n">03</span><h3>Qualidade</h3><p>Controle de qualidade atuante e treinamento contínuo da equipe: impressão, matéria-prima, colagem e fechamento.</p></li>
+          <li class="pl-link" data-reveal><a class="btn btn-ghost" href="/know-how-e-infraestrutura-goiaspel/">Conheça nossa estrutura <Icon name="arrow" class="arrow" /></a></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 · SETORES -->
+  <section class="section setores" aria-labelledby="t-setores">
+    <div class="container-x">
+      <SectionHead
+        id="t-setores"
+        title="Embalagens para diferentes setores"
+        accent="diferentes setores"
+        lead="Embalagens de transporte, apresentação e exposição produzidas para marcas de vários segmentos."
+      />
+      <div class="set-body">
+        <Setores />
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · AMBIENTAL -->
+  <section class="ambiental on-dark tone-green fold-flap-r" aria-labelledby="t-ambiental">
+    <!-- cena: papelão de parede dupla entre folhas molhadas, composta de recortes (assets/ambiental) -->
+    <div class="amb-scene" aria-hidden="true">
+      <Image src={ambFolhagemEsq} alt="" width={560} class="amb-l amb-bokeh" loading="lazy" />
+      <Image src={ambPapelao} alt="" width={760} widths={[480, 760]} sizes="(min-width: 64rem) 46vw, 90vw" class="amb-l amb-papelao" loading="lazy" />
+      <svg class="amb-l amb-arcs" viewBox="0 0 400 400"><circle cx="200" cy="200" r="190" /><circle cx="200" cy="200" r="150" /></svg>
+      <Image src={ambFolhaGota} alt="" width={380} class="amb-l amb-gota" loading="lazy" />
+      <Image src={ambFolhagemDir} alt="" width={580} class="amb-l amb-frente" loading="lazy" />
+    </div>
+    <Image src={ambFolhagemEsq} alt="" width={420} class="amb-canto" loading="lazy" aria-hidden="true" />
+    <div class="container-x amb-inner">
+      <SectionHead
+        id="t-ambiental"
+        title="Compromisso que protege o hoje"
+        accent="protege o hoje"
+        align="start"
+        lead="Práticas incorporadas ao dia a dia da fábrica para um futuro mais sustentável."
+      />
+      <ul class="amb-list" data-reveal-group>
+        {praticasAmbientais.map((p) => (
+          <li data-reveal>
+            <span class="amb-media">
+              <Image src={fotoPratica[p.id as keyof typeof fotoPratica]} alt="" width={216} class="amb-foto" loading="lazy" />
+              <span class="amb-badge"><Icon name={iconByPratica[p.id as keyof typeof iconByPratica]} class="amb-i" /></span>
+            </span>
+            <span class="amb-txt">
+              <h3>{p.titulo}</h3>
+              <p>{p.texto}</p>
+            </span>
+            {p.status === 'pendente' && <Pending title={p.fonte} />}
+          </li>
+        ))}
+      </ul>
+      <a class="btn btn-ghost-light amb-cta" href="/responsabilidade-ambiental-goiaspel/">Conheça nossas práticas <Icon name="arrow" class="arrow" /></a>
+    </div>
+  </section>
+
+  <!-- 05 · ASSISTÊNCIA TÉCNICA -->
+  <section class="section assist" aria-labelledby="t-assist">
+    <div class="container-x as-grid">
+      <div class="as-media">
+        <figure class="as-a cut cut-bl" data-reveal="mask">
+          <Picture src={operador} formats={['avif', 'webp']} widths={[480, 800, 1161]} sizes="(min-width: 64rem) 30vw, 92vw" alt="Colaborador da Goiaspel em uniforme verde e protetor auricular segurando caixas de papelão prontas para expedição." loading="lazy" />
+          <CutLine shape="bl" />
+        </figure>
+      </div>
+      <div class="as-text">
+        <SectionHead
+          id="t-assist"
+          title="Suporte que vai além da venda"
+          accent="além da venda"
+          align="start"
+          size="md"
+        />
+        <p class="lead as-lead" data-reveal>
+          Nossa equipe acompanha o desempenho das embalagens no cliente, identifica oportunidades de melhoria e desenvolve ajustes para reduzir perdas e ganhar produtividade.
+        </p>
+        <ol class="as-list" data-reveal-group>
+          <li data-reveal><span class="num">01</span><div><h3>Acompanhamento técnico no cliente</h3><p>Visitas para observar a embalagem em uso real, na linha e na expedição.</p></div></li>
+          <li data-reveal><span class="num">02</span><div><h3>Análise da operação</h3><p>Manuseio, estocagem, empilhamento e transporte avaliados em conjunto.</p></div></li>
+          <li data-reveal><span class="num">03</span><div><h3>Redução de perdas</h3><p>Ajustes de estrutura, onda e dimensões quando a embalagem pode render mais.</p></div></li>
+        </ol>
+        <a class="link-arrow" href="/know-how-e-infraestrutura-goiaspel/#assistencia">Como funciona a assistência <Icon name="arrow" /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 · HISTÓRIA -->
+  <section class="section historia tone-sage" aria-labelledby="t-historia">
+    <div class="container-x hi-grid">
+      <div>
+        <SectionHead id="t-historia" title="Pioneira desde 1992" accent="desde 1992" align="start" size="md" />
+        <div class="prose-g hi-text" data-reveal>
+          <p>Situada em Goiânia, a Goiaspel desenvolve e produz embalagens de papelão ondulado em flexografia e policromia, atendendo de pequenas a grandes empresas.</p>
+          <p>Fundada em maio de 1992, foi a <strong>indústria pioneira na fabricação de embalagens de papelão em sua região</strong>: a demanda crescia e não havia fornecedor local. Vieram novas máquinas em 1997, a primeira sede própria em 2003 e, em 2015, o parque fabril de 11.000 m².</p>
+          <p>Uma equipe qualificada constrói relacionamentos de valor: entender os desafios de cada cliente e trabalhar junto por resultados concretos.</p>
+        </div>
+        <a class="link-arrow" href="/conheca-a-goiaspel-embalagens-de-papelao/">Conheça a trajetória completa <Icon name="arrow" /></a>
+      </div>
+      <div data-reveal>
+        <VideoFacade id="8aqXcDM1maY" title="Vídeo comemorativo — 30 anos" poster={capa30} />
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 · CLIENTES -->
+  <Clientes variant="marquee" num="" />
+
+  <!-- 07 · CTA -->
+  <CtaFinal />
+  <Instagram />
+</Base>
+
+<style>
+  /* ---------- Hero ---------- */
+  .hero { position: relative; padding-top: clamp(2rem, 5vw, 4rem); overflow: hidden; }
+  .hero-grid { display: grid; gap: 2.5rem; }
+  @media (min-width: 64rem) {
+    .hero-grid { grid-template-columns: repeat(12, 1fr); gap: 2rem; align-items: center; min-height: min(78vh, 52rem); }
+    .hero-text { grid-column: 1 / span 7; grid-row: 1; position: relative; z-index: 2; }
+    .hero-media { grid-column: 8 / -1; grid-row: 1; margin-right: calc(var(--gutter) * -1); }
+  }
+  .hero h1 { margin-top: 1.5rem; color: var(--color-blue-700); }
+  .hero .g { color: var(--color-green-600); }
+  .hero-lead { margin-top: 1.75rem; max-width: 34rem; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+  .hero-media { position: relative; }
+  .hero-main { --chamfer: clamp(28px, 5vw, 72px); margin: 0; }
+  .hero-main :global(img) { width: 100%; height: auto; aspect-ratio: 1.12; object-fit: cover; }
+  @media (min-width: 64rem) { .hero-main :global(img) { aspect-ratio: auto; height: min(74vh, 50rem); } }
+
+  .facts {
+    list-style: none;
+    margin: clamp(4rem, 8vw, 6rem) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--color-line);
+  }
+  @media (min-width: 64rem) { .facts { grid-template-columns: repeat(4, 1fr); } }
+  .facts li { display: grid; gap: 0.15rem; padding: 1.25rem 1rem 1.5rem 0; }
+  .facts strong {
+    font-variation-settings: "wdth" 72;
+    font-weight: 800;
+    font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+    text-transform: uppercase;
+    line-height: 1.05;
+    color: var(--color-ink);
+  }
+  .facts span { font-size: 0.9375rem; color: var(--color-ink-2); }
+  .hero-flute { display: block; height: 44px; margin-top: 1rem; }
+
+  /* ---------- Soluções ---------- */
+
+  .sol-more { display: grid; gap: 0.75rem; margin-top: clamp(4rem, 7vw, 6rem); }
+  @media (min-width: 48rem) { .sol-more { grid-template-columns: 1fr 1fr; } }
+  .sol-card {
+    --chamfer: 24px;
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    padding: 2rem;
+    background: var(--color-paper-2);
+    text-decoration: none;
+    color: var(--color-ink-2);
+    clip-path: polygon(0 0, calc(100% - var(--chamfer)) 0, 100% var(--chamfer), 100% 100%, 0 100%);
+    transition: background-color var(--dur-2);
+  }
+  .sol-card:hover { background: var(--color-paper-3); }
+  .sol-card-t { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.75rem; text-transform: uppercase; color: var(--color-blue-700); }
+
+
+  .hi-grid { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 64rem) { .hi-grid { grid-template-columns: 1fr 1.1fr; gap: 5rem; } }
+  .hi-text { margin: 1.5rem 0 1.5rem; }
+
+  /* ---------- Soluções (uma dobra) ---------- */
+  .so-head { display: grid; gap: 2rem; align-items: end; }
+  @media (min-width: 64rem) { .so-head { grid-template-columns: 1.05fr 1.2fr; gap: 3rem; } }
+  .so-title { margin-top: 1rem; color: var(--color-blue-700); }
+  .so-title .g { color: var(--color-green-700); }
+  .so-aside { display: grid; gap: 1.5rem; }
+  @media (min-width: 64rem) { .so-aside { grid-template-columns: 1.1fr 1fr; align-items: center; padding-left: 2rem; border-left: 1px solid var(--color-line); } }
+  .so-lead { color: var(--color-ink-2); font-size: 1.0625rem; }
+  .so-lead strong { color: var(--color-ink); }
+  .so-bens { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+  .so-bens li { display: grid; justify-items: center; gap: 0.5rem; padding: 0.25rem 0.5rem; text-align: center; font-size: 0.875rem; line-height: 1.25; color: var(--color-ink-2); }
+  .so-bens li + li { border-left: 1px solid var(--color-line); }
+  .so-bens :global(.so-i) { width: 2.1rem; height: 2.1rem; color: var(--gp-verde); }
+  .so-cards { display: grid; gap: 1.25rem; margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+  @media (min-width: 64rem) { .so-cards { grid-template-columns: 1fr 1fr; } }
+  .so-card {
+    position: relative; display: grid; overflow: hidden;
+    background: var(--gp-branco);
+    border: 1px solid var(--color-line);
+    clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%);
+  }
+  @media (min-width: 40rem) { .so-card { grid-template-columns: 1fr 1fr; } }
+  .so-body { position: relative; z-index: 1; display: grid; align-content: start; gap: 0.9rem; padding: clamp(1.5rem, 3vw, 2.25rem); }
+  .so-ct { font-size: clamp(2rem, 3.2vw, 2.9rem); color: var(--color-blue-700); }
+  .so-resumo { color: var(--color-ink-2); }
+  .so-ben { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+  .so-ben li { display: flex; gap: 0.6rem; align-items: center; font-weight: 600; font-size: 0.975rem; }
+  .so-ben .i { width: 1.15rem; height: 1.15rem; color: var(--gp-verde); flex: none; }
+  .so-links { display: grid; gap: 0.25rem; margin-top: 0.5rem; justify-items: start; }
+  .so-media { margin: 0; position: relative; min-height: 18rem; aspect-ratio: 4 / 5; align-self: stretch; background: var(--gp-papel); }
+  .so-media :global(picture), .so-media :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .so-media :global(img) { object-fit: cover; object-position: var(--pos, 50% 50%); transition: transform 1.2s var(--ease-out-quart); }
+  .so-card:hover .so-media :global(img) { transform: scale(1.04); }
+
+  /* ---------- Fila de produtos ---------- */
+  .port-strip { display: grid; gap: 1.25rem; align-items: center; margin-top: clamp(2.5rem, 5vw, 3.5rem); padding-block: 1.5rem; border-block: 1px solid var(--color-line); }
+  @media (min-width: 64rem) { .port-strip { grid-template-columns: 1fr auto; gap: 2.5rem; } }
+  .ps-marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+  .ps-track { list-style: none; margin: 0; padding: 0; display: flex; gap: 1rem; width: max-content; }
+  .ps-track li { flex: none; width: 140px; aspect-ratio: 1; display: grid; place-items: center; background: #fff; }
+  .ps-img { width: 100%; height: 100%; object-fit: contain; padding: 10%; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ps-marquee.is-ready .ps-track { animation: ps-scroll var(--ps-dur, 140s) linear infinite; }
+    .ps-marquee:hover .ps-track, .ps-marquee:focus-within .ps-track { animation-play-state: paused; }
+  }
+  @media (prefers-reduced-motion: reduce) { .ps-marquee { overflow-x: auto; } }
+  @keyframes ps-scroll { to { transform: translateX(-50%); } }
+  .ps-link { display: inline-flex; align-items: center; gap: 0.9rem; padding: 0.75rem 1.25rem; text-decoration: none; color: var(--color-blue-700); border: 1.5px solid var(--color-line); background: var(--gp-branco); transition: border-color var(--dur-2); }
+  .ps-link:hover { border-color: var(--gp-verde); }
+  .ps-n { font-size: clamp(3rem, 5vw, 4rem); color: var(--color-green-700); }
+  .ps-t { font-weight: 700; font-size: 1.05rem; line-height: 1.2; }
+  .ps-link :global(.ps-i) { width: 1.3rem; height: 1.3rem; transition: transform var(--dur-2) var(--ease-out-quart); }
+  .ps-link:hover :global(.ps-i) { transform: translateX(4px); }
+
+  /* ---------- Precisão ---------- */
+  .pilares { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; align-self: center; }
+  .pilares li { display: grid; grid-template-columns: 4.5rem 1fr; column-gap: 1.25rem; padding-block: 1.6rem; border-top: 1px solid var(--color-line); }
+  .pilares li.pl-link { display: block; border-top: 1px solid var(--color-line); padding-top: 2rem; }
+  .pl-n { grid-row: span 2; font-size: 3.4rem; color: var(--color-kraft-deep); }
+  .pilares h3 { font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.9rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .pilares p { color: var(--color-ink-2); max-width: 52ch; }
+  .pre-grid { display: grid; gap: 3rem; }
+  @media (min-width: 64rem) { .pre-grid { grid-template-columns: 0.85fr 1.6fr; gap: 4rem; align-items: start; } }
+  .pre-photo { margin: 2.5rem 0 0; }
+  .pre-photo :global(img) { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: 25% 50%; }
+  .pre-cap { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.75rem; font-size: 0.875rem; color: var(--color-ink-2); }
+
+  /* ---------- Processo ---------- */
+
+  .set-body { margin-top: clamp(3rem, 6vw, 4.5rem); }
+
+  /* ---------- Ambiental ---------- */
+  /* verde profundo, sem foto: folha e onda tom sobre tom à direita, três práticas em colunas com filetes */
+  .ambiental { position: relative; overflow: hidden; background-color: #1E5A3F; background-image: var(--pat-fibra); background-size: 327px auto; background-blend-mode: soft-light; }
+  .ambiental::before { display: none; }
+  .amb-inner { position: relative; z-index: 2; padding-block: clamp(4.5rem, 8vw, 7rem) calc(clamp(4rem, 7vw, 6rem) + var(--fold-h)); }
+  .amb-inner :global(.sh-title) { color: var(--color-white); max-width: 14ch; }
+  .amb-inner :global(.accent) { color: var(--gp-fibra); }
+  .amb-inner :global(.sh-lead) { max-width: 30rem; color: rgb(255 255 255 / 0.88); }
+
+  /* cena à direita: luz quente ao fundo, folhagem desfocada, papelão, folha com gota e folhas à frente */
+  .amb-scene { position: relative; height: 18rem; margin-bottom: -4rem; pointer-events: none;
+    background: radial-gradient(60% 55% at 70% 25%, rgb(214 230 150 / 0.22), transparent 70%); }
+  .amb-l { position: absolute; height: auto; }
+  .amb-bokeh { left: 0; top: 10%; width: 50%; filter: blur(5px); opacity: 0.5; }
+  .amb-papelao { right: -6%; top: 6%; width: 86%; filter: drop-shadow(0 30px 40px rgb(0 0 0 / 0.35)); }
+  .amb-gota { left: 12%; top: -4%; width: 34%; filter: drop-shadow(0 12px 18px rgb(0 0 0 / 0.3)); }
+  .amb-arcs { left: 2%; top: -14%; width: 46%; fill: none; stroke: rgb(255 255 255 / 0.22); stroke-width: 0.8; }
+  .amb-frente { right: -4%; bottom: -10%; width: 62%; filter: blur(1px); }
+  .amb-canto { position: absolute; left: -6rem; bottom: -3rem; width: 18rem; height: auto; filter: blur(7px); opacity: 0.45; transform: rotate(150deg); pointer-events: none; z-index: 1; }
+  @media (min-width: 64rem) {
+    .amb-scene { position: absolute; inset: 0 0 0 auto; width: 56%; height: auto; margin: 0; z-index: 1;
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%); mask-image: linear-gradient(90deg, transparent, #000 22%); }
+    .amb-bokeh { top: 30%; width: 44%; }
+    .amb-papelao { right: -5%; top: 12%; width: 80%; }
+    .amb-gota { left: 20%; top: 14%; width: 25%; z-index: 2; }
+    .amb-arcs { left: 8%; top: 4%; width: 40%; }
+    .amb-frente { right: -3%; bottom: 0; width: 52%; z-index: 2; opacity: 0.9; }
+    /* véu na base para as práticas lerem sobre a cena */
+    .amb-scene::after { content: ""; position: absolute; inset: auto 0 0; height: 55%; background: linear-gradient(0deg, #1E5A3F 30%, transparent); z-index: 1; }
+  }
+
+  .amb-list { list-style: none; margin: clamp(2.5rem, 4vw, 3.5rem) 0 0; padding: 0; display: grid; gap: 2rem; }
+  @media (min-width: 48rem) {
+    .amb-list { grid-template-columns: repeat(3, 1fr); gap: 0; }
+    .amb-list li + li { border-left: 1px solid rgb(255 255 255 / 0.18); padding-left: clamp(1.25rem, 2.5vw, 2.5rem); }
+    .amb-list li { padding-right: clamp(1.25rem, 2.5vw, 2.5rem); }
+  }
+  .amb-list li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1.25rem; align-items: center; }
+  .amb-media { position: relative; display: block; width: 7.5rem; aspect-ratio: 1; margin: 1.1rem 0 0 1.1rem; }
+  .amb-media :global(.amb-foto) { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.25), 0 16px 30px -12px rgb(0 0 0 / 0.5); }
+  .amb-badge { position: absolute; left: -1.1rem; top: -1.1rem; display: grid; place-items: center; width: 3.4rem; height: 3.4rem; border-radius: 50%; background: #133F2C; box-shadow: 0 0 0 1px rgb(155 184 154 / 0.6); }
+  .amb-list :global(.amb-i) { width: 1.7rem; height: 1.7rem; color: var(--color-white); stroke-width: 1.3; }
+  .amb-txt { display: grid; gap: 0.5rem; }
+  .amb-list h3 { font-variation-settings: "wdth" 75; font-weight: 800; font-size: 1.3rem; letter-spacing: 0.01em; text-transform: uppercase; }
+  .amb-list p { color: rgb(255 255 255 / 0.82); font-size: 0.95rem; line-height: 1.5; }
+  .amb-list :global(.pending) { justify-self: start; }
+  .amb-cta { margin-top: 3rem; }
+
+  /* ---------- Assistência ---------- */
+  .as-grid { display: grid; gap: 3rem; align-items: center; }
+  @media (min-width: 64rem) { .as-grid { grid-template-columns: 0.9fr 1fr; gap: 5rem; } }
+  .as-a { --chamfer: 40px; margin: 0; }
+  .as-a :global(img) { width: 100%; height: auto; aspect-ratio: 0.95; object-fit: cover; object-position: 70% 50%; }
+  .as-lead { margin-top: 1.5rem; max-width: 46ch; }
+  .as-list { list-style: none; margin: 2rem 0; padding: 0; display: grid; }
+  .as-list li { display: grid; grid-template-columns: 3.25rem 1fr; gap: 1rem; padding-block: 1.1rem; border-top: 1px solid var(--color-line); }
+  .as-list .num { font-size: 2.25rem; color: var(--color-kraft-deep); }
+  .as-list h3 { font-weight: 700; font-size: 1.125rem; color: var(--color-ink); }
+  .as-list p { color: var(--color-ink-2); font-size: 0.975rem; margin-top: 0.15rem; }
+</style>
+
+<script>
+  // Fila de produtos: embaralha a ordem a cada visita e duplica a lista para o loop contínuo.
+  document.querySelectorAll<HTMLElement>('[data-ps]').forEach((box) => {
+    const track = box.querySelector<HTMLElement>('[data-ps-track]')!;
+    const items = [...track.children];
+    for (let i = items.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [items[i], items[j]] = [items[j], items[i]];
+    }
+    track.replaceChildren(...items);
+    items.forEach((li) => {
+      const c = li.cloneNode(true) as HTMLElement;
+      c.setAttribute('aria-hidden', 'true');
+      c.querySelector('img')?.setAttribute('alt', '');
+      track.append(c);
+    });
+    box.style.setProperty('--ps-dur', `${items.length * 3}s`); // ~3 s por embalagem: passagem lenta
+    box.classList.add('is-ready');
+  });
+</script>

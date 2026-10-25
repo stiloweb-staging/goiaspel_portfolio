@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import VideoFacade from '../components/VideoFacade.astro';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import capa30 from '../assets/outros/capa_video_30_anos.jpg';
+import capaInst from '../assets/outros/capa_video_institucional.jpg';
+
+// Os dois vídeos do site original (/videos-da-goiaspel/), canal oficial no YouTube.
+const videos = [
+  { id: 'vJMXnChkjrk', titulo: 'Institucional 2022', texto: 'O parque fabril, as pessoas e o processo de fabricação das embalagens.', capa: capaInst },
+  { id: '8aqXcDM1maY', titulo: '30 anos', texto: 'Vídeo comemorativo das três décadas da Goiaspel.', capa: capa30 },
+];
+---
+<Base title="Vídeos" description="Assista aos vídeos da Goiaspel: institucional com o parque fabril em Goiânia e o vídeo comemorativo de 30 anos.">
+  <PageHero
+    crumb="Vídeos"
+    eyebrow="Goiaspel em vídeo"
+    title="Veja a fábrica por dentro"
+    accent="por dentro"
+    lead="O parque fabril, as pessoas e três décadas de história, em dois vídeos."
+  />
+
+  <section class="section" aria-label="Vídeos">
+    <div class="container-x">
+      <ul class="vids" data-reveal-group>
+        {videos.map((v) => (
+          <li data-reveal>
+            <VideoFacade id={v.id} title={`Goiaspel Embalagens — ${v.titulo}`} poster={v.capa} />
+            <h2 class="v-t">{v.titulo}</h2>
+            <p class="v-p">{v.texto}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="v-canal"><a class="link-arrow" href="https://www.youtube.com/channel/UCGJjMntsZ24_Yg4fzixWZ-Q" target="_blank" rel="noopener">Canal da Goiaspel no YouTube</a></p>
+    </div>
+  </section>
+
+  <ContinueExplorando grupo={0} />
+  <CtaFinal />
+</Base>
+
+<style>
+  .vids { list-style: none; margin: 0; padding: 0; display: grid; gap: 3rem 2rem; }
+  @media (min-width: 64rem) { .vids { grid-template-columns: 1fr 1fr; } }
+  .v-t { margin-top: 1.25rem; font-variation-settings: "wdth" 72; font-weight: 800; font-size: 1.75rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .v-p { margin-top: 0.4rem; color: var(--color-ink-2); }
+  .v-canal { margin-top: 2.5rem; }
+</style>

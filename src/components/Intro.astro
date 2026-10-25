@@ -1,0 +1,120 @@
+---
+/**
+ * Abertura com a logo oficial: aparece uma vez por sessão (sessionStorage), só com JS e sem
+ * preferência por movimento reduzido — a classe `gp-intro` é posta no <html> por um script inline
+ * no <head>, antes da primeira pintura. A logo é montada em três camadas da mesma imagem (palavra,
+ * símbolo, assinatura) e a barra de progresso é um miolo ondulado que se desenha conforme a página
+ * carrega. Na saída, duas abas (papel e verde) sobem com o chanfro de 45° das dobras do site.
+ * Tempo mínimo 1,4 s, máximo 3 s; dispara `gp:intro-done` (o vídeo do hero espera por ele).
+ */
+import { getImage } from 'astro:assets';
+import logo from '../assets/marca/logo.png';
+
+const img = await getImage({ src: logo, format: 'webp', width: 640, quality: 90 });
+
+// miolo ondulado: 14 ondas em 280 unidades
+let onda = 'M0 10';
+for (let i = 0; i < 14; i++) onda += ' q5 -9 10 0 q5 9 10 0';
+---
+<div class="gi" aria-hidden="true" data-intro>
+  <div class="gi-sheet gi-green"></div>
+  <div class="gi-sheet gi-paper">
+    <div class="gi-stage">
+      <div class="gi-logo">
+        <img class="gi-l gi-word" src={img.src} width="640" height={Math.round(640 * logo.height / logo.width)} alt="" decoding="sync" />
+        <img class="gi-l gi-mark" src={img.src} width="640" height={Math.round(640 * logo.height / logo.width)} alt="" decoding="sync" />
+        <img class="gi-l gi-sign" src={img.src} width="640" height={Math.round(640 * logo.height / logo.width)} alt="" decoding="sync" />
+      </div>
+      <svg class="gi-flute" viewBox="0 0 280 20" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="gi-grad" x1="0" x2="1"><stop offset="0" stop-color="#14395A" /><stop offset="1" stop-color="#2A7654" /></linearGradient>
+        </defs>
+        <path class="gi-track" d={onda} pathLength="1" />
+        <path class="gi-bar" d={onda} pathLength="1" />
+      </svg>
+      <p class="gi-since"><span>Desde 1992</span><span>Goiânia · GO</span></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-intro]');
+  const html = document.documentElement;
+  if (root && html.classList.contains('gp-intro')) {
+    const t0 = performance.now();
+    const MIN = 1400, MAX = 3000;
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      const wait = Math.max(0, MIN - (performance.now() - t0));
+      setTimeout(() => {
+        // barra completa, partindo de onde a animação estava
+        const bar = root.querySelector<SVGPathElement>('.gi-bar')!;
+        const cur = getComputedStyle(bar).strokeDashoffset;
+        bar.style.animation = 'none';
+        bar.style.strokeDashoffset = cur;
+        bar.getBoundingClientRect();
+        bar.style.transition = 'stroke-dashoffset 0.25s ease-out';
+        bar.style.strokeDashoffset = '0';
+        root.classList.add('is-loaded');
+        setTimeout(() => {
+          root.classList.add('is-out');
+          window.dispatchEvent(new Event('gp:intro-done'));
+          root.querySelector('.gi-green')!.addEventListener('transitionend', () => {
+            html.classList.remove('gp-intro');
+            root.remove();
+          }, { once: true });
+        }, 260);
+      }, wait);
+    };
+    if (document.readyState === 'complete') finish();
+    else window.addEventListener('load', finish, { once: true });
+    setTimeout(finish, MAX);
+  } else {
+    root?.remove();
+  }
+</script>
+
+<style>
+  .gi { display: none; }
+  :global(html.gp-intro) .gi { display: block; position: fixed; inset: 0; z-index: 1000; pointer-events: auto; }
+  .gi.is-out { pointer-events: none; }
+
+  /* abas: um pouco mais altas que a tela; a borda de baixo tem o chanfro de 45° das dobras */
+  .gi-sheet {
+    position: absolute; inset: 0 0 auto 0; height: calc(100% + 5rem);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 5rem), calc(100% - 7rem) calc(100% - 5rem), calc(100% - 12rem) 100%, 0 100%);
+    transition: transform 0.85s cubic-bezier(0.76, 0, 0.18, 1);
+  }
+  .gi-green { background: var(--gp-verde); transition-delay: 0.12s; }
+  .gi-paper {
+    background-color: var(--gp-papel); background-image: var(--pat-fibra); background-size: 327px auto; background-blend-mode: soft-light;
+    display: grid; place-items: center; padding-bottom: 5rem;
+  }
+  .gi.is-out .gi-sheet { transform: translateY(-105%); }
+
+  .gi-stage { display: grid; justify-items: center; gap: 1.6rem; width: min(21rem, 66vw); transition: transform 0.6s cubic-bezier(0.76, 0, 0.18, 1), opacity 0.4s; }
+  .gi.is-out .gi-stage { transform: translateY(-2.5rem); opacity: 0; }
+
+  .gi-logo { position: relative; width: 100%; aspect-ratio: 655 / 340; }
+  .gi-l { position: absolute; inset: 0; width: 100%; height: 100%; }
+  /* palavra "Goiaspel": imprime da esquerda para a direita, saindo do desfoque */
+  .gi-word { clip-path: inset(35% 100% 23% 0); filter: blur(6px); animation: gi-word 0.7s 0.15s cubic-bezier(0.65, 0, 0.25, 1) forwards; }
+  /* símbolo (folha azul + arco verde): abre em círculo a partir do talo */
+  .gi-mark { clip-path: circle(0% at 66% 34%); animation: gi-mark 0.65s 0.6s cubic-bezier(0.34, 1.3, 0.5, 1) forwards; }
+  /* assinatura "Embalagens de Papelão" */
+  .gi-sign { clip-path: inset(77% 0 0 0); opacity: 0; transform: translateY(8px); animation: gi-sign 0.5s 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  @keyframes gi-word { to { clip-path: inset(35% 0 23% 0); filter: blur(0); } }
+  @keyframes gi-mark { to { clip-path: circle(75% at 66% 34%); } }
+  @keyframes gi-sign { to { opacity: 1; transform: none; } }
+
+  .gi-flute { width: 72%; height: 0.75rem; overflow: visible; }
+  .gi-flute path { fill: none; stroke-width: 2.2; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+  .gi-track { stroke: rgb(20 57 90 / 0.12); }
+  .gi-bar { stroke: url(#gi-grad); stroke-dasharray: 1; stroke-dashoffset: 1; animation: gi-bar 1.6s 0.1s cubic-bezier(0.3, 0.6, 0.3, 1) forwards; }
+  @keyframes gi-bar { to { stroke-dashoffset: 0.18; } }
+
+  .gi-since { display: flex; gap: 1.1rem; margin: 0; font-size: 0.7rem; font-weight: 650; letter-spacing: 0.22em; text-transform: uppercase; color: var(--color-ink-3, #6b625b); opacity: 0; animation: gi-sign 0.5s 1.05s ease-out forwards; }
+  .gi-since span + span::before { content: ""; display: inline-block; width: 1.4rem; height: 1px; margin-right: 1.1rem; vertical-align: middle; background: var(--gp-fibra); }
+</style>

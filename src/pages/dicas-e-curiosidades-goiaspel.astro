@@ -1,0 +1,92 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import CtaFinal from '../components/CtaFinal.astro';
+import ContinueExplorando from '../components/ContinueExplorando.astro';
+import type { ImageMetadata } from 'astro';
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/dicas/*.jpg', { eager: true });
+const ideias = [
+  { t: 'Organizadores forrados', p: 'Caixas revestidas com tecido ou papel decorado viram organizadores para DVDs, revistas e documentos.' },
+  { t: 'Cesto para toalhas', p: 'Com forro e alças de tecido, a caixa ganha vida nova como cesto para banheiro ou lavanderia.' },
+  { t: 'Caixas decoradas', p: 'Tampas e laterais estampadas transformam caixas comuns em porta-objetos e embalagens de presente.' },
+  { t: 'Baú com alças de corda', p: 'Forrada em xadrez e com alças de corda, uma caixa resistente vira baú para brinquedos.' },
+  { t: 'Casinha para pets', p: 'Recortes simples de porta e janela fazem uma casinha leve e divertida para cães e gatos.' },
+  { t: 'Banco e mesa de apoio', p: 'Chapas de papelão ondulado dobradas e coladas suportam peso quando a onda trabalha na vertical.' },
+  { t: 'Porta-objetos hexagonais', p: 'Recortes em formatos geométricos e cores vivas organizam pequenos itens sobre a mesa.' },
+  { t: 'Nichos de parede', p: 'Caixas pintadas e fixadas na parede formam nichos decorativos para livros e enfeites.' },
+].map((d, i) => ({ ...d, src: files[`../assets/dicas/${i + 1}.jpg`].default }));
+---
+<Base
+  title="Dicas e curiosidades: reaproveite caixas de papelão"
+  description="Ideias para dar nova utilidade às caixas de papelão: organizadores, cestos, casinhas para pets, nichos e mais. Curiosidades sobre o papelão ondulado."
+>
+  <PageHero
+    crumb="Dicas e curiosidades"
+    eyebrow="Saiba mais"
+    title="Sua caixa pode ter uma segunda vida"
+    accent="segunda vida"
+    lead="Sabe aquelas caixas de papelão que iam para o lixo? Elas podem ganhar novas utilidades. Conheça algumas ideias — e depois encaminhe o que sobrar para a reciclagem."
+  />
+
+  <section class="section" aria-labelledby="t-ideias">
+    <div class="container-x">
+      <h2 id="t-ideias" class="sr-only">Ideias de reaproveitamento</h2>
+      <ul class="ideias" data-reveal-group>
+        {ideias.map((d, i) => (
+          <li class="ideia" data-reveal>
+            <figure>
+              <Image src={d.src} alt={d.p} style={i === 7 ? 'object-position:50% 35%' : undefined} width={620} widths={[320, 480, 620]} sizes="(min-width: 64rem) 30vw, 92vw" loading="lazy" />
+              <figcaption><span class="num i-n">0{i + 1}</span><h3>{d.t}</h3><p>{d.p}</p></figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section curio tone-sage" aria-labelledby="t-curio">
+    <div class="container-x">
+      <SectionHead id="t-curio" num="02" eyebrow="Curiosidades" title="Por que o papelão ondulado?" accent="ondulado?" />
+      <div class="cu-grid" data-reveal-group>
+        <article data-reveal>
+          <h3>Termômetro da economia</h3>
+          <p>O setor de papelão ondulado é considerado um termômetro da economia nacional: está ligado à demanda de praticamente todos os setores, como alimentos, químico e farmacêutico, metalúrgico, bebidas, materiais elétricos e comunicação.</p>
+        </article>
+        <article data-reveal>
+          <h3>Versatilidade sob medida</h3>
+          <p>Não há um padrão pré-determinado: o papelão ondulado é produzido para cada tipo de produto e condição de uso. Por isso é a embalagem de transporte que melhor se adapta a cada situação.</p>
+        </article>
+        <article data-reveal>
+          <h3>As ondas são pilares</h3>
+          <p>Na caixa de transporte, as ondulações devem ficar na vertical: funcionam como os pilares de um edifício e sustentam o empilhamento durante a estocagem.</p>
+        </article>
+      </div>
+      <a class="link-arrow cu-link" href="/tire-suas-duvidas-sobre-nossos-produtos-goiaspel/">Dúvidas técnicas sobre papelão <Icon name="arrow" /></a>
+    </div>
+  </section>
+
+  <ContinueExplorando grupo={2} />
+  <CtaFinal />
+</Base>
+
+<style>
+  .ideias { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.5rem 1.5rem; }
+  @media (min-width: 40rem) { .ideias { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .ideias { grid-template-columns: repeat(4, 1fr); } }
+  .ideia figure { margin: 0; }
+  .ideia :global(img) { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%); }
+  .ideia figcaption { display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 1rem; margin-top: 1rem; }
+  .i-n { grid-row: span 2; font-size: 2.5rem; color: var(--color-kraft-deep); }
+  .ideia h3 { font-variation-settings: "wdth" 75; font-weight: 800; font-size: 1.375rem; text-transform: uppercase; color: var(--color-blue-700); align-self: end; }
+  .ideia p { color: var(--color-ink-2); font-size: 0.975rem; }
+  .cu-grid { display: grid; gap: 1px; margin-top: 3rem; background: var(--color-line); }
+  @media (min-width: 48rem) { .cu-grid { grid-template-columns: repeat(3, 1fr); } }
+  .cu-grid article { padding: 2rem 1.75rem; background: var(--gp-fibra); }
+  .cu-grid h3 { font-variation-settings: "wdth" 75; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; color: var(--color-blue-700); }
+  .cu-grid p { margin-top: 0.75rem; color: var(--color-ink-2); }
+  .cu-link { margin-top: 2rem; }
+</style>
