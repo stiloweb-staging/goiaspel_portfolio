@@ -61,10 +61,9 @@ for (let i = 0; i < 14; i++) onda += ' q5 -9 10 0 q5 9 10 0';
         setTimeout(() => {
           root.classList.add('is-out');
           window.dispatchEvent(new Event('gp:intro-done'));
-          root.querySelector('.gi-green')!.addEventListener('transitionend', () => {
-            html.classList.remove('gp-intro');
-            root.remove();
-          }, { once: true });
+          const cleanup = () => { html.classList.remove('gp-intro'); root.remove(); };
+          root.querySelector('.gi-green')!.addEventListener('transitionend', cleanup, { once: true });
+          setTimeout(cleanup, 1400); // aba em segundo plano pode não disparar transitionend
         }, 260);
       }, wait);
     };
