@@ -103,8 +103,8 @@ export const solucoes: Solucao[] = [
     tag: 'Até 3 cores',
     tagCor: 'blue',
     resumo:
-      'Impressão direta sobre o papelão ondulado, com clichê e tintas à base d’água. A escolha certa para produção em volume com identidade padronizada.',
-    beneficios: ['Agilidade em grandes tiragens', 'Padronização entre lotes', 'Escala de produção'],
+      'Impressão direta no papelão ondulado. Ideal para grandes tiragens com agilidade e padronização.',
+    beneficios: ['Alta produtividade', 'Padronização entre lotes', 'Produção em escala'],
     aplicacao: 'Embalagens de transporte, caixas de expedição, linhas de produto com alto giro.',
     imagem: flexoComposicao,
     alt: 'Quatro caixas de papelão impressas em flexografia sobre degraus de pedra: Star Pel, Zupp Amaciante, coletor de perfurocortantes amarelo e caixa Frigorífico Goiás.',
@@ -121,8 +121,8 @@ export const solucoes: Solucao[] = [
     tag: 'Reprodução fotográfica',
     tagCor: 'green',
     resumo:
-      'Impressão em cartão acoplado ao papelão ondulado, com reprodução de imagens e múltiplas cores. Para quando a embalagem também precisa vender.',
-    beneficios: ['Reprodução fotográfica', 'Detalhamento gráfico', 'Presença no ponto de venda'],
+      'Impressão de alta definição, com cores vibrantes e riqueza de detalhes. Embalagens que valorizam sua marca.',
+    beneficios: ['Qualidade fotográfica', 'Acabamento sofisticado', 'Destaque no ponto de venda'],
     aplicacao: 'Embalagens de apresentação, produtos de varejo, kits e caixas promocionais.',
     imagem: poliComposicao,
     alt: 'Caixas de papelão em policromia: caixa de bolo Europa Pães com alça, caixa Mundial Panificadora, caixa Bosch Service Bomdisa e caixa Imperial Tintas.',
